@@ -13,3 +13,5 @@ const app =
         measurementId: process.env.MEASUREMENT_ID,
       })
     : firebase.apps[0];
+
+export default app;
