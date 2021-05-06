@@ -6,4 +6,4 @@ const state = atom<string>({
   default: firebase.auth().currentUser?.uid,
 });
 
-export default state; 
+export default state;
