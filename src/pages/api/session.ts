@@ -5,7 +5,6 @@ const handler: NextApiHandler = async (req, res) => {
   const response = await fetch(
     "https://asia-northeast1-orange-juice-prod.cloudfunctions.net/http-sessionCookie",
     {
-      credentials: "include",
       method: "POST",
       headers: {
         Authorization: req.headers.authorization,
@@ -14,9 +13,9 @@ const handler: NextApiHandler = async (req, res) => {
       body: JSON.stringify({ data: {} }),
     }
   ).then((response) => response.json())
-  console.log(response)
+  res.setHeader("Access-Control-Allow-Origin", "https://orange-juice.app")
   setCookie({ res }, "Cloud-CDN-Cookie", response.result.token, {
-    domain: response.result.domain,
+    domain: "media.orange-juice.app",
     path: response.result.path,
     maxAge: response.result.maxAge,
     secure: true,

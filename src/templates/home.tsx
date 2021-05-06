@@ -17,6 +17,8 @@ const Template: FC = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      mode: "cors",
+      credentials: "include",
     })
   }, [])
   return (
