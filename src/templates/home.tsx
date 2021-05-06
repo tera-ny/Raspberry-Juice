@@ -19,7 +19,7 @@ const Template: FC = () => {
     setCookie(null, "Cloud-CDN-Cookie", res.data.token, {
       domain: res.data.domain,
       path: res.data.path,
-      expires: new Date(res.data.expires),
+      maxAge: res.data.maxAge,
     })
   }, [])
   return (
