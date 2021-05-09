@@ -3,6 +3,7 @@ import authState from "~/stores/auth"
 import { useRecoilValue } from "recoil"
 import firebase from "~/modules/firebase"
 import "firebase/auth"
+import { setCookie } from "nookies"
 
 const Template: FC = () => {
   const uid = useRecoilValue(authState)
@@ -13,13 +14,30 @@ const Template: FC = () => {
   }, [email, password])
   const getToken = useCallback(async () => {
     const token = await firebase.auth().currentUser.getIdToken()
-    await fetch("/api/session", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      mode: "cors",
-      credentials: "include",
+    const response = await fetch(
+      "https://asia-northeast1-orange-juice-prod.cloudfunctions.net/http-sessionCookie",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data: {} }),
+      }
+    ).then((response) => response.json())
+    setCookie(null, "Cloud-CDN-Cookie", response.result.token, {
+      domain: ".orange-juice.app",
+      path: response.result.path,
+      maxAge: response.result.maxAge,
+      secure: true,
     })
+    // await fetch("/api/session", {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    //   mode: "cors",
+    //   credentials: "include",
+    // })
   }, [])
   return (
     <>

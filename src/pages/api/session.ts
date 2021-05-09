@@ -14,9 +14,6 @@ const handler: NextApiHandler = async (req, res) => {
     }
   ).then((response) => response.json())
   res.setHeader("Access-Control-Allow-Origin", "https://orange-juice.app")
-  console.log(response.result.token)
-  console.log(response.result.path)
-  console.log(response.result.maxAge)
   setCookie({ res }, "Cloud-CDN-Cookie", response.result.token, {
     domain: ".orange-juice.app",
     path: response.result.path,
