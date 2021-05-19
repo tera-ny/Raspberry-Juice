@@ -29,7 +29,7 @@ const Template: FC = () => {
           <button onClick={getToken}>get token</button>
           <picture>
             <img
-              src="https://media.orange-juice.app/video/private/XCfWJkbGGvT08umQBaMl5ufL10u2/test.png"
+              src={`https://media.orange-juice.app/video/private/${uid}/test.png`}
               alt=""
             />
           </picture>
