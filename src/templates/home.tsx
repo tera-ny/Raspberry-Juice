@@ -27,9 +27,10 @@ const Template: FC = () => {
         <>
           <div>uid: {uid}</div>
           <button onClick={getToken}>get token</button>
-          <audio controls>
-            <source src="https://media.orange-juice.app/video/private/XCfWJkbGGvT08umQBaMl5ufL10u2/test.mp3" />
-          </audio>
+          <picture>
+            <img src="" alt="" />
+            <source src="https://media.orange-juice.app/video/private/XCfWJkbGGvT08umQBaMl5ufL10u2/test.png" />
+          </picture>
         </>
       ) : (
         <>
