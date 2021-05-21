@@ -14,13 +14,10 @@ const handler: NextApiHandler = async (req, res) => {
     }
   ).then((response) => response.json())
   res.setHeader("Access-Control-Allow-Origin", "https://orange-juice.app")
-  setCookie({ res }, "Cloud-CDN-Cookie", response.result.token, {
-    domain: ".orange-juice.app",
-    path: response.result.path,
-    maxAge: response.result.maxAge,
-    secure: true,
-    httpOnly: true,
-  })
+  res.setHeader(
+    "Set-Cookie",
+    `Cloud-CDN-Cookie=${response.result.token}; Domain=.orange-juice.app; Path=${response.result.path}; MaxAge=${response.result.maxAge}; Secure; HttpOnly`
+  )
   res.end()
 }
 
