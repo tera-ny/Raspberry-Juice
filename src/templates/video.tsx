@@ -6,7 +6,6 @@ import "firebase/auth"
 import "firebase/firestore"
 import { Video } from "~/modules/entity"
 import { useRouter } from "next/dist/client/router"
-import videojs from "video.js"
 import Player from "~/components/player"
 
 const Index: FC = () => {
@@ -36,10 +35,8 @@ const Index: FC = () => {
         .collection("contents")
         .doc(id)
         .get()
-      console.log("get")
       if (mounted) {
         const data = snapshot.data()
-        console.log("set data")
         setVideo({ title: data.title, url: data.url, id: id })
       }
     })()
@@ -54,17 +51,7 @@ const Index: FC = () => {
         <div className={"container"}>
           <div className={"primary"}>
             <div className={"playerContainer"}>
-              <Player
-                options={{
-                  controls: true,
-                  preload: "auto",
-                  controlBar: {
-                    liveDisplay: true,
-                    pictureInPictureToggle: false,
-                  },
-                }}
-                src={video.url}
-              />
+              <Player src={video.url} />
             </div>
             <h2>{video.title}</h2>
           </div>
