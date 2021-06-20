@@ -1,24 +1,16 @@
-import { FC, useEffect } from "react"
-import { useRecoilState } from "recoil"
-import authState from "~/stores/auth"
-import firebase from "~/modules/firebase"
+import { FC } from "react"
+import { useRecoilValue } from "recoil"
+import authState, { useListenAuth } from "~/stores/auth"
 
 interface Props {
   shouldLoggedIn?: boolean
 }
 
 const Auth: FC<Props> = ({ children, shouldLoggedIn }) => {
-  const [uid, setAuth] = useRecoilState(authState)
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      setAuth(user?.uid ?? null)
-    })
-    return () => {
-      unsubscribe()
-    }
-  })
+  const auth = useRecoilValue(authState)
+  useListenAuth()
   if (shouldLoggedIn) {
-    return uid ? <>{children}</> : <></>
+    return auth.uid ? <>{children}</> : <></>
   } else {
     return <>{children}</>
   }
