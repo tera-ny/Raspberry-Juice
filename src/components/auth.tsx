@@ -1,16 +1,16 @@
 import { FC } from "react"
 import { useRecoilValue } from "recoil"
-import authState, { useListenAuth } from "~/stores/auth"
+import { useListenAuth, uidSelector } from "~/stores/auth"
 
 interface Props {
   shouldLoggedIn?: boolean
 }
 
 const Auth: FC<Props> = ({ children, shouldLoggedIn }) => {
-  const auth = useRecoilValue(authState)
+  const uid = useRecoilValue(uidSelector)
   useListenAuth()
   if (shouldLoggedIn) {
-    return auth.uid ? <>{children}</> : <></>
+    return uid ? <>{children}</> : <></>
   } else {
     return <>{children}</>
   }

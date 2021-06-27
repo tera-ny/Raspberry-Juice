@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react"
-import authState from "~/stores/auth"
+import authState, { uidSelector } from "~/stores/auth"
 import { useRecoilValue } from "recoil"
 import firebase from "~/modules/firebase"
 import "firebase/auth"
@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Video } from "~/modules/entity"
 
 const Template: FC = () => {
-  const uid = useRecoilValue(authState)
+  const uid = useRecoilValue(uidSelector)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [videos, setVideos] = useState<Video[]>([])
@@ -27,6 +27,7 @@ const Template: FC = () => {
         .collection("contents")
         .where("type", "==", "video")
         .get()
+      console.log(snapshots.docs.map((doc) => doc.data().id).join(','))
       if (mounted) {
         setVideos(
           snapshots.docs.map((doc) => {
@@ -43,15 +44,18 @@ const Template: FC = () => {
   return (
     <>
       {uid ? (
-        <div>
-          {videos.map((video, index) => (
-            <div className="content" key={index}>
-              <Link href={`/contents/video/${video.id}`}>
-                <a href="">{video.title}</a>
-              </Link>
-            </div>
-          ))}
-        </div>
+        <>
+          <div>
+            {videos.map((video, index) => (
+              <div className="content" key={index}>
+                <Link href={`/contents/video/${video.id}`}>
+                  <a href="">{video.title}</a>
+                </Link>
+              </div>
+            ))}
+          </div>
+          <button onClick={() => { firebase.auth().signOut() }} >ログアウト</button>
+        </>
       ) : (
         <>
           <input
