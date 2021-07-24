@@ -14,6 +14,7 @@ const Template: FC = () => {
   const [videos, setVideos] = useState<Video[]>([])
   const signIn = useCallback(() => {
     firebase.auth().signInWithEmailAndPassword(email, password)
+    console.log(firebase.auth().currentUser.uid)
   }, [email, password])
 
   useEffect(() => {
@@ -31,7 +32,12 @@ const Template: FC = () => {
         setVideos(
           snapshots.docs.map((doc) => {
             const data = doc.data()
-            return { id: doc.id, title: data.title, url: data.url }
+            return {
+              id: doc.id,
+              title: data.title,
+              url: data.url,
+              poster: data.poster,
+            }
           })
         )
       }

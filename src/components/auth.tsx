@@ -1,8 +1,8 @@
 import { FC } from "react"
-import { subscribeAuth } from "~/stores/auth"
+import auth from "~/stores/auth"
 
 const Auth: FC = ({ children }) => {
-  subscribeAuth()
+  auth.effect.useListenAuth()
   return <>{children}</>
 }
 

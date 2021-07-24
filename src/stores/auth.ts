@@ -1,4 +1,4 @@
-import { atom, selector, useRecoilState } from "recoil"
+import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil"
 import firebase from "~/modules/firebase"
 import { useEffect } from "react"
 
@@ -10,44 +10,46 @@ interface Atom {
   subscription?: Subscription
 }
 
-const state = atom<Atom>({
+const authState = atom<Atom>({
   key: "auth",
-  default: undefined,
+  default: {},
 })
 
-const uid = selector<string | undefined>({
+const uidState = selector<string | undefined>({
   key: "auth/uid",
-  get: ({ get }) => get(state).subscription?.uid,
+  get: ({ get }) => get(authState).subscription?.uid,
 })
 
-const isSubscribed = selector<boolean>({
-  key: "auth/uid",
-  get: ({ get }) => get(state).subscription !== undefined,
+const isSubscribedState = selector<boolean>({
+  key: "auth/isSubscribed",
+  get: ({ get }) => get(authState).subscription !== undefined,
 })
 
-export const subscribeAuth = () => {
-  const [uid, setAuth] = useRecoilState(state)
+export const useListenAuth = () => {
+  const setAuth = useSetRecoilState(authState)
+  const isSubscribed = useRecoilValue(isSubscribedState)
   useEffect(() => {
-    if (uid) return
+    if (isSubscribed) return
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      setAuth({
-        subscription: { uid: user?.uid },
-      })
+      setAuth((atom) => ({
+        ...atom,
+        subscription: { uid: user?.uid ?? undefined },
+      }))
     })
     return () => {
       unsubscribe()
-      setAuth({})
+      setAuth((atom) => ({ ...atom, subscription: undefined }))
     }
   }, [])
 }
 
 export default {
-  atom: state,
+  atom: authState,
   selector: {
-    uid,
-    isSubscribed,
+    uid: uidState,
+    isSubscribed: isSubscribedState,
   },
   effect: {
-    subscribeAuth,
+    useListenAuth,
   },
 }

@@ -14,7 +14,7 @@ const Index: FC = () => {
   const [video, setVideo] = useState<Video>()
   useEffect(() => {
     if (!uid) return
-    const _ = (async () => {
+    ;(async () => {
       const token = await firebase.auth().currentUser.getIdToken()
       await fetch(`/api/session?path=${btoa(`users/${uid}/`)}`, {
         headers: {
@@ -24,10 +24,12 @@ const Index: FC = () => {
     })()
   }, [uid])
   useEffect(() => {
+    if (!uid) return
     const id = router.query.id
-    if (!(uid && id && typeof id === "string")) return
+    if (!(id && typeof id === "string")) return
     let mounted = true
-    const _ = (async () => {
+    console.log("fetch")
+    ;(async () => {
       const snapshot = await firebase
         .firestore()
         .collection("users")
@@ -37,7 +39,12 @@ const Index: FC = () => {
         .get()
       if (mounted) {
         const data = snapshot.data()
-        setVideo({ title: data.title, url: data.url, id: id })
+        setVideo({
+          title: data.title,
+          url: data.url,
+          id: id,
+          poster: data.poster,
+        })
       }
     })()
     return () => {
@@ -51,12 +58,13 @@ const Index: FC = () => {
         <div className={"container"}>
           <div className={"primary"}>
             <div className={"playerContainer"}>
-              <Player src={video.url} />
+              <Player src={video.url} poster={video.poster} />
             </div>
             <h2>{video.title}</h2>
           </div>
         </div>
       )}
+      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest" />
       <style jsx>{`
         .container {
           margin: 0 auto;
