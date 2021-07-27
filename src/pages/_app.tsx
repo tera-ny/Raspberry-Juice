@@ -29,6 +29,10 @@ export default function App({ Component, pageProps }: AppProps) {
           font-weight: 500;
           font-size: 16px;
         }
+        :root {
+          --seek-bar-height: 5px;
+          --cursor-width: 12px;
+        }
       `}</style>
     </>
   )
