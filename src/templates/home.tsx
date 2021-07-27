@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react"
-import authState from "~/stores/auth"
+import auth from "~/stores/auth"
 import { useRecoilValue } from "recoil"
 import firebase from "~/modules/firebase"
 import "firebase/auth"
@@ -8,12 +8,13 @@ import Link from "next/link"
 import { Video } from "~/modules/entity"
 
 const Template: FC = () => {
-  const uid = useRecoilValue(authState)
+  const uid = useRecoilValue(auth.selector.uid)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [videos, setVideos] = useState<Video[]>([])
   const signIn = useCallback(() => {
     firebase.auth().signInWithEmailAndPassword(email, password)
+    console.log(firebase.auth().currentUser.uid)
   }, [email, password])
 
   useEffect(() => {
@@ -31,7 +32,12 @@ const Template: FC = () => {
         setVideos(
           snapshots.docs.map((doc) => {
             const data = doc.data()
-            return { id: doc.id, title: data.title, url: data.url }
+            return {
+              id: doc.id,
+              title: data.title,
+              url: data.url,
+              poster: data.poster,
+            }
           })
         )
       }

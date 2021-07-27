@@ -10,9 +10,7 @@ const Page: NextPage<{}> = () => {
   return (
     <>
       <main>
-        <Auth>
-          <Template />
-        </Auth>
+        <Template />
       </main>
     </>
   )

@@ -1,11 +1,14 @@
 import { AppProps } from "next/app"
 import { RecoilRoot } from "recoil"
+import Auth from "~/components/auth"
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <RecoilRoot>
-        <Component {...pageProps} />
+        <Auth>
+          <Component {...pageProps} />
+        </Auth>
       </RecoilRoot>
       <style jsx global>{`
         html,
@@ -25,6 +28,10 @@ export default function App({ Component, pageProps }: AppProps) {
         h4 {
           font-weight: 500;
           font-size: 16px;
+        }
+        :root {
+          --seek-bar-height: 5px;
+          --cursor-width: 12px;
         }
       `}</style>
     </>
