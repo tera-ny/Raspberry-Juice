@@ -1,9 +1,17 @@
-import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil"
+import {
+  atom,
+  DefaultValue,
+  selector,
+  useRecoilValue,
+  useSetRecoilState,
+  waitForAll,
+} from "recoil"
 import firebase from "~/modules/firebase"
 import { useEffect } from "react"
 
 interface Subscription {
   uid?: string
+  cdnSessionExpires?: number
 }
 
 interface Atom {
@@ -13,6 +21,18 @@ interface Atom {
 const authState = atom<Atom>({
   key: "auth",
   default: {},
+})
+
+const cdnSessionExpiresState = selector<number | undefined>({
+  key: "auth/expires",
+  get: ({ get }) => get(authState).subscription?.cdnSessionExpires,
+  set: ({ set }, newVal) =>
+    set(authState, (current) => ({
+      subscription: {
+        uid: current.subscription.uid,
+        cdnSessionExpires: newVal instanceof DefaultValue ? undefined : newVal,
+      },
+    })),
 })
 
 const uidState = selector<string | undefined>({
@@ -43,11 +63,54 @@ export const useListenAuth = () => {
   }, [])
 }
 
+const fetchCDNSessionToken = async (uid: string, token: string) => {
+  const response = await fetch(`/api/session?path=${btoa(`users/${uid}/`)}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  const data = await response.json()
+  return data.expires as number
+}
+
+export const listenCDNSession = () => {
+  const [uid, expires] = useRecoilValue(
+    waitForAll([uidState, cdnSessionExpiresState])
+  )
+  const setExpires = useSetRecoilState(cdnSessionExpiresState)
+  useEffect(() => {
+    if (!(uid && !expires)) return
+    let mounted = true
+    ;(async () => {
+      const token = await firebase.auth().currentUser.getIdToken()
+      const result = await fetchCDNSessionToken(uid, token)
+      if (mounted) {
+        setExpires(result)
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [uid, expires])
+  useEffect(() => {
+    if (!(uid && expires)) return
+    const timeout = setTimeout(async () => {
+      const token = await firebase.auth().currentUser.getIdToken()
+      const result = await fetchCDNSessionToken(uid, token)
+      setExpires(result)
+    }, expires * 1000 - Date.now() - 30000)
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [uid, expires])
+}
+
 export default {
   atom: authState,
   selector: {
     uid: uidState,
     isSubscribed: isSubscribedState,
+    sessionExpires: cdnSessionExpiresState,
   },
   effect: {
     useListenAuth,

@@ -20,9 +20,13 @@ const handler: NextApiHandler = async (req, res) => {
       ).then((response) => response.json())
       res.setHeader(
         "Set-Cookie",
-        `Cloud-CDN-Cookie=${response.result.token}; Path=${response.result.path}; MaxAge=${response.result.maxAge}; Secure; HttpOnly`
+        `Cloud-CDN-Cookie=${response.result.token}; Path=${response.result.path}; Expires=${response.result.expires}; Secure; HttpOnly`
       )
       res.statusCode = 200
+      res.json({
+        expires: response.result.expires,
+      })
+      return
     } else if (!auth) {
       res.statusCode = 403
     } else {

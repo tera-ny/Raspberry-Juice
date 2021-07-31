@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import auth from "~/stores/auth"
+import auth, { listenCDNSession } from "~/stores/auth"
 import { useRecoilValue } from "recoil"
 import firebase from "~/modules/firebase"
 import "firebase/auth"
@@ -11,24 +11,14 @@ import Player from "~/components/player"
 const Index: FC = () => {
   const router = useRouter()
   const uid = useRecoilValue(auth.selector.uid)
+  const expires = useRecoilValue(auth.selector.sessionExpires)
   const [video, setVideo] = useState<Video>()
+  listenCDNSession()
   useEffect(() => {
-    if (!uid) return
-    ;(async () => {
-      const token = await firebase.auth().currentUser.getIdToken()
-      await fetch(`/api/session?path=${btoa(`users/${uid}/`)}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-    })()
-  }, [uid])
-  useEffect(() => {
-    if (!uid) return
+    if (!(uid && expires) || expires <= Date.now() / 1000) return
     const id = router.query.id
     if (!(id && typeof id === "string")) return
     let mounted = true
-    console.log("fetch")
     ;(async () => {
       const snapshot = await firebase
         .firestore()
@@ -50,7 +40,7 @@ const Index: FC = () => {
     return () => {
       mounted = false
     }
-  }, [uid])
+  }, [uid, expires])
 
   return (
     <>
