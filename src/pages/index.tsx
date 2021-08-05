@@ -1,5 +1,4 @@
 import { NextPage, GetStaticProps } from "next"
-import Auth from "~/components/auth"
 import Template from "~/templates/home"
 
 export const getStaticProps: GetStaticProps<{}> = async () => {

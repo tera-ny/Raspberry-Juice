@@ -1,4 +1,4 @@
-import { DependencyList, useEffect } from "react"
+import { DependencyList, useEffect, useRef } from "react"
 
 export const useWindowEvent = <K extends keyof WindowEventMap>(
   type: K,
@@ -29,3 +29,11 @@ export const useDocumentEvent = <K extends keyof DocumentEventMap>(
       }
     }
   }, deps)
+
+export const usePrevious = <T>(value: T) => {
+  const ref = useRef<T>()
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+  return ref.current
+}

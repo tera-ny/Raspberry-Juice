@@ -9,8 +9,10 @@ import {
 import Hls from "hls.js"
 import NextHead from "next/head"
 import { useState } from "react"
-import { useWindowEvent } from "~/modules/hooks"
+import { useWindowEvent, usePrevious } from "~/modules/hooks"
 import { useCallback } from "react"
+import auth from "~/stores/auth"
+import { useRecoilValue } from "recoil"
 
 interface SeekBarProps {
   buffer: number
@@ -18,8 +20,6 @@ interface SeekBarProps {
   duration: number
   seeked: (time: number) => void
 }
-
-const seekbarHeight = 5
 const cursorWidth = 12
 
 const calcCursorPositionX = (pageX: number, seekbarRect: DOMRect) => {
@@ -209,7 +209,6 @@ const VideoComponentWithRef = forwardRef(
     { poster }: VideoComponentProps,
     videoRef: MutableRefObject<HTMLVideoElement>
   ) => {
-    const isSupportBrowser = useMemo(() => Hls.isSupported(), [])
     const [currentTime, setCurrentTime] = useState(0)
     const [buffered, setBuffered] = useState(0)
     const [duration, setDuration] = useState(0)
@@ -273,6 +272,7 @@ const VideoComponentWithRef = forwardRef(
             ref={videoRef}
             id="video"
             className="video"
+            poster={poster}
             controls
             playsInline
           />
@@ -336,9 +336,13 @@ interface Props {
 const Player: FC<Props> = ({ src, poster }) => {
   const isSupportBrowser = useMemo(() => Hls.isSupported(), [])
   const videoRef = useRef<HTMLVideoElement>()
+  const expires = useRecoilValue(auth.selector.sessionExpires)
+  const prevexpires = usePrevious(expires)
   useEffect(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!(video && expires)) return
+    //TODO: srcが変更された時だけ更新するようにしたい。
+    if (prevexpires !== undefined) return
     if (isSupportBrowser) {
       var hls = new Hls()
       hls.loadSource(src)
@@ -346,7 +350,7 @@ const Player: FC<Props> = ({ src, poster }) => {
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = src
     }
-  }, [src, videoRef.current])
+  }, [src, prevexpires, videoRef.current, expires])
   return (
     <>
       <NextHead>
