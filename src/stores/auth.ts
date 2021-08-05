@@ -45,7 +45,7 @@ const isSubscribedState = selector<boolean>({
   get: ({ get }) => get(authState).subscription !== undefined,
 })
 
-export const useListenAuth = () => {
+export const listenAuth = () => {
   const setAuth = useSetRecoilState(authState)
   const isSubscribed = useRecoilValue(isSubscribedState)
   useEffect(() => {
@@ -113,6 +113,7 @@ export default {
     sessionExpires: cdnSessionExpiresState,
   },
   effect: {
-    useListenAuth,
+    listenAuth,
+    listenCDNSession,
   },
 }
