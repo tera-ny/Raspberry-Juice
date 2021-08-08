@@ -90,7 +90,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               background: transparent;
               outline: none;
               font-size: 14px;
-              font-weight: lighter;
+              font-weight: regular;
             }
 
             @media (prefers-color-scheme: dark) {

@@ -46,13 +46,15 @@ const Form: FC<FormProps> = ({ signin }) => {
               setIsShowPassword((val) => !val)
             }}>{`${isShowPassword ? "hide" : "show"} password`}</button>
         </div>
-        <button
-          className="signin"
-          onClick={() => {
-            signin(email, password)
-          }}>
-          Sign in
-        </button>
+        <div className="signinwrapper">
+          <button
+            className="signin"
+            onClick={() => {
+              signin(email, password)
+            }}>
+            Sign in
+          </button>
+        </div>
       </div>
       <style jsx>{`
         .container {
@@ -68,9 +70,14 @@ const Form: FC<FormProps> = ({ signin }) => {
           background-color: transparent;
           text-decoration: underline;
         }
+        .showpassword:active {
+          color: #636363;
+        }
+        .signinwrapper {
+          margin: 32px 6px 0;
+        }
         .signin {
           width: 100%;
-          margin-top: 32px;
           font-size: 24px;
           font-weight: bold;
           font-family: roboto;
@@ -120,12 +127,24 @@ const SignInTemplate: FC = () => {
   return (
     <>
       <div className="formwrapper">
+        <img
+          className="logo"
+          src="/img/logo_light.svg"
+          height="60"
+          width="236"
+        />
         <Form signin={signin} />
       </div>
       <style jsx>{`
         .formwrapper {
-          margin: 0 auto;
+          margin: 44px auto 0;
           max-width: 400px;
+          display: flex;
+          flex-direction: column;
+        }
+        .logo {
+          padding-right: 20px;
+          margin: 0 auto;
         }
       `}</style>
     </>
