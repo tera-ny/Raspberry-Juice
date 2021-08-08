@@ -1,11 +1,24 @@
 import { AppProps } from "next/app"
 import { RecoilRoot } from "recoil"
 import Auth from "~/components/auth"
+import NextHead from "next/head"
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <RecoilRoot>
+        <NextHead>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
+            rel="stylesheet"
+          />
+        </NextHead>
         <Auth>
           <Component {...pageProps} />
         </Auth>
@@ -32,6 +45,12 @@ export default function App({ Component, pageProps }: AppProps) {
         :root {
           --seek-bar-height: 5px;
           --cursor-width: 12px;
+        }
+        @media (prefers-color-scheme: dark) {
+          body {
+            background-color: #1e2026;
+            color: white;
+          }
         }
       `}</style>
     </>
