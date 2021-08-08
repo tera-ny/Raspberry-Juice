@@ -6,16 +6,12 @@ import "firebase/auth"
 import "firebase/firestore"
 import Link from "next/link"
 import { Video } from "~/modules/entity"
+import SignInTemplate from "./signin"
 
 const Template: FC = () => {
   const uid = useRecoilValue(auth.selector.uid)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [videos, setVideos] = useState<Video[]>([])
-  const signIn = useCallback(() => {
-    firebase.auth().signInWithEmailAndPassword(email, password)
-    console.log(firebase.auth().currentUser.uid)
-  }, [email, password])
+  const isSubscribed = useRecoilValue(auth.selector.isSubscribed)
 
   useEffect(() => {
     if (!uid) return
@@ -46,6 +42,7 @@ const Template: FC = () => {
       mounted = false
     }
   }, [uid])
+  if (!isSubscribed) return <></>
   return (
     <>
       {uid ? (
@@ -60,19 +57,7 @@ const Template: FC = () => {
         </div>
       ) : (
         <>
-          <input
-            type="mail"
-            placeholder="mail"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-          />
-          <input
-            type="password"
-            placeholder="password"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-          />
-          <button onClick={signIn}>signin</button>
+          <SignInTemplate />
         </>
       )}
       <style jsx>{`
