@@ -127,12 +127,13 @@ const SignInTemplate: FC = () => {
   return (
     <>
       <div className="formwrapper">
-        <img
-          className="logo"
-          src="/img/logo_light.svg"
-          height="60"
-          width="236"
-        />
+        <picture className="logo">
+          <source
+            srcSet="/img/logo_dark.svg"
+            media="(prefers-color-scheme: dark)"
+          />
+          <img height="60" width="220" src="/img/logo_light.svg" />
+        </picture>
         <Form signin={signin} />
       </div>
       <style jsx>{`
