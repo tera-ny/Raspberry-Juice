@@ -57,13 +57,14 @@ const SeekBar: FC<SeekBarProps> = ({
         seekbarRect
       )}px)`
     }
-    seekbar.current.addEventListener("mouseenter", mouseOverHandler)
-    seekbar.current.addEventListener("mouseleave", mouseLeaveHandler)
-    seekbar.current.addEventListener("mousedown", mouseDownHandler)
+    const seekbarobj = seekbar.current
+    seekbarobj.addEventListener("mouseenter", mouseOverHandler)
+    seekbarobj.addEventListener("mouseleave", mouseLeaveHandler)
+    seekbarobj.addEventListener("mousedown", mouseDownHandler)
     return () => {
-      seekbar.current.removeEventListener("mouseenter", mouseOverHandler)
-      seekbar.current.removeEventListener("mouseleave", mouseLeaveHandler)
-      seekbar.current.removeEventListener("mousedown", mouseDownHandler)
+      seekbarobj.removeEventListener("mouseenter", mouseOverHandler)
+      seekbarobj.removeEventListener("mouseleave", mouseLeaveHandler)
+      seekbarobj.removeEventListener("mousedown", mouseDownHandler)
     }
   }, [seekbar.current, seekbarRect])
   const handleSeek = useCallback(
@@ -94,13 +95,14 @@ const SeekBar: FC<SeekBarProps> = ({
         )
       }
     }
-    seekbar.current.addEventListener("touchstart", handleTouchEvent)
-    seekbar.current.addEventListener("touchmove", handleTouchEvent)
-    seekbar.current.addEventListener("touchend", handleTouchEndEvent)
+    const seekbarobj = seekbar.current
+    seekbarobj.addEventListener("touchstart", handleTouchEvent)
+    seekbarobj.addEventListener("touchmove", handleTouchEvent)
+    seekbarobj.addEventListener("touchend", handleTouchEndEvent)
     return () => {
-      seekbar.current.removeEventListener("touchstart", handleTouchEvent)
-      seekbar.current.removeEventListener("touchmove", handleTouchEvent)
-      seekbar.current.removeEventListener("touchend", handleTouchEndEvent)
+      seekbarobj.removeEventListener("touchstart", handleTouchEvent)
+      seekbarobj.removeEventListener("touchmove", handleTouchEvent)
+      seekbarobj.removeEventListener("touchend", handleTouchEndEvent)
     }
   }, [seekbar.current, seekbarRect, isSeek, seeked, duration])
   useWindowEvent(
@@ -127,6 +129,7 @@ const SeekBar: FC<SeekBarProps> = ({
     [isSeek, seekbarRect]
   )
   useEffect(() => {
+    if (!cursor.current) return
     cursor.current.style.visibility =
       isSeek || isMouseOver ? "visible" : "hidden"
   }, [isSeek, isMouseOver, cursor.current])
