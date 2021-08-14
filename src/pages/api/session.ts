@@ -1,10 +1,21 @@
 import { NextApiHandler } from "next"
+import admin from "~/modules/admin"
+import * as adminSDK from "firebase-admin"
 
 const handler: NextApiHandler = async (req, res) => {
-  const path = req.query.path
-  const auth = req.headers.authorization
+  const auth = req.headers.authorization?.split(" ")
+  let decoded: adminSDK.auth.DecodedIdToken
   try {
-    if (auth && typeof path === "string") {
+    if (!(auth[0] === "Bearer")) throw Error("invalid-arg")
+    decoded = await admin.auth().verifyIdToken(auth[1] ?? "")
+  } catch (error) {
+    console.error(error)
+    res.statusCode = 403
+    res.end()
+    return
+  }
+  try {
+    if (req.headers.authorization) {
       const response = await fetch(
         "https://asia-northeast1-orange-juice-prod.cloudfunctions.net/http-sessionCookie",
         {
@@ -14,7 +25,9 @@ const handler: NextApiHandler = async (req, res) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            data: { path: Buffer.from(path, "base64").toString() },
+            data: {
+              path: `users/${decoded.uid}`,
+            },
           }),
         }
       ).then((response) => response.json())

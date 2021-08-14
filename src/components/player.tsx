@@ -3,16 +3,15 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
   forwardRef,
   MutableRefObject,
+  useCallback,
 } from "react"
-import Hls from "hls.js"
-import NextHead from "next/head"
-import { useState } from "react"
 import { useWindowEvent, usePrevious } from "~/modules/hooks"
-import { useCallback } from "react"
 import auth from "~/stores/auth"
 import { useRecoilValue } from "recoil"
+import videoStore from "~/stores/video"
 
 interface SeekBarProps {
   buffer: number
@@ -40,7 +39,7 @@ const SeekBar: FC<SeekBarProps> = ({
   const seekbarRect = useMemo(
     () =>
       seekbar.current ? seekbar.current.getBoundingClientRect() : undefined,
-    [seekbar.current, window.innerWidth]
+    [seekbar.current, global.window?.innerWidth]
   )
   useEffect(() => {
     if (!(cursor.current && seekbar.current)) return
@@ -279,7 +278,7 @@ const VideoComponentWithRef = forwardRef(
             controls
             playsInline
           />
-          <div className="control_container">
+          {/* <div className="control_container">
             <div className="control_contents">
               <div className="seek_bar_container">
                 <SeekBar
@@ -290,12 +289,13 @@ const VideoComponentWithRef = forwardRef(
                 />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <style jsx>{`
           .video {
             width: 100%;
             height: auto;
+            background-color: black;
             vertical-align: bottom;
           }
           .wrapper {
@@ -331,36 +331,31 @@ const VideoComponentWithRef = forwardRef(
   }
 )
 
-interface Props {
-  src: string
-  poster?: string
-}
-
-const Player: FC<Props> = ({ src, poster }) => {
-  const isSupportBrowser = useMemo(() => Hls.isSupported(), [])
+const Player: FC = () => {
   const videoRef = useRef<HTMLVideoElement>()
   const expires = useRecoilValue(auth.selector.sessionExpires)
   const prevexpires = usePrevious(expires)
+  const content = useRecoilValue(videoStore.atom)
   useEffect(() => {
     const video = videoRef.current
+    if (!content) return
     if (!(video && expires)) return
     //TODO: srcが変更された時だけ更新するようにしたい。
     if (prevexpires !== undefined) return
-    if (isSupportBrowser) {
-      var hls = new Hls()
-      hls.loadSource(src)
-      hls.attachMedia(video)
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      video.src = src
-    }
-  }, [src, prevexpires, videoRef.current, expires])
+    import("hls.js").then((hlsmodule) => {
+      if (hlsmodule.default.isSupported()) {
+        var hls = new hlsmodule.default()
+        hls.loadSource(content.src)
+        hls.attachMedia(video)
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = content.src
+      }
+    })
+  }, [content, prevexpires, videoRef.current, expires])
   return (
     <>
-      <NextHead>
-        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-      </NextHead>
       <div className="videoContainer">
-        <VideoComponentWithRef ref={videoRef} poster={poster} />
+        <VideoComponentWithRef ref={videoRef} poster={content?.poster} />
       </div>
     </>
   )

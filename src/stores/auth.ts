@@ -20,12 +20,12 @@ interface Atom {
 
 const authState = atom<Atom>({
   key: "auth",
-  default: {},
+  default: { subscription: firebase.auth().currentUser ?? undefined },
 })
 
 const cdnSessionExpiresState = selector<number | undefined>({
   key: "auth/expires",
-  get: ({ get }) => get(authState).subscription?.cdnSessionExpires,
+  get: ({ get }) => get(authState)?.subscription?.cdnSessionExpires,
   set: ({ set }, newVal) =>
     set(authState, (current) => ({
       subscription: {
@@ -37,12 +37,12 @@ const cdnSessionExpiresState = selector<number | undefined>({
 
 const uidState = selector<string | undefined>({
   key: "auth/uid",
-  get: ({ get }) => get(authState).subscription?.uid,
+  get: ({ get }) => get(authState)?.subscription?.uid,
 })
 
 const isSubscribedState = selector<boolean>({
   key: "auth/isSubscribed",
-  get: ({ get }) => get(authState).subscription !== undefined,
+  get: ({ get }) => get(authState)?.subscription !== undefined,
 })
 
 export const listenAuth = () => {
@@ -63,8 +63,8 @@ export const listenAuth = () => {
   }, [])
 }
 
-const fetchCDNSessionToken = async (uid: string, token: string) => {
-  const response = await fetch(`/api/session?path=${btoa(`users/${uid}/`)}`, {
+const fetchCDNSessionToken = async (token: string) => {
+  const response = await fetch("/api/session", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -79,11 +79,11 @@ export const listenCDNSession = () => {
   )
   const setExpires = useSetRecoilState(cdnSessionExpiresState)
   useEffect(() => {
-    if (!(uid && !expires)) return
+    if (!uid || expires) return
     let mounted = true
     ;(async () => {
       const token = await firebase.auth().currentUser.getIdToken()
-      const result = await fetchCDNSessionToken(uid, token)
+      const result = await fetchCDNSessionToken(token)
       if (mounted) {
         setExpires(result)
       }
@@ -96,7 +96,7 @@ export const listenCDNSession = () => {
     if (!(uid && expires)) return
     const timeout = setTimeout(async () => {
       const token = await firebase.auth().currentUser.getIdToken()
-      const result = await fetchCDNSessionToken(uid, token)
+      const result = await fetchCDNSessionToken(token)
       setExpires(result)
     }, expires * 1000 - Date.now() - 30000)
     return () => {
