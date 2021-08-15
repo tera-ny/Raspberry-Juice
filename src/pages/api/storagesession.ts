@@ -1,13 +1,14 @@
 import { NextApiHandler } from "next"
-import admin from "~/modules/admin"
-import * as adminSDK from "firebase-admin"
+import initAuth from "~/modules/nextauth"
+import { AuthUser, verifyIdToken } from "next-firebase-auth"
+
+initAuth()
 
 const handler: NextApiHandler = async (req, res) => {
-  const auth = req.headers.authorization?.split(" ")
-  let decoded: adminSDK.auth.DecodedIdToken
+  const auth = req.headers.authorization
+  let decoded: AuthUser
   try {
-    if (!(auth[0] === "Bearer")) throw Error("invalid-arg")
-    decoded = await admin.auth().verifyIdToken(auth[1] ?? "")
+    decoded = await verifyIdToken(auth)
   } catch (error) {
     console.error(error)
     res.statusCode = 403
@@ -26,7 +27,7 @@ const handler: NextApiHandler = async (req, res) => {
           },
           body: JSON.stringify({
             data: {
-              path: `users/${decoded.uid}`,
+              path: `users/${decoded.id}`,
             },
           }),
         }

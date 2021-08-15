@@ -11,7 +11,7 @@ import {
 import { useWindowEvent, usePrevious } from "~/modules/hooks"
 import auth from "~/stores/auth"
 import { useRecoilValue } from "recoil"
-import videoStore from "~/stores/video"
+import video from "~/stores/video"
 
 interface SeekBarProps {
   buffer: number
@@ -331,31 +331,24 @@ const VideoComponentWithRef = forwardRef(
   }
 )
 
-const Player: FC = () => {
+const Player: FC<{ src: string; poster?: string }> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>()
-  const expires = useRecoilValue(auth.selector.sessionExpires)
-  const prevexpires = usePrevious(expires)
-  const content = useRecoilValue(videoStore.atom)
   useEffect(() => {
     const video = videoRef.current
-    if (!content) return
-    if (!(video && expires)) return
-    //TODO: srcが変更された時だけ更新するようにしたい。
-    if (prevexpires !== undefined) return
     import("hls.js").then((hlsmodule) => {
       if (hlsmodule.default.isSupported()) {
         var hls = new hlsmodule.default()
-        hls.loadSource(content.src)
+        hls.loadSource(src)
         hls.attachMedia(video)
       } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = content.src
+        video.src = src
       }
     })
-  }, [content, prevexpires, videoRef.current, expires])
+  }, [src, videoRef.current])
   return (
     <>
       <div className="videoContainer">
-        <VideoComponentWithRef ref={videoRef} poster={content?.poster} />
+        <VideoComponentWithRef ref={videoRef} poster={poster} />
       </div>
     </>
   )

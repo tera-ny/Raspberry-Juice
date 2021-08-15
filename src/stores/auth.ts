@@ -64,7 +64,7 @@ export const listenAuth = () => {
 }
 
 const fetchCDNSessionToken = async (token: string) => {
-  const response = await fetch("/api/session", {
+  const response = await fetch("/api/storagesession", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
