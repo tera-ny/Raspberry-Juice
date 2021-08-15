@@ -49,7 +49,7 @@ export const listenAuth = () => {
   useEffect(() => {
     if (isSubscribed) return
     let unsubscribe: () => void = () => {}
-    ;async () => {
+    ;(async () => {
       unsubscribe = await import("~/modules/firebase").then((firebase) => {
         return firebase.default.auth().onAuthStateChanged((user) => {
           setAuth((atom) => ({
@@ -58,7 +58,7 @@ export const listenAuth = () => {
           }))
         })
       })
-    }
+    })()
     return () => {
       unsubscribe()
       setAuth((atom) => ({ ...atom, subscription: undefined }))
