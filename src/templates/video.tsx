@@ -2,27 +2,22 @@ import { FC } from "react"
 import auth from "~/stores/auth"
 import "firebase/auth"
 import "firebase/firestore"
-import video from "~/stores/video"
 import Player from "~/components/player"
-import { useRecoilValue } from "recoil"
+import { Video } from "~/modules/entity"
 
 interface Props {
-  id: string
+  video: Video
 }
 
-const Index: FC<Props> = ({ id }) => {
-  auth.effect.listenCDNSession()
-  video.effect.listenVideo(id)
-  const content = useRecoilValue(video.atom)
-
+const Index: FC<Props> = ({ video }) => {
   return (
     <>
       <div className={"container"}>
         <div className={"primary"}>
           <div className={"playerContainer"}>
-            <Player />
+            <Player src={video.url} poster={video.poster} />
           </div>
-          <h2>{content?.title}</h2>
+          <h2 className="title">{video.title}</h2>
         </div>
       </div>
       <style jsx>{`
@@ -31,6 +26,15 @@ const Index: FC<Props> = ({ id }) => {
           padding: 40px 20px 0;
           max-width: 900px;
           display: grid;
+        }
+        .title {
+          font-size: 32px;
+          font-weight: medium;
+        }
+        @media screen and (max-width: 899px) {
+          .title {
+            font-size: 20px;
+          }
         }
       `}</style>
     </>
