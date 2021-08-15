@@ -8,10 +8,7 @@ import {
   MutableRefObject,
   useCallback,
 } from "react"
-import { useWindowEvent, usePrevious } from "~/modules/hooks"
-import auth from "~/stores/auth"
-import { useRecoilValue } from "recoil"
-import video from "~/stores/video"
+import { useWindowEvent } from "~/modules/hooks"
 
 interface SeekBarProps {
   buffer: number
