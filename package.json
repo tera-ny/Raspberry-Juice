@@ -9,6 +9,7 @@
     "start": "next start -p $PORT"
   },
   "dependencies": {
+    "@google-cloud/secret-manager": "^3.9.0",
     "crypto": "^1.0.1",
     "dayjs": "^1.10.6",
     "firebase": "^8.2.5",
@@ -16,7 +17,6 @@
     "hls.js": "^1.0.9",
     "next": "10.0.5",
     "next-firebase-auth": "^0.13.3-alpha.1",
-    "nookies": "^2.5.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "recoil": "^0.4.0"

@@ -4,6 +4,8 @@ import Error from "next/error"
 import { withAuthUserTokenSSR, AuthAction } from "next-firebase-auth"
 import getAbsoluteURL from "~/modules/getAbsoluteURL"
 import { Video } from "~/modules/entity"
+import dayjs from "dayjs"
+import { generateSignature } from "~/modules/storagecookie"
 
 interface Props {
   video?: Video
@@ -23,24 +25,15 @@ export const getServerSideProps = withAuthUserTokenSSR({
       },
     })
     if (response.status === 200) {
-      const session = await fetch(
-        "https://asia-northeast1-orange-juice-prod.cloudfunctions.net/http-sessionCookie",
-        {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + token,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            data: {
-              path: `users/${AuthUser.id}/`,
-            },
-          }),
-        }
-      ).then((response) => response.json())
+      const expiresOfUnix = dayjs().add(1, "day").unix()
+      //TODO: valid path
+      const path = `/media/users/${AuthUser.id}/${query.id}/`
+      const sessionToken = await generateSignature(path, expiresOfUnix)
       res.setHeader(
         "Set-Cookie",
-        `Cloud-CDN-Cookie=${session.result.token}; Path=${session.result.path}; Expires=${session.result.expires}; Secure; HttpOnly`
+        `Cloud-CDN-Cookie=${sessionToken}; Path=${path}; Expires=${new Date(
+          expiresOfUnix * 1000
+        ).toUTCString()}; Secure; HttpOnly`
       )
       const video = await response.json()
       return {
