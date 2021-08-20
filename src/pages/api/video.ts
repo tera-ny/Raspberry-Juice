@@ -34,7 +34,7 @@ const handler: NextApiHandler = async (req, res) => {
       const video = snapshot.data() as Video
       res.statusCode = 200
       res.json({
-        video,
+        video: { ...video, id },
       })
       return
     } else {

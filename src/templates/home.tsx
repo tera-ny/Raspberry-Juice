@@ -47,8 +47,14 @@ const Template: FC = () => {
       <div>
         {videos.map((video, index) => (
           <div className="content" key={index}>
-            <Link href={`/contents/video/${video.id}`}>
-              <a href="">{video.title}</a>
+            <Link
+              href={{
+                pathname: "/contents/video",
+                query: {
+                  id: video.id,
+                },
+              }}>
+              <a>{video.title}</a>
             </Link>
           </div>
         ))}

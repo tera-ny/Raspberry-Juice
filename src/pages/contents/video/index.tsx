@@ -25,17 +25,16 @@ export const getServerSideProps = withAuthUserTokenSSR({
       },
     })
     if (response.status === 200) {
+      const video = await response.json()
+      const path = `/contents/video/${AuthUser.id}/${query.id}`
       const expiresOfUnix = dayjs().add(1, "day").unix()
-      //TODO: valid path
-      const path = `/media/users/${AuthUser.id}/${query.id}/`
       const sessionToken = await generateSignature(path, expiresOfUnix)
       res.setHeader(
         "Set-Cookie",
-        `Cloud-CDN-Cookie=${sessionToken}; Path=${path}; Expires=${new Date(
+        `Cloud-CDN-Cookie=${sessionToken}; Path=/contents/video; Expires=${new Date(
           expiresOfUnix * 1000
-        ).toUTCString()}; Secure; HttpOnly`
+        ).toUTCString()}; HttpOnly`
       )
-      const video = await response.json()
       return {
         props: video,
       }

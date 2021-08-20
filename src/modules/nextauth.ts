@@ -33,10 +33,10 @@ const initAuth = () => {
       ],
       httpOnly: true,
       maxAge: 10 * 60 * 60 * 24 * 1000,
-      overwrite: true,
+      overwrite: false,
       path: "/",
       sameSite: "strict",
-      secure: process.env.NODE_ENV === "development" ? false : true,
+      secure: false,
       signed: true,
     },
   })
