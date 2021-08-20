@@ -138,14 +138,21 @@ const SignInTemplate: FC = () => {
       </div>
       <style jsx>{`
         .formwrapper {
-          margin: 44px auto 0;
-          max-width: 400px;
+          padding: 28px 8px 32px;
+          width: 100%;
           display: flex;
           flex-direction: column;
         }
         .logo {
           padding-right: 20px;
           margin: 0 auto;
+        }
+        @media screen and (min-width: 400px) {
+          .formwrapper {
+            border: solid 1px #c4c4c4;
+            border-radius: 4px;
+            width: 400px;
+          }
         }
       `}</style>
     </>
