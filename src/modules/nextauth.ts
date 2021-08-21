@@ -26,19 +26,17 @@ const initAuth = () => {
       measurementId: process.env.MEASUREMENT_ID,
     },
     cookies: {
-      name: "orange-juice-session", // required
-      // Keys are required unless you set `signed` to `false`.
-      // The keys cannot be accessible on the client side.
+      name: "orange-juice-session",
       keys: [
         process.env.COOKIE_SECRET_CURRENT,
         process.env.COOKIE_SECRET_PREVIOUS,
       ],
       httpOnly: true,
-      maxAge: 10 * 60 * 60 * 24 * 1000, // twelve days
-      overwrite: true,
+      maxAge: 10 * 60 * 60 * 24 * 1000,
+      overwrite: false,
       path: "/",
       sameSite: "strict",
-      secure: false, // set this to false in local (non-HTTPS) development
+      secure: false,
       signed: true,
     },
   })

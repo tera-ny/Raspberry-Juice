@@ -8,10 +8,7 @@ import {
   MutableRefObject,
   useCallback,
 } from "react"
-import { useWindowEvent, usePrevious } from "~/modules/hooks"
-import auth from "~/stores/auth"
-import { useRecoilValue } from "recoil"
-import video from "~/stores/video"
+import { useWindowEvent } from "~/modules/hooks"
 
 interface SeekBarProps {
   buffer: number
@@ -211,62 +208,62 @@ const VideoComponentWithRef = forwardRef(
     { poster }: VideoComponentProps,
     videoRef: MutableRefObject<HTMLVideoElement>
   ) => {
-    const [currentTime, setCurrentTime] = useState(0)
-    const [buffered, setBuffered] = useState(0)
-    const [duration, setDuration] = useState(0)
-    const [isPlaying, setIsPlaying] = useState(false)
-    useEffect(() => {
-      const video = videoRef.current
-      if (!video) return
-      const handleDurationChanged = () => {
-        setDuration(video.duration)
-      }
-      const handleIsPlaying = (playing: boolean) => () => {
-        setIsPlaying(playing)
-      }
-      const handlePlay = handleIsPlaying(true)
-      const handlePause = handleIsPlaying(false)
-      video.addEventListener("durationchange", handleDurationChanged)
-      video.addEventListener("pause", handlePause)
-      video.addEventListener("play", handlePlay)
-      return () => {
-        video.removeEventListener("durationchange", handleDurationChanged)
-        video.removeEventListener("pause", handlePause)
-        video.removeEventListener("play", handlePlay)
-      }
-    }, [videoRef.current])
-    useEffect(() => {
-      if (!videoRef.current) return
-      const video = videoRef.current
-      const handleBuffer = () => {
-        if (video.buffered.length > 0) {
-          setBuffered(video.buffered.end(0))
-        }
-      }
-      video.addEventListener("progress", handleBuffer)
-      return () => {
-        video.removeEventListener("progress", handleBuffer)
-      }
-    }, [videoRef.current])
-    useEffect(() => {
-      const video = videoRef.current
-      if (!video) return
-      setCurrentTime(video.currentTime ?? 0)
-      if (!isPlaying) return
-      const interval = setInterval(() => {
-        setCurrentTime(video.currentTime ?? 0)
-      }, 1000)
-      return () => {
-        clearInterval(interval)
-      }
-    }, [videoRef.current, isPlaying])
-    const handleSeek = useCallback(
-      (time: number) => {
-        videoRef.current.currentTime = time
-        setCurrentTime(time)
-      },
-      [videoRef.current]
-    )
+    // const [currentTime, setCurrentTime] = useState(0)
+    // const [buffered, setBuffered] = useState(0)
+    // const [duration, setDuration] = useState(0)
+    // const [isPlaying, setIsPlaying] = useState(false)
+    // useEffect(() => {
+    //   const video = videoRef.current
+    //   if (!video) return
+    //   const handleDurationChanged = () => {
+    //     setDuration(video.duration)
+    //   }
+    //   const handleIsPlaying = (playing: boolean) => () => {
+    //     setIsPlaying(playing)
+    //   }
+    //   const handlePlay = handleIsPlaying(true)
+    //   const handlePause = handleIsPlaying(false)
+    //   video.addEventListener("durationchange", handleDurationChanged)
+    //   video.addEventListener("pause", handlePause)
+    //   video.addEventListener("play", handlePlay)
+    //   return () => {
+    //     video.removeEventListener("durationchange", handleDurationChanged)
+    //     video.removeEventListener("pause", handlePause)
+    //     video.removeEventListener("play", handlePlay)
+    //   }
+    // }, [videoRef.current])
+    // useEffect(() => {
+    //   if (!videoRef.current) return
+    //   const video = videoRef.current
+    //   const handleBuffer = () => {
+    //     if (video.buffered.length > 0) {
+    //       setBuffered(video.buffered.end(0))
+    //     }
+    //   }
+    //   video.addEventListener("progress", handleBuffer)
+    //   return () => {
+    //     video.removeEventListener("progress", handleBuffer)
+    //   }
+    // }, [videoRef.current])
+    // useEffect(() => {
+    //   const video = videoRef.current
+    //   if (!video) return
+    //   setCurrentTime(video.currentTime ?? 0)
+    //   if (!isPlaying) return
+    //   const interval = setInterval(() => {
+    //     setCurrentTime(video.currentTime ?? 0)
+    //   }, 1000)
+    //   return () => {
+    //     clearInterval(interval)
+    //   }
+    // }, [videoRef.current, isPlaying])
+    // const handleSeek = useCallback(
+    //   (time: number) => {
+    //     videoRef.current.currentTime = time
+    //     setCurrentTime(time)
+    //   },
+    //   [videoRef.current]
+    // )
     return (
       <>
         <div className="wrapper">
@@ -335,7 +332,7 @@ const Player: FC<{ src: string; poster?: string }> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>()
   useEffect(() => {
     const video = videoRef.current
-    import("hls.js").then((hlsmodule) => {
+    import(/* webpackPrefetch: true */ "hls.js").then((hlsmodule) => {
       if (hlsmodule.default.isSupported()) {
         var hls = new hlsmodule.default()
         hls.loadSource(src)

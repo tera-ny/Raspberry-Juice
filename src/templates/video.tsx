@@ -1,7 +1,4 @@
 import { FC } from "react"
-import auth from "~/stores/auth"
-import "firebase/auth"
-import "firebase/firestore"
 import Player from "~/components/player"
 import { Video } from "~/modules/entity"
 
