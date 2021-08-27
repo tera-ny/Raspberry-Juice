@@ -108,6 +108,11 @@ const Form: FC<FormProps> = ({ signin }) => {
             box-shadow: none;
           }
         }
+        @media screen and (max-width: 399px) {
+          .container {
+            height: 100%;
+          }
+        }
       `}</style>
     </>
   )
@@ -149,7 +154,12 @@ const SignInTemplate: FC = () => {
           padding-right: 20px;
           margin: 0 auto;
         }
-        @media screen and (min-width: 400px) {
+        @media (prefers-color-scheme: dark) {
+          .formwrapper {
+            background-color: #25282e;
+          }
+        }
+        @media screen and (min-width: 450px) {
           .formwrapper {
             border-radius: 4px;
             width: 400px;

@@ -15,14 +15,14 @@ const Page: NextPage<{}> = () => {
       <style jsx>
         {`
           main {
-            min-height: 100vh;
             display: flex;
             align-items: flex-start;
           }
-          @media screen and (min-width: 400px) {
+          @media screen and (min-width: 450px) {
             main {
               align-items: center;
               justify-content: center;
+              min-height: 100vh;
             }
           }
         `}

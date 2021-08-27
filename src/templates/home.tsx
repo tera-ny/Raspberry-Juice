@@ -73,9 +73,22 @@ const Template: FC = () => {
         }
         .contents {
           display: grid;
-          grid-template-columns: repeat(auto-fit, 210px);
+          grid-template-columns: repeat(auto-fill, 280px);
           column-gap: 32px;
           row-gap: 24px;
+        }
+        @media (prefers-color-scheme: dark) {
+          .sectiontitle {
+            color: white;
+          }
+        }
+        @media (max-width: 450px) {
+          .container {
+            padding: 16px 20px;
+          }
+          .contents {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
     </>

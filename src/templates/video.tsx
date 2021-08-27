@@ -27,6 +27,7 @@ const Index: FC<Props> = ({ video }) => {
         .title {
           font-size: 20px;
           font-weight: medium;
+          padding-top: 20px;
         }
         @media screen and (max-width: 899px) {
           .container {

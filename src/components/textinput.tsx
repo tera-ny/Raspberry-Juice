@@ -85,7 +85,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               border-radius: 4px;
               padding: 0 4px;
               height: 24px;
-              font-size: 14px;
+              font-size: 16px;
               font-weight: regular;
               -webkit-box-shadow: 0 0 0px 1000px transparent inset;
             }

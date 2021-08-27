@@ -11,7 +11,6 @@ import { Video } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateSignature } from "~/modules/storagecookie"
 import Header from "~/components/header"
-import Cookies from "cookies"
 
 interface Props {
   video?: Video
@@ -35,13 +34,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
       const path = `/contents/video/${query.id}/`
       const expiresOfUnix = dayjs().add(1, "day").unix()
       const sessionToken = await generateSignature(path, expiresOfUnix)
-      const cookies = new Cookies(req, res)
-      cookies.set("Cloud-CDN-Cookie", sessionToken, {
-        path: path,
-        expires: new Date(expiresOfUnix * 1000),
-        secure: process.env.Environment !== "development",
-        httpOnly: true,
-      })
+      res.setHeader("Set-Cookie", [
+        `Cloud-CDN-Cookie=${sessionToken}; Path=${path}; Expires=${new Date(
+          expiresOfUnix * 1000
+        ).toUTCString()}; ${
+          process.env.Environment !== "development" ? "Secure;" : ""
+        } HttpOnly`,
+      ])
       return {
         props: video,
       }
