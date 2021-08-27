@@ -1,11 +1,5 @@
 import { forwardRef } from "react"
-import {
-  MutableRefObject,
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-} from "react"
+import { MutableRefObject, useState, useEffect, useCallback } from "react"
 
 interface Props {
   ispassword?: boolean
@@ -64,10 +58,12 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               border: 2px solid;
               border-color: ${isFocus ? "#43B6E5" : "transparent"};
               border-radius: 8px;
-              height: 48px;
+              height: 40px;
               position: relative;
               background-color: #f8f8f8;
               cursor: text;
+              overflow: hidden;
+              padding: 4px;
             }
             .title {
               font-size: 9px;
@@ -75,22 +71,23 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               font-weight: bold;
               color: ${isFocus ? "#2da7db" : "#575757"};
               margin: 0;
-              padding: 2px 8px;
+              padding-bottom: 4px;
               font-family: Roboto;
               background: transparent;
             }
             .input {
               width: 100%;
               line-height: 16px;
-              position: absolute;
-              bottom: 0;
-              padding: 12px 8px;
               box-sizing: border-box;
               border: none;
               background: transparent;
               outline: none;
+              border-radius: 4px;
+              padding: 0 4px;
+              height: 24px;
               font-size: 14px;
               font-weight: regular;
+              -webkit-box-shadow: 0 0 0px 1000px transparent inset;
             }
 
             @media (prefers-color-scheme: dark) {

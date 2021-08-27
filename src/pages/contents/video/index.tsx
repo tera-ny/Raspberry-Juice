@@ -6,6 +6,7 @@ import getAbsoluteURL from "~/modules/getAbsoluteURL"
 import { Video } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateSignature } from "~/modules/storagecookie"
+import Header from "~/components/header"
 
 interface Props {
   video?: Video
@@ -60,6 +61,7 @@ const Page: NextPage<Props> = ({ video, error }) => {
   } else {
     return (
       <>
+        <Header />
         <main>
           <Template video={video} />
         </main>
