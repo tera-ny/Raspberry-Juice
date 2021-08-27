@@ -25,12 +25,15 @@ const Index: FC<Props> = ({ video }) => {
           display: grid;
         }
         .title {
-          font-size: 32px;
+          font-size: 20px;
           font-weight: medium;
         }
         @media screen and (max-width: 899px) {
+          .container {
+            padding: 12px 20px 0;
+          }
           .title {
-            font-size: 20px;
+            font-size: 16px;
           }
         }
       `}</style>

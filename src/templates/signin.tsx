@@ -142,6 +142,8 @@ const SignInTemplate: FC = () => {
           width: 100%;
           display: flex;
           flex-direction: column;
+          background-color: white;
+          min-height: 100vh;
         }
         .logo {
           padding-right: 20px;
@@ -149,9 +151,9 @@ const SignInTemplate: FC = () => {
         }
         @media screen and (min-width: 400px) {
           .formwrapper {
-            border: solid 1px #c4c4c4;
             border-radius: 4px;
             width: 400px;
+            min-height: auto;
           }
         }
       `}</style>

@@ -34,6 +34,8 @@ export default function App({ Component, pageProps }: AppProps) {
           font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
             Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
             Helvetica Neue, sans-serif;
+          background-color: #f8f8f8;
+          min-height: 100vh;
         }
 
         h2 {
@@ -50,6 +52,7 @@ export default function App({ Component, pageProps }: AppProps) {
           --cursor-width: 12px;
         }
         @media (prefers-color-scheme: dark) {
+          html,
           body {
             background-color: #1e2026;
             color: white;
