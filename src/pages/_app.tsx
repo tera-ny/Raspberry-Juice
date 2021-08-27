@@ -18,9 +18,8 @@ export default function App({ Component, pageProps }: AppProps) {
             crossOrigin="anonymous"
           />
           <link
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap"
-            rel="stylesheet"
-          />
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Roboto:wght@300;400;500&display=swap"
+            rel="stylesheet"></link>
         </NextHead>
         <Auth>
           <Component {...pageProps} />
