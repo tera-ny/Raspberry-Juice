@@ -4,8 +4,8 @@ import { useRecoilValue } from "recoil"
 import firebase from "~/modules/firebase"
 import "firebase/auth"
 import "firebase/firestore"
-import Link from "next/link"
 import { Video } from "~/modules/entity"
+import Content from "~/components/videocontent"
 
 const Template: FC = () => {
   const uid = useRecoilValue(auth.selector.uid)
@@ -44,24 +44,38 @@ const Template: FC = () => {
   if (!isSubscribed) return <></>
   return (
     <>
-      <div>
-        {videos.map((video, index) => (
-          <div className="content" key={index}>
-            <Link
-              href={{
-                pathname: "/contents/video",
-                query: {
-                  id: video.id,
-                },
-              }}>
-              <a>{video.title}</a>
-            </Link>
-          </div>
-        ))}
+      <div className="container">
+        <div className="sectiontitlewrapper">
+          <h2 className="sectiontitle">Home</h2>
+          <hr className="separator" />
+        </div>
+        <div className="contents">
+          {videos.map((video, index) => (
+            <Content video={video} key={index} />
+          ))}
+        </div>
       </div>
       <style jsx>{`
-        .content {
-          max-width: 300px;
+        .container {
+          padding: 20px 52px;
+        }
+        .sectiontitlewrapper {
+          padding-bottom: 20px;
+        }
+        .sectiontitle {
+          font-weight: medium;
+          font-size: 24px;
+          color: #404040;
+        }
+        .separator {
+          margin: 0;
+          max-width: 100px;
+        }
+        .contents {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, 210px);
+          column-gap: 32px;
+          row-gap: 24px;
         }
       `}</style>
     </>

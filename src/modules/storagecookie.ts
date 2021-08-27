@@ -41,7 +41,8 @@ export const generateSignature = async (
   requestPath: string,
   expiresOfUnix: number
 ) => {
-  if (process.env.NODE_ENV !== "production") return "xxxxxx"
+  console.log(process.env.Environment)
+  if (process.env.Environment === "development") return "xxxxxx"
   const keyName = process.env.CLOUD_SECRET_NAME
   const keyVersion = process.env.CLOUD_SECRET_VERSION
   const projectID = process.env.PROJECT_ID
