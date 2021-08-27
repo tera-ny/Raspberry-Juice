@@ -38,7 +38,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
         `Cloud-CDN-Cookie=${sessionToken}; Path=${path}; Expires=${new Date(
           expiresOfUnix * 1000
         ).toUTCString()}; ${
-          process.env.Environment !== "development" ? "Secure;" : ""
+          process.env.ENVIRONMENT !== "development" ? "Secure;" : ""
         } HttpOnly`,
       ])
       return {

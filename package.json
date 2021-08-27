@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "Environment=development next",
-    "deploy": "Environment=production yarn build && gcloud app deploy",
+    "dev": "ENVIRONMENT=development next",
+    "deploy": "ENVIRONMENT=production yarn build && gcloud app deploy",
     "build": "next build",
     "start": "next start -p $PORT"
   },
