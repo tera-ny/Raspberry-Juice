@@ -1,12 +1,17 @@
 import { NextPage } from "next"
 import Template from "~/templates/video"
 import Error from "next/error"
-import { withAuthUserTokenSSR, AuthAction } from "next-firebase-auth"
+import {
+  withAuthUserTokenSSR,
+  AuthAction,
+  withAuthUser,
+} from "next-firebase-auth"
 import getAbsoluteURL from "~/modules/getAbsoluteURL"
 import { Video } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateSignature } from "~/modules/storagecookie"
 import Header from "~/components/header"
+import Cookies from "cookies"
 
 interface Props {
   video?: Video
@@ -27,15 +32,16 @@ export const getServerSideProps = withAuthUserTokenSSR({
     })
     if (response.status === 200) {
       const video = await response.json()
-      const path = `/contents/video/${AuthUser.id}/${query.id}`
+      const path = `/contents/video/${query.id}/`
       const expiresOfUnix = dayjs().add(1, "day").unix()
       const sessionToken = await generateSignature(path, expiresOfUnix)
-      res.setHeader(
-        "Set-Cookie",
-        `Cloud-CDN-Cookie=${sessionToken}; Path=/contents/video; Expires=${new Date(
-          expiresOfUnix * 1000
-        ).toUTCString()}; HttpOnly`
-      )
+      const cookies = new Cookies(req, res)
+      cookies.set("Cloud-CDN-Cookie", sessionToken, {
+        path: path,
+        expires: new Date(expiresOfUnix * 1000),
+        secure: process.env.Environment !== "development",
+        httpOnly: true,
+      })
       return {
         props: video,
       }
@@ -70,4 +76,6 @@ const Page: NextPage<Props> = ({ video, error }) => {
   }
 }
 
-export default Page
+export default withAuthUser({
+  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
+})(Page)

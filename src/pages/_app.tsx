@@ -37,6 +37,17 @@ export default function App({ Component, pageProps }: AppProps) {
           background-color: #f8f8f8;
           min-height: 100vh;
         }
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        p,
+        button,
+        a,
+        input {
+          margin: 0;
+        }
 
         h2 {
           font-weight: 700;
