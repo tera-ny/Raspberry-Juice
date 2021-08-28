@@ -11,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
     console.error(e)
     return res.status(500).json({ error: "Unexpected error." })
   }
-  return res.redirect("/api/logoutsession").end()
+  return res.status(200).end()
 }
 
 export default handler

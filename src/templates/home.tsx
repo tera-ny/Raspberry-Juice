@@ -1,47 +1,12 @@
-import { FC, useEffect, useState } from "react"
-import auth from "~/stores/auth"
-import { useRecoilValue } from "recoil"
-import firebase from "~/modules/firebase"
-import "firebase/auth"
-import "firebase/firestore"
-import { Video } from "~/modules/entity"
+import { FC } from "react"
+import { SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
 
-const Template: FC = () => {
-  const uid = useRecoilValue(auth.selector.uid)
-  const [videos, setVideos] = useState<Video[]>([])
-  const isSubscribed = useRecoilValue(auth.selector.isSubscribed)
+interface Props {
+  videos: SerializableVideo[]
+}
 
-  useEffect(() => {
-    if (!uid) return
-    let mounted = true
-    const _ = (async () => {
-      const snapshots = await firebase
-        .firestore()
-        .collection("users")
-        .doc(uid)
-        .collection("contents")
-        .where("type", "==", "video")
-        .get()
-      if (mounted) {
-        setVideos(
-          snapshots.docs.map((doc) => {
-            const data = doc.data()
-            return {
-              id: doc.id,
-              title: data.title,
-              url: data.url,
-              poster: data.poster,
-            }
-          })
-        )
-      }
-    })()
-    return () => {
-      mounted = false
-    }
-  }, [uid])
-  if (!isSubscribed) return <></>
+const Template: FC<Props> = ({ videos }) => {
   return (
     <>
       <div className="container">
