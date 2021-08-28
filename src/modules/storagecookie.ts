@@ -37,23 +37,58 @@ const generate = (
   return signedValue
 }
 
-export const generateSignature = async (
+const generateSignature = (
   requestPath: string,
-  expiresOfUnix: number
+  expiresOfUnix: number,
+  keyName: string,
+  secretKey: string
 ) => {
   if (process.env.ENVIRONMENT === "development") return "xxxxxx"
+  const urlPrefix = `https://orange-juice.app${requestPath}`
+  const prefix = generate(urlPrefix, keyName, secretKey, expiresOfUnix)
+  return prefix
+}
+
+const makeCookieString = (
+  key: string,
+  value: string,
+  path: string,
+  expires: Date,
+  isSecure: boolean
+) => {
+  let values = [`${key}=${value}`]
+  values.push(`Path=${path}`)
+  values.push(`Expires=${expires.toUTCString()}`)
+  if (isSecure) {
+    values.push("Secure")
+  }
+  values.push("HttpOnly")
+  return values.join("; ")
+}
+
+export const generateCDNCookies = async (
+  contentIDs: string[],
+  expiresOfUnix: number,
+  isSecure: boolean
+): Promise<string[]> => {
   const keyName = process.env.CLOUD_SECRET_NAME
   const keyVersion = process.env.CLOUD_SECRET_VERSION
   const projectID = process.env.PROJECT_ID
-
-  const client = new SecretManagerServiceClient()
-  const signatureKey = await decodeSecretKey(
-    client,
-    projectID,
-    keyName,
-    keyVersion
-  )
-  const urlPrefix = `https://orange-juice.app${requestPath}`
-  const prefix = generate(urlPrefix, keyName, signatureKey, expiresOfUnix)
-  return prefix
+  let signatureKey: string
+  if (process.env.ENVIRONMENT === "development") {
+    signatureKey = "xxxxxxxx"
+  } else {
+    const client = new SecretManagerServiceClient()
+    signatureKey = await decodeSecretKey(client, projectID, keyName, keyVersion)
+  }
+  return contentIDs.map((id) => {
+    const path = `/contents/video/${id}/`
+    return makeCookieString(
+      "Cloud-CDN-Cookie",
+      generateSignature(path, expiresOfUnix, keyName, signatureKey),
+      path,
+      new Date(expiresOfUnix * 1000),
+      isSecure
+    )
+  })
 }
