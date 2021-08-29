@@ -4,3 +4,7 @@ export interface Video {
   url: string
   poster?: string
 }
+
+export type SerializableVideo = Omit<Video, "poster"> & {
+  poster: string | null
+}
