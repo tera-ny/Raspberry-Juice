@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "ENVIRONMENT=development next",
-    "deploy": "ENVIRONMENT=production yarn build && gcloud app deploy",
+    "deploy": "rm -rf .next/ && ENVIRONMENT=production yarn build && gcloud app deploy",
     "build": "next build",
     "start": "next start -p $PORT"
   },
