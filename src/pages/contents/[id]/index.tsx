@@ -28,6 +28,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   }): Promise<GetServerSidePropsResult<Props>> => {
     const token = await AuthUser.getIdToken()
     if (typeof query.id === "string") {
+      if (query.id === "video") return { props: { error: 400 } }
       const endpoint = getAbsoluteURL(`/api/video?id=${query.id}`, req)
       const response = await fetch(endpoint, {
         method: "GET",

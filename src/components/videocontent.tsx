@@ -51,7 +51,7 @@ interface Props {
 
 const Content: FC<Props> = (props) => (
   <>
-    <Link href={{ pathname: "/contents/video", query: { id: props.video.id } }}>
+    <Link href={`contents/${props.video.id}`}>
       <a>
         <div className="wrapper">
           <div className="content">
