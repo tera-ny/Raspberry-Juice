@@ -11,6 +11,7 @@ import { Video } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateCDNCookies } from "~/modules/storagecookie"
 import Header from "~/components/header"
+import Modal from "~/components/modal"
 
 interface Props {
   video?: Video
