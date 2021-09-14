@@ -33,6 +33,11 @@ This is an online content storage system that allows users to upload their own v
 
 - [GoogleAppEngine](https://cloud.google.com/appengine)
 
+#### BackendSolution
+- [GoogleCloudCDN](https://cloud.google.com/cdn)
+- [GoogleCloudStorage](https://cloud.google.com/storage)
+- [TranscoderAPI](https://cloud.google.com/transcoder/docs)
+
 ### License
 
 [**No License**](https://choosealicense.com/no-permission/)
