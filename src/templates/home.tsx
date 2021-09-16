@@ -1,12 +1,14 @@
-import { FC } from "react"
+import { FC, useContext } from "react"
 import { SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
+import { ModalContext } from "~/components/modal"
 
 interface Props {
   videos: SerializableVideo[]
 }
 
 const Template: FC<Props> = ({ videos }) => {
+  const context = useContext(ModalContext)
   return (
     <>
       <div className="container">
@@ -19,6 +21,12 @@ const Template: FC<Props> = ({ videos }) => {
             <Content video={video} key={index} />
           ))}
         </div>
+        <button
+          onClick={() => {
+            context.updateContent("UP_LOAD")
+          }}>
+          content='UP_LOAD'
+        </button>
       </div>
       <style jsx>{`
         .container {

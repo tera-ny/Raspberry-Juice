@@ -3,6 +3,7 @@ import { RecoilRoot } from "recoil"
 import Auth from "~/components/auth"
 import NextHead from "next/head"
 import initAuth from "~/modules/nextauth"
+import ModalProvider from "~/components/modal"
 
 initAuth()
 
@@ -22,7 +23,9 @@ export default function App({ Component, pageProps }: AppProps) {
             rel="stylesheet"></link>
         </NextHead>
         <Auth>
-          <Component {...pageProps} />
+          <ModalProvider>
+            <Component {...pageProps} />
+          </ModalProvider>
         </Auth>
       </RecoilRoot>
       <style jsx global>{`
