@@ -1,12 +1,7 @@
-import { FC, createContext, useState } from "react"
-import UploadContent from "./uploadcontent"
+import { FC } from "react"
 export type Content = "UP_LOAD"
 
-export const ModalContext = createContext<{
-  updateContent: (content?: Content) => void
-}>({ updateContent: () => {} })
-
-const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
+export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
   visible,
   onClickBackground,
   children,
@@ -31,6 +26,7 @@ const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
           transition: opacity 0.5s, visibility 0s ease-in-out 0.5s;
           opacity: 0;
           visibility: hidden;
+          box-sizing: border-box;
         }
         .container.visible {
           transition-delay: 0s;
@@ -48,6 +44,7 @@ const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
           z-index: 1;
         }
         .contents {
+          position: relative;
           margin: 20px;
           background: white;
           border-radius: 4px;
@@ -77,27 +74,4 @@ const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
   )
 }
 
-const ModalProvider: FC = ({ children }) => {
-  const [content, setContent] = useState<Content>()
-  return (
-    <ModalContext.Provider value={{ updateContent: setContent }}>
-      {children}
-      <Modal
-        visible={content !== undefined}
-        onClickBackground={() => {
-          setContent(undefined)
-        }}>
-        {(() => {
-          switch (content) {
-            case "UP_LOAD":
-              return <UploadContent />
-            default:
-              return <></>
-          }
-        })()}
-      </Modal>
-    </ModalContext.Provider>
-  )
-}
-
-export default ModalProvider
+export default Modal
