@@ -7,17 +7,21 @@ import {
   getFirebaseAdmin,
 } from "next-firebase-auth"
 import Header from "~/components/header"
-import { SerializableVideo, Video } from "~/modules/entity"
+import { SerializableVideo } from "~/modules/entity"
 import { generateCDNCookies } from "~/modules/storagecookie"
+
 import dayjs from "dayjs"
-interface Props {
-  videos: SerializableVideo[]
-}
+
+import { Props } from "~/templates/home"
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(
-  async ({ AuthUser, res }): Promise<GetServerSidePropsResult<{}>> => {
+  async ({
+    AuthUser,
+    res,
+    query,
+  }): Promise<GetServerSidePropsResult<Props>> => {
     const uid = AuthUser.id
     const snapshot = await getFirebaseAdmin()
       .firestore()
@@ -27,7 +31,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
       .where("type", "==", "video")
       .get()
     const videos = snapshot.docs.map(
-      (doc): Video => {
+      (doc): SerializableVideo => {
         const data = doc.data()
         return {
           id: doc.id,
@@ -48,18 +52,19 @@ export const getServerSideProps = withAuthUserTokenSSR({
     res.setHeader("Set-Cookie", cookies)
     return {
       props: {
+        upload: query.upload === "true",
         videos,
       },
     }
   }
 )
 
-const Page: NextPage<Props> = ({ videos }) => {
+const Page: NextPage<Props> = (props) => {
   return (
     <>
       <Header />
       <main>
-        <Template videos={videos} />
+        <Template {...props} />
       </main>
     </>
   )

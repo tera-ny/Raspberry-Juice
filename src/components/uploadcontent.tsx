@@ -1,18 +1,28 @@
+import { useAuthUser } from "next-firebase-auth"
 import {
   ChangeEvent,
   DragEvent,
   FC,
   useCallback,
+  useEffect,
+  // useEffect,
   useRef,
   useState,
 } from "react"
+import { Policy } from "~/modules/uploadpolicy"
 
 var timeoutID: any
 
 const UploadContent: FC = () => {
-  const [file, setFile] = useState<File>()
-  const [isDragOver, setIsDragOver] = useState(false)
+  const user = useAuthUser()
+
   const field = useRef<HTMLDivElement>()
+  const [isDragOver, setIsDragOver] = useState(false)
+
+  const [file, setFile] = useState<File>()
+  const [policy, setPolicy] = useState<Policy>()
+  const [id, setID] = useState<string>()
+
   const changeUploadTarget = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files.length !== 1) return
     const file = e.target.files.item(0)
@@ -43,6 +53,28 @@ const UploadContent: FC = () => {
     if (file.type !== "video/mp4") return
     setFile(file)
   }, [])
+  useEffect(() => {
+    setPolicy(undefined)
+    setID(undefined)
+    if (!file) return
+    user
+      .getIdToken()
+      .then((token) =>
+        fetch("/api/pre_upload_content", { headers: { Authorization: token } })
+      )
+      .then((res) => res.json())
+      .then((json) => {
+        setPolicy(json.policy)
+        setID(json.id)
+      })
+  }, [file])
+
+  const submit = useCallback(() => {
+    if (policy) {
+      const form = document.getElementById("form") as HTMLFormElement
+      form.submit()
+    }
+  }, [policy])
   return (
     <>
       <h2 className="title">コンテンツをアップロード</h2>
@@ -81,20 +113,44 @@ const UploadContent: FC = () => {
             </picture>
           </>
         )}
-        <div className="meta">
-          <label className="pickerButton">
-            アップロードする動画を選択
-            <input
-              type="file"
-              className="picker"
-              accept="video/mp4,.mp4"
-              onChange={changeUploadTarget}
-            />
-          </label>
-          <p>or</p>
-          <p>この枠内にファイルをドロップ</p>
-        </div>
+        <form
+          id={"form"}
+          action={policy?.url}
+          method="post"
+          encType="multipart/form-data">
+          {policy && (
+            <>
+              {Object.keys(policy.fields).map((name, key) => (
+                <input
+                  key={key}
+                  name={name}
+                  value={policy.fields[name]}
+                  type="hidden"
+                />
+              ))}
+            </>
+          )}
+          <div className="meta">
+            <label className="pickerButton">
+              アップロードする動画を{file ? "変更" : "選択"}
+              <input
+                name="file"
+                type="file"
+                className="picker"
+                accept="video/mp4,.mp4"
+                onChange={changeUploadTarget}
+              />
+            </label>
+            <p>or</p>
+            <p>この枠内にファイルをドロップ</p>
+          </div>
+        </form>
       </div>
+      {file && (
+        <button className="upload" onClick={submit}>
+          アップロード
+        </button>
+      )}
       <style jsx>
         {`
           .title {
@@ -142,6 +198,7 @@ const UploadContent: FC = () => {
             font-size: 12px;
           }
           .pickerButton {
+            cursor: pointer;
             border: none;
             outline: none;
             padding: 8px 12px;
@@ -157,6 +214,26 @@ const UploadContent: FC = () => {
           }
           .pickerButton:active {
             background-color: #d3754d;
+          }
+          .upload {
+            cursor: pointer;
+            border: none;
+            outline: none;
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            color: white;
+            background-color: #e6aa11;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 4px;
+          }
+          @media (min-width: 600px) {
+            .upload {
+              bottom: 28px;
+              right: 52px;
+            }
           }
         `}
       </style>

@@ -1,14 +1,18 @@
 import { FC, useContext } from "react"
 import { SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
-import { ModalContext } from "~/components/modal"
+import { Modal } from "~/components/modal"
+import Link from "next/link"
+import UploadContent from "~/components/uploadcontent"
+import { useRouter } from "next/dist/client/router"
 
-interface Props {
+export type Props = {
   videos: SerializableVideo[]
+  upload: boolean
 }
 
-const Template: FC<Props> = ({ videos }) => {
-  const context = useContext(ModalContext)
+const Template: FC<Props> = (props) => {
+  const router = useRouter()
   return (
     <>
       <div className="container">
@@ -17,17 +21,21 @@ const Template: FC<Props> = ({ videos }) => {
           <hr className="separator" />
         </div>
         <div className="contents">
-          {videos.map((video, index) => (
+          {props.videos.map((video, index) => (
             <Content video={video} key={index} />
           ))}
         </div>
-        <button
-          onClick={() => {
-            context.updateContent("UP_LOAD")
-          }}>
-          content='UP_LOAD'
-        </button>
+        <Link href={{ pathname: "/", query: { upload: true } }}>
+          <a>link</a>
+        </Link>
       </div>
+      <Modal
+        visible={props.upload}
+        onClickBackground={() => {
+          router.push({ pathname: "/" })
+        }}>
+        {props.upload && <UploadContent />}
+      </Modal>
       <style jsx>{`
         .container {
           padding: 20px 52px;
