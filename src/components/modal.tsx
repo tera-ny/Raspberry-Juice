@@ -1,5 +1,4 @@
 import { FC } from "react"
-export type Content = "UP_LOAD"
 
 export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
   visible,
