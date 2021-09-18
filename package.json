@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^3.9.0",
+    "@google-cloud/storage": "^5.14.2",
     "dayjs": "^1.10.6",
     "firebase": "^8.2.5",
     "firebase-admin": "^9.11.0",
