@@ -25,17 +25,17 @@ export const getServerSideProps = withAuthUserTokenSSR({
     const uid = AuthUser.id
     const snapshot = await getFirebaseAdmin()
       .firestore()
-      .collection("users")
-      .doc(uid)
       .collection("contents")
       .where("type", "==", "video")
+      .where("owner", "==", uid)
+      .where("draft", "==", false)
       .get()
     const videos = snapshot.docs.map(
       (doc): SerializableVideo => {
         const data = doc.data()
         return {
           id: doc.id,
-          title: data.title,
+          title: data.title ?? "無題",
           url: data.url,
           poster: data.poster ?? null,
         }

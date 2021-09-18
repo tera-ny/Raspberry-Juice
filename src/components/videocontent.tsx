@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Video } from "~/modules/entity"
+import { SerializableVideo } from "~/modules/entity"
 import Link from "next/link"
 
 const Placeholder: FC = () => (
@@ -46,7 +46,7 @@ const Placeholder: FC = () => (
 )
 
 interface Props {
-  video: Video
+  video: SerializableVideo
 }
 
 const Content: FC<Props> = (props) => (

@@ -25,13 +25,11 @@ const handler: NextApiHandler = async (req, res) => {
   try {
     const snapshot = await getFirebaseAdmin()
       .firestore()
-      .collection("users")
-      .doc(decoded.id)
       .collection("contents")
       .doc(id)
       .get()
-    if (snapshot.exists) {
-      const video = snapshot.data() as Video
+    const video = snapshot.data() as Video
+    if (snapshot.exists && video.owner === decoded.id) {
       res.statusCode = 200
       res.json({
         video: { ...video, id },
