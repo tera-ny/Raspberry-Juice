@@ -6,9 +6,10 @@ import { useRef } from "react"
 
 interface FormProps {
   signin: (email: string, password: string) => void
+  disableButton: boolean
 }
 
-const Form: FC<FormProps> = ({ signin }) => {
+const Form: FC<FormProps> = ({ signin, disableButton }) => {
   const [isShowPassword, setIsShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -49,6 +50,7 @@ const Form: FC<FormProps> = ({ signin }) => {
         <div className="signinwrapper">
           <button
             className="signin"
+            disabled={disableButton}
             onClick={() => {
               signin(email, password)
             }}>
@@ -139,7 +141,7 @@ const SignInTemplate: FC = () => {
           />
           <img height="60" width="220" src="/img/logo_light.svg" />
         </picture>
-        <Form signin={signin} />
+        <Form signin={signin} disableButton={isLoading} />
       </div>
       <style jsx>{`
         .formwrapper {
