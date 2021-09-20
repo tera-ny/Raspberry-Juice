@@ -1,4 +1,4 @@
-import { FC, useContext } from "react"
+import { FC, useContext, useState } from "react"
 import { SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
 import { Modal } from "~/components/modal"
@@ -13,6 +13,7 @@ export type Props = {
 
 const Template: FC<Props> = (props) => {
   const router = useRouter()
+  const [isUploading, setIsUploading] = useState(false)
   return (
     <>
       <div className="container">
@@ -32,9 +33,11 @@ const Template: FC<Props> = (props) => {
       <Modal
         visible={props.upload}
         onClickBackground={() => {
-          router.push({ pathname: "/" })
+          if (!isUploading) {
+            router.push({ pathname: "/" })
+          }
         }}>
-        {props.upload && <UploadContent />}
+        {props.upload && <UploadContent onChangeIsUploading={setIsUploading} />}
       </Modal>
       <style jsx>{`
         .container {

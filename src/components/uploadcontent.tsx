@@ -13,49 +13,56 @@ import { Policy } from "~/modules/uploadpolicy"
 
 var timeoutID: any
 
-const UploadContent: FC = () => {
+interface Props {
+  onChangeIsUploading?: (uploading: boolean) => void
+}
+
+const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   const user = useAuthUser()
 
-  const field = useRef<HTMLDivElement>()
+  const form = useRef<HTMLFormElement>()
   const [isDragOver, setIsDragOver] = useState(false)
 
   const [file, setFile] = useState<File>()
   const [policy, setPolicy] = useState<Policy>()
-  const [id, setID] = useState<string>()
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const [count, setCount] = useState(0)
 
   const changeUploadTarget = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files.length !== 1) return
     const file = e.target.files.item(0)
     setFile(file)
   }, [])
-  const dragOverHandler = useCallback((e: DragEvent<HTMLDivElement>) => {
+  const dragOverHandler = useCallback((e: DragEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (timeoutID) {
       clearTimeout(timeoutID)
     }
-    field.current.classList.add("dragover")
+    form.current.classList.add("dragover")
     setIsDragOver(true)
     timeoutID = setTimeout(function () {
-      field.current.classList.remove("dragover")
+      form.current.classList.remove("dragover")
       setIsDragOver(false)
     }, 100)
   }, [])
-  const dropFile = useCallback((e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    let file: File
-    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      file = e.dataTransfer.items[0].getAsFile()
-    } else if (e.dataTransfer.files.length > 0) {
-      file = e.dataTransfer.files[0]
-    } else {
-      return
-    }
-    if (file.type !== "video/mp4") return
-    setFile(file)
-  }, [])
+  const dropFile = useCallback(
+    (e: DragEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      let file: File
+      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+        file = e.dataTransfer.items[0].getAsFile()
+      } else if (e.dataTransfer.files.length > 0) {
+        file = e.dataTransfer.files[0]
+      } else {
+        return
+      }
+      if (file.type !== "video/mp4" || isUploading) return
+      setFile(file)
+    },
+    [isUploading]
+  )
   useEffect(() => {
     setPolicy(undefined)
-    setID(undefined)
     if (!file) return
     user
       .getIdToken()
@@ -65,99 +72,104 @@ const UploadContent: FC = () => {
       .then((res) => res.json())
       .then((json) => {
         setPolicy(json.policy)
-        setID(json.id)
       })
   }, [file])
 
-  const submit = useCallback(() => {
+  useEffect(() => {
     if (policy) {
-      const form = document.getElementById("form") as HTMLFormElement
-      form.submit()
+      setIsUploading(true)
+      form.current.submit()
     }
-  }, [policy])
+  }, [policy, form])
+  useEffect(() => {
+    onChangeIsUploading(isUploading)
+  }, [isUploading])
+  useEffect(() => {
+    if (isUploading) {
+      setCount(0)
+      const interval = setInterval(() => {
+        setCount((prev) => (prev < 4 ? prev + 1 : 0))
+      }, 1000)
+      return () => {
+        clearInterval(interval)
+      }
+    }
+  }, [isUploading])
   return (
     <>
       <h2 className="title">コンテンツをアップロード</h2>
-      <div
-        ref={field}
+      <form
+        className={"form"}
+        ref={form}
         onDrop={dropFile}
         onDragOver={dragOverHandler}
-        className="field">
-        {file && (
-          <video
-            height="100%"
-            className="video"
-            src={URL.createObjectURL(file)}
-            controls></video>
-        )}
-        {!file && (
+        action={policy?.url}
+        method="post"
+        encType="multipart/form-data">
+        <picture className="uploadContentLogo">
+          <source
+            srcSet={
+              isDragOver
+                ? "/img/upload_content_active.svg"
+                : "/img/upload_content_dark.svg"
+            }
+            media="(prefers-color-scheme: dark)"
+          />
+          <img
+            height="94"
+            width="152"
+            src={
+              isDragOver
+                ? "/img/upload_content_active.svg"
+                : "/img/upload_content_light.svg"
+            }
+          />
+        </picture>
+        {policy && (
           <>
-            <picture className="uploadContentLogo">
-              <source
-                srcSet={
-                  isDragOver
-                    ? "/img/upload_content_active.svg"
-                    : "/img/upload_content_dark.svg"
-                }
-                media="(prefers-color-scheme: dark)"
+            {Object.keys(policy.fields).map((name, key) => (
+              <input
+                key={key}
+                name={name}
+                value={policy.fields[name]}
+                type="hidden"
               />
-              <img
-                height="94"
-                width="152"
-                src={
-                  isDragOver
-                    ? "/img/upload_content_active.svg"
-                    : "/img/upload_content_light.svg"
-                }
-              />
-            </picture>
+            ))}
           </>
         )}
-        <form
-          id={"form"}
-          action={policy?.url}
-          method="post"
-          encType="multipart/form-data">
-          {policy && (
+        <div className="meta">
+          <label className="pickerButton">
+            アップロードする動画を{file ? "変更" : "選択"}
+            <input
+              disabled={isUploading}
+              name="file"
+              type="file"
+              className="picker"
+              accept="video/mp4,.mp4"
+              onChange={changeUploadTarget}
+            />
+          </label>
+          {!isUploading && (
             <>
-              {Object.keys(policy.fields).map((name, key) => (
-                <input
-                  key={key}
-                  name={name}
-                  value={policy.fields[name]}
-                  type="hidden"
-                />
-              ))}
+              <p>or</p>
+              <p>この枠内にファイルをドロップ</p>
             </>
           )}
-          <div className="meta">
-            <label className="pickerButton">
-              アップロードする動画を{file ? "変更" : "選択"}
-              <input
-                name="file"
-                type="file"
-                className="picker"
-                accept="video/mp4,.mp4"
-                onChange={changeUploadTarget}
-              />
-            </label>
-            <p>or</p>
-            <p>この枠内にファイルをドロップ</p>
-          </div>
-        </form>
-      </div>
-      {file && (
-        <button className="upload" onClick={submit}>
-          アップロード
-        </button>
-      )}
+          {isUploading && (
+            <>
+              <p>アップロード中{".".repeat(count)}</p>
+              <p>タブを閉じずにこのままお待ちください</p>
+            </>
+          )}
+        </div>
+      </form>
       <style jsx>
         {`
           .title {
             font-size: 16px;
             font-weight: bold;
           }
-          .field {
+          .form {
             margin-top: 24px;
             display: flex;
             align-items: center;
@@ -166,9 +178,9 @@ const UploadContent: FC = () => {
             border-radius: 4px;
             justify-content: center;
             width: 100%;
-            height: 351px;
+            height: calc(100% - 48px);
           }
-          .field.dragover {
+          .from.dragover {
             border-color: #43b6e5;
           }
           .video {
@@ -198,6 +210,8 @@ const UploadContent: FC = () => {
             font-size: 12px;
           }
           .pickerButton {
+            visibility: ${isUploading ? "hidden" : "visible"};
+            user-select: none;
             cursor: pointer;
             border: none;
             outline: none;
@@ -229,6 +243,7 @@ const UploadContent: FC = () => {
             padding: 8px 12px;
             border-radius: 4px;
           }
+
           @media (min-width: 600px) {
             .upload {
               bottom: 28px;

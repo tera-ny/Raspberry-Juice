@@ -36,7 +36,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
         return {
           id: doc.id,
           title: data.title ?? "無題",
-          url: data.url,
+          url: data.url ?? "",
           poster: data.poster ?? null,
         }
       }
