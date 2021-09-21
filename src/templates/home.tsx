@@ -7,7 +7,7 @@ import UploadContent from "~/components/uploadcontent"
 import { useRouter } from "next/dist/client/router"
 
 export type Props = {
-  videos: SerializableVideo[]
+  contents: SerializableVideo[]
   upload: boolean
 }
 
@@ -22,7 +22,7 @@ const Template: FC<Props> = (props) => {
           <hr className="separator" />
         </div>
         <div className="contents">
-          {props.videos.map((video, index) => (
+          {props.contents.map((video, index) => (
             <Content video={video} key={index} />
           ))}
         </div>

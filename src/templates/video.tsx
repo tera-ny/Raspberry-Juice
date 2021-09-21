@@ -1,9 +1,9 @@
 import { FC } from "react"
 import Player from "~/components/player"
-import { Video } from "~/modules/entity"
+import { SerializableVideo } from "~/modules/entity"
 
 interface Props {
-  video: Video
+  video: SerializableVideo
 }
 
 const Index: FC<Props> = ({ video }) => {

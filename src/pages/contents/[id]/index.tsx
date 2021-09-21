@@ -6,14 +6,14 @@ import {
   AuthAction,
   withAuthUser,
 } from "next-firebase-auth"
-import getAbsoluteURL from "~/modules/getAbsoluteURL"
-import { Video } from "~/modules/entity"
+import api from "~/modules/api/videos/id"
+import { SerializableVideo } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateCDNCookies } from "~/modules/storagecookie"
 import Header from "~/components/header"
 
 interface Props {
-  video?: Video
+  video?: SerializableVideo
   error?: number
 }
 
@@ -22,22 +22,12 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(
   async ({
     AuthUser,
-    req,
     res,
     query,
   }): Promise<GetServerSidePropsResult<Props>> => {
-    const token = await AuthUser.getIdToken()
-    if (typeof query.id === "string") {
-      if (query.id === "video") return { props: { error: 400 } }
-      const endpoint = getAbsoluteURL(`/api/video?id=${query.id}`, req)
-      const response = await fetch(endpoint, {
-        method: "GET",
-        headers: {
-          Authorization: token || "unauthenticated",
-        },
-      })
-      if (response.status === 200) {
-        const video = await response.json()
+    if (typeof query.id === "string" && query.id !== "video") {
+      try {
+        const reponse = await api(query.id, AuthUser.id)
         const expiresOfUnix = dayjs().add(1, "day").unix()
         const isSecure = process.env.ENVIRONMENT !== "development"
         const cdnCookies = await generateCDNCookies(
@@ -47,20 +37,26 @@ export const getServerSideProps = withAuthUserTokenSSR({
         )
         res.setHeader("Set-Cookie", cdnCookies)
         return {
-          props: video,
-        }
-      } else {
-        return {
           props: {
-            error: response.status,
+            video: reponse.content,
           },
+        }
+      } catch (error) {
+        if (error === 404) {
+          return {
+            notFound: true,
+          }
+        } else {
+          return {
+            props: {
+              error: 500,
+            },
+          }
         }
       }
     } else {
       return {
-        props: {
-          error: 404,
-        },
+        notFound: true,
       }
     }
   }

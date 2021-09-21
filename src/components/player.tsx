@@ -329,7 +329,7 @@ const VideoComponentWithRef = forwardRef(
   }
 )
 
-const Player: FC<{ src: string; poster?: string }> = ({ src, poster }) => {
+const Player: FC<{ src?: string; poster?: string }> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>()
   const [hls, setHls] = useState<Hls>()
   useEffect(() => {
@@ -339,7 +339,7 @@ const Player: FC<{ src: string; poster?: string }> = ({ src, poster }) => {
   }, [])
   useEffect(() => {
     const video = videoRef.current
-    if (hls) {
+    if (hls && src) {
       hls.loadSource(src)
       hls.attachMedia(video)
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
