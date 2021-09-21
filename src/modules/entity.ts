@@ -1,10 +1,15 @@
-export interface Video {
-  id: string
-  title: string
-  url: string
+export interface Video<Timestamp> {
+  owner: string
+  title?: string
+  url?: string
   poster?: string
+  createdAt?: Timestamp
 }
 
-export type SerializableVideo = Omit<Video, "poster"> & {
+export interface SerializableVideo {
+  id: string
+  title: string | null
+  url: string | null
   poster: string | null
+  createdAtMillis: number | null
 }

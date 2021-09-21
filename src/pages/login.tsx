@@ -5,13 +5,25 @@ import {
   withAuthUser,
   AuthAction,
 } from "next-firebase-auth"
+import { useEffect, useState } from "react"
+import firebase from "firebase/app"
+import "firebase/auth"
 
 const Page: NextPage<{}> = () => {
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        setIsSubscribed(true)
+      }
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [])
   return (
     <>
-      <main>
-        <Template />
-      </main>
+      <main>{isSubscribed && <Template />}</main>
       <style jsx>
         {`
           main {

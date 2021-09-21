@@ -1,5 +1,5 @@
 import { NextApiHandler } from "next"
-import { getFirebaseAdmin, setAuthCookies } from "next-firebase-auth"
+import { setAuthCookies } from "next-firebase-auth"
 import initAuth from "~/modules/nextauth" // the module you created above
 
 initAuth()

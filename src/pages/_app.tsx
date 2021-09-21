@@ -23,9 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
             rel="stylesheet"></link>
         </NextHead>
         <Auth>
-          <ModalProvider>
-            <Component {...pageProps} />
-          </ModalProvider>
+          <Component {...pageProps} />
         </Auth>
       </RecoilRoot>
       <style jsx global>{`

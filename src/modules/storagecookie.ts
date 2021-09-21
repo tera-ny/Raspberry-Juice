@@ -62,6 +62,7 @@ const makeCookieString = (
   if (isSecure) {
     values.push("Secure")
   }
+  values.push("SameSite=None")
   values.push("HttpOnly")
   return values.join("; ")
 }

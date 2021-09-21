@@ -1,6 +1,7 @@
 import { FC } from "react"
-import { Video } from "~/modules/entity"
+import { SerializableVideo } from "~/modules/entity"
 import Link from "next/link"
+import dayjs from "dayjs"
 
 const Placeholder: FC = () => (
   <>
@@ -45,8 +46,11 @@ const Placeholder: FC = () => (
   </>
 )
 
+const millisToFormatedDate = (millis: number) =>
+  dayjs(millis).format("YYYY/MM/DD")
+
 interface Props {
-  video: Video
+  video: SerializableVideo
 }
 
 const Content: FC<Props> = (props) => (
@@ -70,8 +74,10 @@ const Content: FC<Props> = (props) => (
               )}
             </div>
             <div className="metadata">
-              <p className="title">{props.video.title}</p>
-              <p className="date">2021/09/01</p>
+              <p className="title">{props.video.title ?? "No title"}</p>
+              <p className="date">
+                {millisToFormatedDate(props.video.createdAtMillis)}
+              </p>
             </div>
           </div>
         </div>
