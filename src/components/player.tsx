@@ -8,6 +8,7 @@ import {
   MutableRefObject,
   useCallback,
 } from "react"
+import Hls from "hls.js"
 import { useWindowEvent } from "~/modules/hooks"
 
 interface SeekBarProps {
@@ -330,18 +331,21 @@ const VideoComponentWithRef = forwardRef(
 
 const Player: FC<{ src: string; poster?: string }> = ({ src, poster }) => {
   const videoRef = useRef<HTMLVideoElement>()
+  const [hls, setHls] = useState<Hls>()
+  useEffect(() => {
+    if (Hls.isSupported()) {
+      setHls(new Hls())
+    }
+  }, [])
   useEffect(() => {
     const video = videoRef.current
-    import(/* webpackPrefetch: true */ "hls.js").then((hlsmodule) => {
-      if (hlsmodule.default.isSupported()) {
-        var hls = new hlsmodule.default()
-        hls.loadSource(src)
-        hls.attachMedia(video)
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = src
-      }
-    })
-  }, [src, videoRef.current])
+    if (hls) {
+      hls.loadSource(src)
+      hls.attachMedia(video)
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = src
+    }
+  }, [src, hls])
   return (
     <>
       <div className="videoContainer">
