@@ -29,6 +29,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
       .where("type", "==", "video")
       .where("owner", "==", uid)
       .where("draft", "==", false)
+      .orderBy("createdAt", "desc")
       .get()
     const videos = snapshot.docs.map(
       (doc): SerializableVideo => {
