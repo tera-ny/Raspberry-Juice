@@ -66,7 +66,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
     user
       .getIdToken()
       .then((token) =>
-        fetch("/api/pre_upload_content", { headers: { Authorization: token } })
+        fetch("/api/upload_policy", { headers: { Authorization: token } })
       )
       .then((res) => res.json())
       .then((json) => {

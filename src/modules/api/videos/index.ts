@@ -27,7 +27,11 @@ const handler = async (uid: string): Promise<Response> => {
         return {
           id: doc.id,
           title: data.title ?? null,
-          url: data.url ?? null,
+          url: data.url
+            ? typeof data.url === "string"
+              ? data.url
+              : data.url.hls
+            : null,
           poster: data.poster ?? null,
           createdAtMillis: data.createdAt.toMillis() ?? null,
         }

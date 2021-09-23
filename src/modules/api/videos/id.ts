@@ -22,7 +22,11 @@ const handler = async (id: string, uid: string): Promise<Response> => {
         content: {
           id: snapshot.ref.id,
           title: video.title ?? null,
-          url: video.url ?? null,
+          url: video.url
+            ? typeof video.url === "string"
+              ? video.url
+              : video.url.hls
+            : null,
           poster: video.poster ?? null,
           createdAtMillis: video.createdAt?.toMillis() ?? null,
         },
