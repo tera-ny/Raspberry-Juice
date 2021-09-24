@@ -3,7 +3,6 @@ import { RecoilRoot } from "recoil"
 import Auth from "~/components/auth"
 import NextHead from "next/head"
 import initAuth from "~/modules/nextauth"
-import ModalProvider from "~/components/modal"
 
 initAuth()
 

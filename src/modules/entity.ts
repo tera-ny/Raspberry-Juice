@@ -4,6 +4,7 @@ export interface Video<Timestamp> {
   url?: string | { hls: string; mpd: string }
   poster?: string
   createdAt?: Timestamp
+  draft: boolean
 }
 
 export interface SerializableVideo {

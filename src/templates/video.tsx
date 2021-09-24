@@ -1,10 +1,14 @@
 import { FC } from "react"
-import Player from "~/components/player"
 import { SerializableVideo } from "~/modules/entity"
+import dynamic from "next/dynamic"
 
 interface Props {
   video: SerializableVideo
 }
+
+const DynamicPlayer = dynamic(import("~/components/player"), {
+  loading: () => <video></video>,
+})
 
 const Index: FC<Props> = ({ video }) => {
   return (
@@ -12,7 +16,7 @@ const Index: FC<Props> = ({ video }) => {
       <div className={"container"}>
         <div className={"primary"}>
           <div className={"playerContainer"}>
-            <Player src={video.url} poster={video.poster} />
+            <DynamicPlayer src={video.url} poster={video.poster} />
           </div>
           <h2 className="title">{video.title}</h2>
         </div>

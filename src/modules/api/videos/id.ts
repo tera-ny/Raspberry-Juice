@@ -17,7 +17,7 @@ const handler = async (id: string, uid: string): Promise<Response> => {
       .doc(id)
       .get()
     const video = snapshot.data() as Video<firestore.Timestamp>
-    if (snapshot.exists && video.owner === uid) {
+    if (snapshot.exists && video.owner === uid && video.draft === false) {
       return {
         content: {
           id: snapshot.ref.id,
