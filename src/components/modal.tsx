@@ -48,8 +48,8 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
           background: white;
           border-radius: 4px;
           padding: 12px 20px;
-          max-width: 600px;
-          max-height: 610px;
+          max-width: 800px;
+          max-height: 710px;
           box-sizing: border-box;
           width: 100%;
           height: 100%;
@@ -65,7 +65,7 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
         }
         @media (min-width: 600px) {
           .contents {
-            padding: 28px 52px;
+            padding: 24px 20px;
           }
         }
       `}</style>

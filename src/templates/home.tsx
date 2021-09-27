@@ -1,14 +1,16 @@
-import { FC, useContext, useState } from "react"
+import { FC, useState } from "react"
 import { SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
 import { Modal } from "~/components/modal"
 import Link from "next/link"
 import UploadContent from "~/components/uploadcontent"
 import { useRouter } from "next/dist/client/router"
+import EditContent from "~/components/editcontent"
 
 export type Props = {
   contents: SerializableVideo[]
-  upload: boolean
+  modal: boolean
+  edit?: SerializableVideo
 }
 
 const Template: FC<Props> = (props) => {
@@ -26,18 +28,29 @@ const Template: FC<Props> = (props) => {
             <Content video={video} key={index} />
           ))}
         </div>
-        <Link href={{ pathname: "/", query: { upload: true } }}>
+        <Link href={{ pathname: "/", query: { m: true } }}>
           <a>link</a>
         </Link>
       </div>
       <Modal
-        visible={props.upload}
+        visible={props.modal}
         onClickBackground={() => {
           if (!isUploading) {
             router.push({ pathname: "/" })
           }
         }}>
-        {props.upload && <UploadContent onChangeIsUploading={setIsUploading} />}
+        {props.modal && (
+          <>
+            {props.edit ? (
+              <EditContent
+                video={props.edit}
+                onChangeIsUploading={setIsUploading}
+              />
+            ) : (
+              <UploadContent onChangeIsUploading={setIsUploading} />
+            )}
+          </>
+        )}
       </Modal>
       <style jsx>{`
         .container {

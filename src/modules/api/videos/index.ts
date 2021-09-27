@@ -34,6 +34,8 @@ const handler = async (uid: string): Promise<Response> => {
             : null,
           poster: data.poster ?? null,
           createdAtMillis: data.createdAt.toMillis() ?? null,
+          description: data.description ?? null,
+          draft: data.draft,
         }
       }
     )

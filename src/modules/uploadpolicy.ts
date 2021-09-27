@@ -42,7 +42,7 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
         ["eq", "$key", key],
         { bucket: "orange-juice-origin" },
         {
-          success_action_redirect: `https://orange-juice.app?edit=${id}`,
+          success_action_redirect: `https://orange-juice.app?m=true&id=${id}`,
         },
         ["content-length-range", 0, 4 * 1000 ** 3],
         ["eq", "$Content-Type", "video/mp4"],

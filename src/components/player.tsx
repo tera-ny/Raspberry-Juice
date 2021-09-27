@@ -7,16 +7,54 @@ import {
   MutableRefObject,
 } from "react"
 import Hls from "hls.js"
+import css from "styled-jsx/css"
 
 interface VideoComponentProps {
   poster?: string
+  aspectRatio?: number
+}
+
+const getVideoComponentStyle = (aspectRatio?: number) => {
+  if (aspectRatio) {
+    return css`
+      .wrapper {
+        position: relative;
+        width: 100%;
+      }
+      .wrapper::before {
+        content: "";
+        display: block;
+        padding-top: calc(100% / ${aspectRatio});
+      }
+      .video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    `
+  } else {
+    return css`
+      .video {
+        width: 100%;
+        height: auto;
+        background-color: black;
+        vertical-align: bottom;
+      }
+      .wrapper {
+        position: relative;
+      }
+    `
+  }
 }
 
 const VideoComponentWithRef = forwardRef(
   (
-    { poster }: VideoComponentProps,
+    { poster, aspectRatio }: VideoComponentProps,
     videoRef: MutableRefObject<HTMLVideoElement>
   ) => {
+    const styles = getVideoComponentStyle(aspectRatio)
     return (
       <>
         <div className="wrapper">
@@ -29,41 +67,7 @@ const VideoComponentWithRef = forwardRef(
             playsInline
           />
         </div>
-        <style jsx>{`
-          .video {
-            width: 100%;
-            height: auto;
-            background-color: black;
-            vertical-align: bottom;
-          }
-          .wrapper {
-            position: relative;
-          }
-          .control_container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 20%;
-            padding: 20px;
-            background: linear-gradient(
-              180deg,
-              rgba(0, 0, 0, 0) 0%,
-              rgba(0, 0, 0, 0.5) 47%,
-              rgba(0, 0, 0, 0.7) 100%
-            );
-          }
-          .control_contents {
-            position: relative;
-            height: 100%;
-          }
-          .seek_bar_container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-          }
-        `}</style>
+        <style jsx>{styles}</style>
       </>
     )
   }
@@ -74,7 +78,11 @@ interface HLS {
   attachMedia: (mediaTag: HTMLMediaElement) => void
 }
 
-const Player: FC<{ src?: string; poster?: string }> = ({ src, poster }) => {
+const Player: FC<{ src?: string; poster?: string; aspectRatio?: number }> = ({
+  src,
+  poster,
+  aspectRatio,
+}) => {
   const videoRef = useRef<HTMLVideoElement>()
   const [hls, setHls] = useState<HLS>()
   useEffect(() => {
@@ -94,7 +102,11 @@ const Player: FC<{ src?: string; poster?: string }> = ({ src, poster }) => {
   return (
     <>
       <div className="videoContainer">
-        <VideoComponentWithRef ref={videoRef} poster={poster} />
+        <VideoComponentWithRef
+          ref={videoRef}
+          poster={poster}
+          aspectRatio={aspectRatio}
+        />
       </div>
     </>
   )

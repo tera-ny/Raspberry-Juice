@@ -29,6 +29,9 @@ const handler = async (id: string, uid: string): Promise<Response> => {
             : null,
           poster: video.poster ?? null,
           createdAtMillis: video.createdAt?.toMillis() ?? null,
+          state: video.state,
+          description: video.description ?? null,
+          draft: video.draft,
         },
       }
     } else {
