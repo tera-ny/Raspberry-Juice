@@ -1,6 +1,5 @@
 import { FC, useState } from "react"
 import { SerializableVideo } from "~/modules/entity"
-import Link from "next/link"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 

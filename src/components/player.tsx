@@ -8,6 +8,7 @@ import {
 } from "react"
 import Hls from "hls.js"
 import css from "styled-jsx/css"
+import dynamic from "next/dynamic"
 
 interface VideoComponentProps {
   poster?: string

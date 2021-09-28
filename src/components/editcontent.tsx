@@ -3,8 +3,12 @@ import { EditingVideo, SerializableVideo } from "~/modules/entity"
 import firebase from "firebase/app"
 import "firebase/firestore"
 import { useRouter } from "next/router"
-import Player from "./player"
 import { useAuthUser } from "next-firebase-auth"
+import dynamic from "next/dynamic"
+
+const Player = dynamic(import("~/components/player"), {
+  loading: () => <video></video>,
+})
 
 interface Props {
   video: SerializableVideo
