@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react"
-import { EditingVideo, SerializableVideo } from "~/modules/entity"
+import { EditingVideo, Video } from "~/modules/entity"
 import firebase from "firebase/app"
 import "firebase/firestore"
 import { useRouter } from "next/router"
@@ -11,20 +11,21 @@ const Player = dynamic(import("~/components/player"), {
 })
 
 interface Props {
-  video: SerializableVideo
+  id: string
   onChangeIsUploading?: (uploading: boolean) => void
 }
 
-const convert = (video: SerializableVideo): EditingVideo => ({
+const convert = (video: Video<firebase.firestore.Timestamp>): EditingVideo => ({
   title: video.title ?? "",
-  url: video.url,
-  poster: video.poster ?? "",
-  state: video.state!,
+  poster: video.poster,
   description: video.description,
+  state: video.state,
+  url: typeof video.url === "object" ? video.url.hls : video.url,
 })
 
-const EditContent: FC<Props> = (props) => {
-  const [video, setVideo] = useState<EditingVideo>(convert(props.video))
+const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
+  const [isDraft, setIsDraft] = useState<boolean>()
+  const [video, setVideo] = useState<EditingVideo>()
   const router = useRouter()
   const [title, setTitle] = useState<string>()
   const [description, setDescription] = useState<string>()
@@ -34,30 +35,32 @@ const EditContent: FC<Props> = (props) => {
     setDescription(video?.description)
   }, [video])
   useEffect(() => {
-    setVideo(convert(props.video))
     const unsubscribe = firebase
       .firestore()
       .collection("contents")
-      .doc(props.video.id)
-      .onSnapshot((snapshot) => {
-        if (snapshot.exists) {
-          const data: any = snapshot.data()
-          setVideo({
-            ...data,
-            url: typeof data.url === "object" ? data.url.hls : data.url,
-          })
-        } else {
+      .doc(id)
+      .onSnapshot(
+        (snapshot) => {
+          if (snapshot.exists) {
+            const data = snapshot.data() as Video<firebase.firestore.Timestamp>
+            setIsDraft(data.draft)
+            setVideo(convert(data))
+          } else {
+            router.replace("/")
+          }
+        },
+        () => {
           router.replace("/")
         }
-      })
+      )
     return () => {
       unsubscribe()
     }
-  }, [props.video.id])
+  }, [id])
 
   const submitProfile = useCallback(async () => {
     const token = await user.getIdToken()
-    fetch(`/api/content_profile?id=${props.video.id}`, {
+    fetch(`/api/content_profile?id=${id}`, {
       method: "PUT",
       headers: {
         authorization: token,
@@ -66,7 +69,13 @@ const EditContent: FC<Props> = (props) => {
     }).then(() => {
       router.replace("/")
     })
-  }, [title, description, props.video.id])
+  }, [title, description, id])
+
+  if (video === undefined && isDraft === undefined) return <></>
+  if (isDraft) {
+    return <>アップロード処理中....</>
+  }
+
   return (
     <>
       <div className="container">
@@ -113,10 +122,6 @@ const EditContent: FC<Props> = (props) => {
                 }}
               />
             </div>
-            {/* <h3 className="sectionTitle">ジャンル</h3>
-            <div className="meta">
-              <button className="genereButton">ジャンルを追加</button>
-            </div> */}
             <h3 className="sectionTitle">動画の説明</h3>
             <div className="meta">
               <textarea

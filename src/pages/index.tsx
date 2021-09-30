@@ -7,10 +7,8 @@ import {
 } from "next-firebase-auth"
 import Header from "~/components/header"
 import fetchContents from "~/modules/api/videos"
-import fetchContent from "~/modules/api/videos/id"
 
 import { Props } from "~/templates/home"
-import { SerializableVideo } from "~/modules/entity"
 
 export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -19,16 +17,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
     try {
       const uid = AuthUser.id
       const response = await fetchContents(uid)
-      const targetID = query.id
-      let edit: SerializableVideo = null
-      if (typeof targetID === "string") {
-        const response = await fetchContent(targetID, uid)
-        edit = response.content.draft ? null : response.content
-      }
+      const targetID = typeof query.id === "string" ? query.id : null
       return {
         props: {
           modal: query.m === "true",
-          edit,
+          edit: targetID,
           contents: response.contents,
         },
       }

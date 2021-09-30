@@ -55,7 +55,7 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
       ],
       fields: {
         key,
-        success_action_redirect: `https://orange-juice.app?edit=${id}`,
+        success_action_redirect: `https://orange-juice.app?m=true&id=${id}`,
         "Content-Type": "video/mp4",
         Expires: expiration,
       },

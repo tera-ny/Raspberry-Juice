@@ -10,7 +10,7 @@ import EditContent from "~/components/editcontent"
 export type Props = {
   contents: SerializableVideo[]
   modal: boolean
-  edit?: SerializableVideo
+  edit?: string
 }
 
 const Template: FC<Props> = (props) => {
@@ -43,7 +43,7 @@ const Template: FC<Props> = (props) => {
           <>
             {props.edit ? (
               <EditContent
-                video={props.edit}
+                id={props.edit}
                 onChangeIsUploading={setIsUploading}
               />
             ) : (
