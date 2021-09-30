@@ -45,6 +45,5 @@ This is an online content storage system that allows users to upload their own v
 ### Contributor
 
 <a href="https://github.com/tera-ny">
-<img src="https://avatars.githubusercontent.com/u/33125821?v=4" width=100px /><br/>
-<p style="color: white">terany</p>
+tera-ny
 </a>
