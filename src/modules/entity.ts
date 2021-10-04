@@ -4,6 +4,9 @@ export interface Video<Timestamp> {
   url?: string | { hls: string; mpd: string }
   poster?: string
   createdAt?: Timestamp
+  description?: string
+  draft: boolean
+  state?: "uploaded" | "transcoded"
 }
 
 export interface SerializableVideo {
@@ -12,4 +15,15 @@ export interface SerializableVideo {
   url: string | null
   poster: string | null
   createdAtMillis: number | null
+  description: string | null
+  draft: boolean
+  state?: "uploaded" | "transcoded"
+}
+
+export interface EditingVideo {
+  title: string
+  poster: string
+  url?: string
+  description?: string
+  readonly state: "uploaded" | "transcoded"
 }

@@ -4,10 +4,9 @@ import {
   withAuthUser,
   AuthAction,
   withAuthUserTokenSSR,
-  getFirebaseAdmin,
 } from "next-firebase-auth"
 import Header from "~/components/header"
-import api from "~/modules/api/videos"
+import fetchContents from "~/modules/api/videos"
 
 import { Props } from "~/templates/home"
 
@@ -17,10 +16,12 @@ export const getServerSideProps = withAuthUserTokenSSR({
   async ({ AuthUser, query }): Promise<GetServerSidePropsResult<Props>> => {
     try {
       const uid = AuthUser.id
-      const response = await api(uid)
+      const response = await fetchContents(uid)
+      const targetID = typeof query.id === "string" ? query.id : null
       return {
         props: {
-          upload: query.upload === "true",
+          modal: query.m === "true",
+          edit: targetID,
           contents: response.contents,
         },
       }

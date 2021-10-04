@@ -1,4 +1,5 @@
 import { useAuthUser } from "next-firebase-auth"
+import { useRouter } from "next/router"
 import {
   ChangeEvent,
   DragEvent,
@@ -26,6 +27,8 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   const [policy, setPolicy] = useState<Policy>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [count, setCount] = useState(0)
+
+  const router = useRouter()
 
   const changeUploadTarget = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files.length !== 1) return
@@ -62,7 +65,6 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   )
   useEffect(() => {
     setPolicy(undefined)
-    if (!file) return
     user
       .getIdToken()
       .then((token) =>
@@ -72,14 +74,29 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
       .then((json) => {
         setPolicy(json.policy)
       })
-  }, [file])
+  }, [])
 
   useEffect(() => {
-    if (policy) {
+    if (policy && !isUploading) {
       setIsUploading(true)
-      form.current.submit()
+      const request = new XMLHttpRequest()
+      const data = new FormData(form.current)
+      request.open("POST", policy.url)
+      request.send(data)
+      request.addEventListener("error", () => {
+        console.error(request.status)
+        setIsUploading(false)
+        setFile(undefined)
+      })
+      request.addEventListener("progress", (e) => {
+        console.log(e.loaded ? (e.loaded / e.total) * 100 : 0)
+      })
+      request.addEventListener("load", () => {
+        console.log("uploaded")
+        router.replace("/")
+      })
     }
-  }, [policy, form])
+  }, [file, isUploading])
   useEffect(() => {
     onChangeIsUploading(isUploading)
   }, [isUploading])
@@ -94,6 +111,11 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
       }
     }
   }, [isUploading])
+
+  if (!policy) {
+    return <></>
+  }
+
   return (
     <>
       <h2 className="title">コンテンツをアップロード</h2>
@@ -124,18 +146,16 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             }
           />
         </picture>
-        {policy && (
-          <>
-            {Object.keys(policy.fields).map((name, key) => (
-              <input
-                key={key}
-                name={name}
-                value={policy.fields[name]}
-                type="hidden"
-              />
-            ))}
-          </>
-        )}
+        <>
+          {Object.keys(policy.fields).map((name, key) => (
+            <input
+              key={key}
+              name={name}
+              value={policy.fields[name]}
+              type="hidden"
+            />
+          ))}
+        </>
         <div className="meta">
           <label className="pickerButton">
             アップロードする動画を{file ? "変更" : "選択"}

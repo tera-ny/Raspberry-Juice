@@ -35,7 +35,7 @@ const initAuth = () => {
       maxAge: 10 * 60 * 60 * 24 * 1000,
       overwrite: false,
       path: "/",
-      sameSite: "None",
+      sameSite: process.env.ENVIRONMENT !== "development" ? "None" : "Strict",
       secure: process.env.ENVIRONMENT !== "development",
       signed: true,
     },

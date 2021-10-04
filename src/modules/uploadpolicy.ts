@@ -41,9 +41,6 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
       conditions: [
         ["eq", "$key", key],
         { bucket: "orange-juice-origin" },
-        {
-          success_action_redirect: `https://orange-juice.app?edit=${id}`,
-        },
         ["content-length-range", 0, 4 * 1000 ** 3],
         ["eq", "$Content-Type", "video/mp4"],
         { "x-goog-algorithm": algorithm },
@@ -55,7 +52,6 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
       ],
       fields: {
         key,
-        success_action_redirect: `https://orange-juice.app?edit=${id}`,
         "Content-Type": "video/mp4",
         Expires: expiration,
       },
