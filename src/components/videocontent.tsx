@@ -62,7 +62,7 @@ const Content: FC<Props> = (props) => {
         onClick={() => {
           router.push(`/contents/${props.video.id}`)
         }}
-        className="wrapper">
+        className="article">
         <div className="content">
           <div className="imagewrapper">
             {props.video.poster ? (
@@ -126,6 +126,9 @@ const Content: FC<Props> = (props) => {
       </article>
       <style jsx>
         {`
+          .article {
+            cursor: pointer;
+          }
           .content {
             background-color: white;
             display: flex;

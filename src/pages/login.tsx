@@ -5,22 +5,12 @@ import {
   withAuthUser,
   AuthAction,
 } from "next-firebase-auth"
-import { useEffect, useState } from "react"
-import firebase from "firebase/app"
 import "firebase/auth"
+import { useRecoilValue } from "recoil"
+import store from "~/stores/auth"
 
 const Page: NextPage<{}> = () => {
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        setIsSubscribed(true)
-      }
-    })
-    return () => {
-      unsubscribe()
-    }
-  }, [])
+  const isSubscribed = useRecoilValue(store.selector.isSubscribed)
   return (
     <>
       <main>{isSubscribed && <Template />}</main>
