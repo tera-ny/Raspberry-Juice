@@ -136,10 +136,10 @@ const SignInTemplate: FC = () => {
       <div className="formwrapper">
         <picture className="logo">
           <source
-            srcSet="/img/logo_dark.svg"
+            srcSet="/img/logo_full_dark.svg"
             media="(prefers-color-scheme: dark)"
           />
-          <img height="60" width="220" src="/img/logo_light.svg" />
+          <img height="60" width="220" src="/img/logo_full_light.svg" />
         </picture>
         <Form signin={signin} disableButton={isLoading} />
       </div>

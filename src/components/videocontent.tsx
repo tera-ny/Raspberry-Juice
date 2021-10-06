@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import { SerializableVideo } from "~/modules/entity"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
@@ -10,8 +10,8 @@ const Placeholder: FC = () => (
         className="img"
         width={66}
         height={42}
-        src="/img/video_tape_light.svg"
-        alt=""
+        src="/img/logo_white.svg"
+        alt="logo"
       />
       <p className="text">no image</p>
     </div>
@@ -25,6 +25,8 @@ const Placeholder: FC = () => (
           padding: 20px;
           height: 100%;
           box-sizing: border-box;
+          user-select: none;
+          pointer-events: none;
         }
         .img {
           align-self: flex-end;
@@ -54,7 +56,6 @@ interface Props {
 }
 
 const Content: FC<Props> = (props) => {
-  const [showMenu, setShowMenu] = useState(false)
   const router = useRouter()
   return (
     <>
@@ -79,45 +80,7 @@ const Content: FC<Props> = (props) => {
             )}
           </div>
           <div className="metadata">
-            <div className="primary">
-              <p className="title">{props.video.title ?? "No title"}</p>
-              <div className="menuWrapper">
-                {showMenu && (
-                  <div className="menu">
-                    <p
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setShowMenu(false)
-                        router.replace({
-                          pathname: "/",
-                          query: { m: true, id: props.video.id },
-                        })
-                      }}>
-                      編集する
-                    </p>
-                  </div>
-                )}
-                <button
-                  className="toggleButton"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setShowMenu((prev) => !prev)
-                  }}>
-                  <picture>
-                    <source
-                      srcSet="/img/three_dots_dark.svg"
-                      media="(prefers-color-scheme: dark)"
-                    />
-                    <img
-                      className="menuIcon"
-                      width="16"
-                      height="4"
-                      src="/img/three_dots_light.svg"
-                    />
-                  </picture>
-                </button>
-              </div>
-            </div>
+            <h3 className="title">{props.video.title ?? "No title"}</h3>
             <p className="date">
               {millisToFormatedDate(props.video.createdAtMillis)}
             </p>
@@ -128,6 +91,9 @@ const Content: FC<Props> = (props) => {
         {`
           .article {
             cursor: pointer;
+          }
+          .article:hover {
+            box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.2);
           }
           .content {
             background-color: white;
@@ -141,7 +107,7 @@ const Content: FC<Props> = (props) => {
           .imagewrapper:before {
             content: "";
             display: block;
-            padding-top: 56%; /* 高さを幅の75%に固定 */
+            padding-top: 49%; /* 高さを幅の75%に固定 */
           }
           .image {
             height: 100%;
@@ -153,57 +119,24 @@ const Content: FC<Props> = (props) => {
           }
           .metadata {
             position: relative;
-            padding: 8px;
-          }
-          .primary {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-          }
-          .menuWrapper {
-            position: relative;
-          }
-          .menu {
-            position: absolute;
-            background-color: #f8f8f8;
-            right: 0;
-            bottom: calc(100% + 10px);
-            width: 120px;
             padding: 4px 8px;
-            border-radius: 4px;
-            box-shadow: 0 0 2px black;
-          }
-          .menu > p {
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-          }
-          .toggleButton {
-            border: none;
-            outline: none;
-            background-color: transparent;
-            cursor: pointer;
-            padding: 0;
-          }
-          .menuIcon {
-            height: 16px;
-            padding: 4px;
           }
           .title {
-            font-size: 12px;
-            color: #404040;
+            font-size: 14px;
+            line-height: 18px;
+            color: #4a4a4a;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-weight: 500;
+            font-weight: 400;
             display: -webkit-box;
             -webkit-line-clamp: 2; /* number of lines to show */
             -webkit-box-orient: vertical;
-            height: 34px;
+            max-height: 36px;
           }
           .date {
             width: 100%;
             text-align: end;
-            font-size: 8px;
+            font-size: 12px;
             padding-top: 8px;
             color: #ababab;
           }

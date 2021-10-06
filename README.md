@@ -2,7 +2,7 @@
 <a href="https://orange-juice.app">
 <img
   className="logo"
-  src="https://raw.githubusercontent.com/tera-ny/OrangeJuiceWeb/main/public/img/logo_light.svg"
+  src="https://raw.githubusercontent.com/tera-ny/OrangeJuiceWeb/main/public/img/logo_full_light.svg"
   width=50%
 />
 </a>
@@ -34,6 +34,7 @@ This is an online content storage system that allows users to upload their own v
 - [GoogleAppEngine](https://cloud.google.com/appengine)
 
 #### BackendSolution
+
 - [GoogleCloudCDN](https://cloud.google.com/cdn)
 - [GoogleCloudStorage](https://cloud.google.com/storage)
 - [TranscoderAPI](https://cloud.google.com/transcoder/docs)

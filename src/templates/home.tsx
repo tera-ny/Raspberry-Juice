@@ -111,8 +111,9 @@ const Template: FC<Props> = (props) => {
         }
         .contents {
           display: grid;
-          grid-template-columns: repeat(auto-fill, 220px);
+          grid-template-columns: repeat(auto-fill, 240px);
           justify-content: center;
+          align-items: flex-start;
           column-gap: 32px;
           row-gap: 24px;
         }

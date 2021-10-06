@@ -9,14 +9,14 @@ const Header: FC = () => {
           <a className="link">
             <picture>
               <source
-                srcSet="/img/logo_dark.svg"
+                srcSet="/img/logo_full_dark.svg"
                 media="(prefers-color-scheme: dark)"
               />
               <img
                 className="logo"
                 height="60"
                 width="220"
-                src="/img/logo_light.svg"
+                src="/img/logo_full_light.svg"
               />
             </picture>
           </a>
