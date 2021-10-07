@@ -82,17 +82,17 @@ const Template: FC<Props> = (props) => {
           text-align: center;
           font-size: 16px;
           color: white;
-          background-color: #d0693e;
+          background-color: #1d72af;
           cursor: pointer;
           display: flex;
           align-items: center;
           line-height: 18px;
         }
         .uploadbutton:hover {
-          background-color: #e36e3d;
+          background-color: #1e88d4;
         }
         .uploadbutton:active {
-          background-color: #d3754d;
+          background-color: #3e9ce0;
         }
         .uploadicon {
           padding-left: 12px;

@@ -10,6 +10,8 @@ import {
   useState,
 } from "react"
 import { Policy } from "~/modules/uploadpolicy"
+import firebase from "firebase/app"
+import "firebase/firestore"
 
 var timeoutID: any
 
@@ -27,6 +29,10 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   const [policy, setPolicy] = useState<Policy>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [count, setCount] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [total, setToatal] = useState(0)
+  const [id, setID] = useState<string>()
+  const [isUploaded, setIsUploaded] = useState(false)
 
   const router = useRouter()
 
@@ -73,8 +79,26 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
       .then((res) => res.json())
       .then((json) => {
         setPolicy(json.policy)
+        setID(json.id)
       })
   }, [])
+
+  useEffect(() => {
+    if (!id) return
+    const unsubscribe = firebase
+      .firestore()
+      .collection("contents")
+      .doc(id)
+      .onSnapshot((snapshot) => {
+        const data = snapshot.data()
+        if (snapshot.exists && data && !data.draft) {
+          router.replace({ pathname: "/", query: { m: true, id } })
+        }
+      })
+    return () => {
+      unsubscribe()
+    }
+  }, [id])
 
   useEffect(() => {
     if (policy && !isUploading) {
@@ -89,11 +113,14 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
         setFile(undefined)
       })
       request.addEventListener("progress", (e) => {
-        console.log(e.loaded ? (e.loaded / e.total) * 100 : 0)
+        setProgress(e.loaded)
+      })
+      request.addEventListener("loadstart", (e) => {
+        setToatal(e.total)
       })
       request.addEventListener("load", () => {
-        console.log("uploaded")
-        router.replace("/")
+        setIsUploaded(true)
+        setIsUploading(false)
       })
     }
   }, [file, isUploading])
@@ -120,7 +147,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
     <>
       <h2 className="title">コンテンツをアップロード</h2>
       <form
-        className={"form"}
+        className={`form${isDragOver ? " dragover" : ""}`}
         ref={form}
         onDrop={dropFile}
         onDragOver={dragOverHandler}
@@ -129,22 +156,10 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
         encType="multipart/form-data">
         <picture className="uploadContentLogo">
           <source
-            srcSet={
-              isDragOver
-                ? "/img/upload_content_active.svg"
-                : "/img/upload_content_dark.svg"
-            }
+            srcSet={"/img/upload_content_dark.svg"}
             media="(prefers-color-scheme: dark)"
           />
-          <img
-            height="94"
-            width="152"
-            src={
-              isDragOver
-                ? "/img/upload_content_active.svg"
-                : "/img/upload_content_light.svg"
-            }
-          />
+          <img height="94" width="152" src={"/img/upload_content_light.svg"} />
         </picture>
         <>
           {Object.keys(policy.fields).map((name, key) => (
@@ -168,15 +183,19 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
               onChange={changeUploadTarget}
             />
           </label>
-          {!isUploading && (
+          {!(isUploading || isUploaded) && (
             <>
               <p>or</p>
               <p>この枠内にファイルをドロップ</p>
             </>
           )}
-          {isUploading && (
+          {isUploaded && <p>ファイナライズ中...</p>}
+          {!isUploaded && isUploading && (
             <>
               <p>アップロード中{".".repeat(count)}</p>
+              <p>
+                {progress} / {total}
+              </p>
               <p>タブを閉じずにこのままお待ちください</p>
             </>
           )}
@@ -199,7 +218,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             width: 100%;
             height: calc(100% - 48px);
           }
-          .from.dragover {
+          .form.dragover {
             border-color: #43b6e5;
           }
           .video {
@@ -236,17 +255,17 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             outline: none;
             padding: 8px 12px;
             color: white;
-            background-color: #d0693e;
+            background-color: #1d72af;
             border-radius: 4px;
           }
           .picker {
             display: none;
           }
           .pickerButton:hover {
-            background-color: #e36e3d;
+            background-color: #1e88d4;
           }
           .pickerButton:active {
-            background-color: #d3754d;
+            background-color: #3e9ce0;
           }
           .upload {
             cursor: pointer;
@@ -256,7 +275,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             bottom: 12px;
             right: 20px;
             color: white;
-            background-color: #e6aa11;
+            background-color: #ce4b5a;
             font-weight: bold;
             font-size: 14px;
             padding: 8px 12px;
