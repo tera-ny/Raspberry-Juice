@@ -47,6 +47,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
             notFound: true,
           }
         } else {
+          console.error(error)
           return {
             props: {
               error: 500,

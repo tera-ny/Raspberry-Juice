@@ -21,8 +21,15 @@ const Index: FC<Props> = ({ video }) => {
         <div>
           <h2 className="title">{video.title}</h2>
           <p>{dayjs(video.createdAtMillis).format("YYYY/MM/DD")}</p>
+          <p>{video.description}</p>
         </div>
-        <p>{video.description}</p>
+        <div>
+          <div>
+            <img src="" alt="" />
+            <p></p>
+          </div>
+          <p></p>
+        </div>
       </div>
       <style jsx>{`
         .container {
