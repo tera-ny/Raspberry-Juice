@@ -24,7 +24,7 @@ const generate = (
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
 
-  const input = `URLPrefix=${urlPrefixEncoded}:Expires=${expiresOfUnix}:KeyName=${keyName}`
+  const input = `URLPrefix=${urlPrefixEncoded}:Expires=${expiresOfUnix}:KeyName=sign-key`
   const signature = crypto
     .createHmac("sha1", decodedKeybytes)
     .update(input)
@@ -44,7 +44,7 @@ const generateSignature = (
   secretKey: string
 ) => {
   if (process.env.ENVIRONMENT === "development") return "xxxxxx"
-  const urlPrefix = `https://orange-juice.app${requestPath}`
+  const urlPrefix = `https://raspberry-juice.com${requestPath}`
   const prefix = generate(urlPrefix, keyName, secretKey, expiresOfUnix)
   return prefix
 }

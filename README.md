@@ -1,5 +1,5 @@
 <div align=center>
-<a href="https://orange-juice.app">
+<a href="https://raspberry-juice.com">
 <img
   className="logo"
   src="https://raw.githubusercontent.com/tera-ny/OrangeJuiceWeb/main/public/img/logo_full_light.svg"

@@ -1,6 +1,6 @@
 import { FC, useCallback, useState } from "react"
 import TextInput from "~/components/textinput"
-import firebase from "firebase/app"
+import firebase from "~/modules/firebase"
 import "firebase/auth"
 import { useRef } from "react"
 
@@ -124,6 +124,7 @@ const SignInTemplate: FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const signin = useCallback(async (email: string, password: string) => {
     setIsLoading(true)
+    console.log()
     try {
       await firebase.auth().signInWithEmailAndPassword(email, password)
     } catch (e) {
