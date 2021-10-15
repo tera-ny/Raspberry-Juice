@@ -69,6 +69,7 @@ const Content: FC<Props> = (props) => {
             {props.video.poster ? (
               <img
                 className="image"
+                alt="poster"
                 src={props.video.poster}
                 width={100}
                 height={56}
@@ -107,7 +108,7 @@ const Content: FC<Props> = (props) => {
           .imagewrapper:before {
             content: "";
             display: block;
-            padding-top: 49%; /* 高さを幅の75%に固定 */
+            padding-top: calc(9 / 16 * 100%); /* 高さを幅の75%に固定 */
           }
           .image {
             height: 100%;

@@ -14,6 +14,7 @@ const Header: FC = () => {
               />
               <img
                 className="logo"
+                alt="logo"
                 height="60"
                 width="220"
                 src="/img/logo_full_light.svg"

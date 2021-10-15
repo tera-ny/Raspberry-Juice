@@ -7,7 +7,13 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
 }) => {
   return (
     <>
-      <div className={"container" + (visible ? " visible" : "")}>
+      <div
+        className={"container"}
+        style={
+          visible
+            ? { transitionDelay: "0s", opacity: 1, visibility: "visible" }
+            : { opacity: 0, visibility: "hidden" }
+        }>
         <div className={"contents"}>{children}</div>
         <div className={"background"} onClick={onClickBackground}></div>
       </div>
@@ -23,14 +29,7 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
           left: 0;
           right: 0;
           transition: opacity 0.5s, visibility 0s ease-in-out 0.5s;
-          opacity: 0;
-          visibility: hidden;
           box-sizing: border-box;
-        }
-        .container.visible {
-          transition-delay: 0s;
-          opacity: 1;
-          visibility: visible;
         }
         .background {
           background: black;

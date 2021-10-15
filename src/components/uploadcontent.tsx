@@ -81,7 +81,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
         setPolicy(json.policy)
         setID(json.id)
       })
-  }, [])
+  }, [user])
 
   useEffect(() => {
     if (!id) return
@@ -92,16 +92,16 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
       .onSnapshot((snapshot) => {
         const data = snapshot.data()
         if (snapshot.exists && data && !data.draft) {
-          router.replace({ pathname: "/", query: { m: true, id } })
+          router.push({ pathname: "/contents/" + id, query: { edit: true } })
         }
       })
     return () => {
       unsubscribe()
     }
-  }, [id])
+  }, [id, router])
 
   useEffect(() => {
-    if (policy && !isUploading) {
+    if (policy && !isUploading && file) {
       setIsUploading(true)
       const request = new XMLHttpRequest()
       const data = new FormData(form.current)
@@ -123,10 +123,10 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
         setIsUploading(false)
       })
     }
-  }, [file, isUploading])
+  }, [file, policy, isUploading])
   useEffect(() => {
     onChangeIsUploading(isUploading)
-  }, [isUploading])
+  }, [isUploading, onChangeIsUploading])
   useEffect(() => {
     if (isUploading) {
       setCount(0)
@@ -159,7 +159,12 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             srcSet={"/img/upload_content_dark.svg"}
             media="(prefers-color-scheme: dark)"
           />
-          <img height="94" width="152" src={"/img/upload_content_light.svg"} />
+          <img
+            height="94"
+            width="152"
+            alt="upload content"
+            src={"/img/upload_content_light.svg"}
+          />
         </picture>
         <>
           {Object.keys(policy.fields).map((name, key) => (
@@ -172,19 +177,19 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
           ))}
         </>
         <div className="meta">
-          <label className="pickerButton">
-            アップロードする動画を{file ? "変更" : "選択"}
-            <input
-              disabled={isUploading}
-              name="file"
-              type="file"
-              className="picker"
-              accept="video/mp4,.mp4"
-              onChange={changeUploadTarget}
-            />
-          </label>
           {!(isUploading || isUploaded) && (
             <>
+              <label className="pickerButton">
+                アップロードする動画を{file ? "変更" : "選択"}
+                <input
+                  disabled={isUploading}
+                  name="file"
+                  type="file"
+                  className="picker"
+                  accept="video/mp4,.mp4"
+                  onChange={changeUploadTarget}
+                />
+              </label>
               <p>or</p>
               <p>この枠内にファイルをドロップ</p>
             </>
@@ -248,7 +253,6 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             font-size: 12px;
           }
           .pickerButton {
-            visibility: ${isUploading ? "hidden" : "visible"};
             user-select: none;
             cursor: pointer;
             border: none;

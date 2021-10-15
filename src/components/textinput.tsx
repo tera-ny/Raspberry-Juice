@@ -22,7 +22,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
     const [isFocus, setIsFocus] = useState(false)
     const focus = useCallback(() => {
       ref.current?.focus()
-    }, [ref.current])
+    }, [ref])
     useEffect(() => {
       if (!ref.current) return
       const handleFocus = () => {
@@ -38,7 +38,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
         form.removeEventListener("focus", handleFocus)
         form.removeEventListener("blur", handleBlur)
       }
-    }, [ref.current])
+    }, [ref])
 
     return (
       <>
@@ -113,5 +113,7 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
     )
   }
 )
+
+TextInput.displayName = "TextInput"
 
 export default TextInput
