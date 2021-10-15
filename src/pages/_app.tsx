@@ -246,15 +246,6 @@ export default function App({ Component, pageProps }: AppProps) {
             href="/icon-32x32.png"
           />
           <link rel="manifest" href="/manifest.json" />
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Roboto:wght@300;400;500&display=swap"
-            rel="stylesheet"></link>
         </NextHead>
         <Auth>
           <Component {...pageProps} />
