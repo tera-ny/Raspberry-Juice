@@ -11,6 +11,7 @@ export interface Video<Timestamp> {
 
 export interface SerializableVideo {
   id: string
+  owner: string
   title: string | null
   url: string | null
   poster: string | null

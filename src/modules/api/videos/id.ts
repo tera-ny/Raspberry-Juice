@@ -1,9 +1,6 @@
-import initAuth from "~/modules/nextauth"
 import { getFirebaseAdmin } from "next-firebase-auth"
 import { SerializableVideo, Video } from "~/modules/entity"
 import { firestore } from "firebase-admin"
-
-initAuth()
 
 export interface Response {
   content: SerializableVideo
@@ -21,6 +18,7 @@ const handler = async (id: string, uid: string): Promise<Response> => {
       return {
         content: {
           id: snapshot.ref.id,
+          owner: video.owner,
           title: video.title ?? null,
           url: video.url
             ? typeof video.url === "string"
