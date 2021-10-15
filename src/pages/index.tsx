@@ -20,12 +20,13 @@ export const getServerSideProps = withAuthUserTokenSSR({
       const targetID = typeof query.id === "string" ? query.id : null
       return {
         props: {
-          modal: query.m === "true",
+          modal: query.m === "upload",
           edit: targetID,
           contents: response.contents,
         },
       }
     } catch (error) {
+      console.error(error)
       return {
         notFound: true,
       }
