@@ -279,7 +279,8 @@ const Profile: FC = () => {
             }
             .primary {
               padding-left: 15%;
-              column-gap: 100px;
+              column-gap: 52px;
+              justify-content: flex-start;
             }
             .createdAt {
               display: none;
