@@ -1,5 +1,5 @@
 import { FC, useState, useRef, useCallback, useEffect } from "react"
-import { SerializableVideo } from "~/modules/entity"
+import { Profile, SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
 import { Modal } from "~/components/modal"
 import { useRouter } from "next/router"
@@ -8,34 +8,83 @@ import ReactLinkify from "react-linkify"
 import UploadButton from "~/components/button/upload"
 import EditProfileButton from "~/components/button/editprofile"
 
-const Profile: FC = () => {
-  const description = useState(
-    `Virtual hip hop girls duo "KMNZ"(KEMONOZ) Liz official YouTube Channel.\n\nバーチャルHIP-HOPガールズデュオ、KMNZ（ケモノズ）リズの公式YouTubeチャンネル。LIZ RADIOのアーカイブや、リズが大好きなボカロ・アニソンのカバーを中心に更新。`
-  )
+const profile: Profile = {
+  name: "KMNZ",
+  description: `https://google.com Virtual hip hop girls duo "KMNZ"(KEMONOZ) Liz official YouTube Channel.\n\nバーチャルHIP-HOPガールズデュオ、KMNZ（ケモノズ）リズの公式YouTubeチャンネル。LIZ RADIOのアーカイブや、リズが大好きなボカロ・アニソンのカバーを中心に更新。`,
+  registeredAtMillis: new Date("2021/09/30").getTime(),
+  links: [
+    {
+      text: "KMNSTREET OFFICIAL ACCOUNT",
+      url: "https://twitter.com/KMNSTREET",
+    },
+    {
+      text: "KMNZ OFFICIAL SITE",
+      url: "https://kmnz.jp",
+    },
+    {
+      text: "KMNZ LITA YouTube Channel",
+      url: "https://www.youtube.com/c/KMNZLITA",
+    },
+    {
+      text: "KMNZ LIZ YouTube Channel",
+      url: "https://www.youtube.com/c/KMNZLIZ",
+    },
+    {
+      text: "KMNZ on Apple Music",
+      url: "https://itunes.apple.com/jp/artist/kmnz/1416494540",
+    },
+    {
+      text: "KMNZ on Spotify",
+      url: "https://open.spotify.com/artist/4uWpa0r7BZUXJ1ip2LJysz",
+    },
+    {
+      text: "KMNSUPPLY",
+      url: "https://kmnsupply.stores.jp/",
+    },
+  ],
+  background: "/img/test/background.png",
+  icon: "/img/test/icon_large.png",
+  theme: 0xb0f3ad,
+}
 
+const ProfileTemplate: FC = () => {
   return (
     <>
       <div className="container">
-        <img className="background" src="/img/test/background.png" alt="" />
+        <div className="background">
+          {profile.background && (
+            <img
+              src="/img/test/background.png"
+              width="100%"
+              height="100%"
+              alt=""
+            />
+          )}
+        </div>
         <div className="primary">
           <img
             className="icon"
             height="200"
-            src="/img/test/icon_large.png"
-            alt=""
+            src={profile.icon ?? `/api/icon?color=${profile.theme}`}
+            alt="icon"
           />
           <div className="namewrapper">
-            <h2 className="name">KMNZ</h2>
+            <h2 className="name">{profile.name}</h2>
           </div>
-          <div className="links">
-            <p>KMNSTREET OFFICIAL ACCOUNT</p>
-            <p>Sound Cloud</p>
-            <p>Official Web Site</p>
-            <p>YouTube</p>
-            <p>KMNZ on Apple Music</p>
-            <p>KMNZ on Spotify</p>
-            <p>KMNSUPPLY</p>
-          </div>
+          {!!profile.links.length && (
+            <div className="links">
+              {profile.links.map((link, index) => (
+                <a
+                  className="link"
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  <p>{link.text}</p>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
         <div className="secondary">
           <div className="meta">
@@ -44,7 +93,7 @@ const Profile: FC = () => {
                 <ReactLinkify
                   componentDecorator={(href, text, key) => (
                     <a
-                      className="link"
+                      style={{ color: "inherit" }}
                       href={href}
                       key={key}
                       target="_blank"
@@ -52,7 +101,7 @@ const Profile: FC = () => {
                       {text}
                     </a>
                   )}>
-                  {description}
+                  {profile.description}
                 </ReactLinkify>
                 <br />
                 <br />
@@ -84,7 +133,17 @@ const Profile: FC = () => {
             height: 100%;
             width: 100%;
             object-fit: cover;
-            background-color: pink;
+          }
+          .background img {
+            object-fit: cover;
+          }
+          .background:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
           }
           .container div:not(.background) {
             position: relative;
@@ -92,28 +151,28 @@ const Profile: FC = () => {
           .primary {
             display: grid;
             align-items: center;
+            justify-content: flex-start;
           }
           .namewrapper {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
           }
+
           .name {
             font-size: 68px;
-            color: black;
-            background-color: white;
-            padding: 4px 8px;
+            color: white;
+            background-color: black;
+            padding: 2px 12px;
           }
           .links {
             display: flex;
             column-gap: 20px;
             row-gap: 12px;
             padding-top: 32px;
-            color: black;
             flex-wrap: wrap;
           }
-          .links p {
-            background-color: rgba(255, 255, 255, 0.56);
+          .link {
             padding: 4px 8px;
             font-size: 16px;
             font-weight: 400;
@@ -121,16 +180,18 @@ const Profile: FC = () => {
             -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             cursor: pointer;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.56);
           }
-          .links p:hover {
-            color: #e2495d;
+          .link:hover {
+            background-color: rgba(40, 40, 40, 0.56);
           }
           .secondary {
             height: 100%;
             display: grid;
             flex-direction: column;
             row-gap: 20px;
-            justify-content: stretch;
+            justify-content: flex-start;
             align-items: flex-start;
             box-sizing: border-box;
             grid-template-rows: 1fr auto;
@@ -152,10 +213,6 @@ const Profile: FC = () => {
             line-height: 20px;
             word-break: break-all;
             letter-spacing: 2px;
-          }
-          .link {
-            color: black;
-            text-decoration: underline;
           }
           .morebutton {
             outline: none;
@@ -198,6 +255,7 @@ const Profile: FC = () => {
             .primary {
               padding: 20px;
               column-gap: 20px;
+              grid-template-columns: 100px auto;
             }
             .icon {
               width: 100px;
@@ -208,8 +266,7 @@ const Profile: FC = () => {
             }
             .secondary {
               width: 100%;
-              background-color: white;
-              padding: 20px;
+              padding: 42px 20px 20px;
             }
           }
           @media (min-width: 1201px) {
@@ -226,6 +283,7 @@ const Profile: FC = () => {
               padding: 0 20px;
             }
             .primary {
+              grid-template-columns: 150px auto;
               column-gap: 32px;
             }
             .icon {
@@ -256,12 +314,12 @@ const Profile: FC = () => {
             }
             .links {
               grid-row: 2/3;
-              grid-column: 1/4;
+              grid-column: 1/3;
             }
           }
           @media (min-width: 1601px) {
             .icon {
-              grid-row: 1/3;
+              grid-row: 1 / ${!!profile.links.length ? "3" : "2"};
             }
             .namewrapper {
               grid-row: 1/2;
@@ -302,19 +360,8 @@ const Profile: FC = () => {
             }
           }
           @media (prefers-color-scheme: light) {
-            .name {
-              color: black;
-              background-color: white;
-            }
-            .links p {
-              color: #202020;
-              background-color: rgba(255, 255, 255, 0.56);
-            }
             .bio {
               color: #080808;
-            }
-            .link {
-              color: black;
             }
             .morebutton {
               color: black;
@@ -324,18 +371,7 @@ const Profile: FC = () => {
             }
           }
           @media (prefers-color-scheme: dark) {
-            .name {
-              color: white;
-              background-color: black;
-            }
-            .links p {
-              color: white;
-              background-color: rgba(0, 0, 0, 0.56);
-            }
             .bio {
-              color: white;
-            }
-            .link {
               color: white;
             }
             .morebutton {
@@ -345,16 +381,25 @@ const Profile: FC = () => {
               color: #f8f8f8;
             }
           }
-          @media (prefers-color-scheme: light) and (max-width: 1200px) {
-            .secondary {
-              background-color: white;
+          @media (prefers-color-scheme: light) {
+            .background:after {
+              background-image: linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0),
+                rgba(248, 248, 248, 1)
+              );
             }
           }
-          @media (prefers-color-scheme: dark) and (max-width: 1200px) {
-            .secondary {
-              background-color: #25282e;
+          @media (prefers-color-scheme: dark) {
+            .background:after {
+              background-image: linear-gradient(
+                180deg,
+                rgba(0, 0, 0, 0),
+                rgba(30, 32, 38, 1)
+              );
             }
           }
+
           @media (prefers-color-scheme: light) and (min-width: 1201px) and (max-width: 1600px) {
             .meta {
               background-color: white;
@@ -362,17 +407,7 @@ const Profile: FC = () => {
           }
           @media (prefers-color-scheme: dark) and (min-width: 1201px) and (max-width: 1600px) {
             .meta {
-              background-color: #25282e;
-            }
-          }
-          @media (prefers-color-scheme: light) and (min-width: 1601px) {
-            .secondary {
-              background-color: white;
-            }
-          }
-          @media (prefers-color-scheme: dark) and (min-width: 1601px) {
-            .secondary {
-              background-color: #25282e;
+              background-color: #1e2026;
             }
           }
         `}
@@ -394,7 +429,7 @@ const Template: FC<Props> = (props) => {
   const [isUploading, setIsUploading] = useState(false)
   return (
     <>
-      <Profile />
+      <ProfileTemplate />
       <div className="container">
         <div className="sectiontitlewrapper">
           <h2 className="sectiontitle">Contents</h2>
@@ -447,6 +482,18 @@ const Template: FC<Props> = (props) => {
             color: white;
           }
         }
+        @media (max-width: 500px) {
+          .container {
+            padding: 16px 20px;
+          }
+          .upload {
+            bottom: 16px;
+            right: 20px;
+          }
+          .contents {
+            grid-template-columns: 1fr;
+          }
+        }
         @media (max-width: 830px) {
           .container {
             padding: 20px;
@@ -460,16 +507,12 @@ const Template: FC<Props> = (props) => {
             row-gap: 16px;
           }
         }
-        @media (max-width: 500px) {
+        @media (min-width: 831px) {
           .container {
-            padding: 16px 20px;
-          }
-          .upload {
-            bottom: 16px;
-            right: 20px;
+            padding-top: 40px;
           }
           .contents {
-            grid-template-columns: 1fr;
+            padding-top: 32px;
           }
         }
       `}</style>

@@ -28,3 +28,16 @@ export interface EditingVideo {
   description?: string
   readonly state: "uploaded" | "transcoded"
 }
+
+export interface Profile {
+  name: string
+  description: string
+  links: {
+    text: string
+    url: string
+  }[]
+  registeredAtMillis: number
+  background?: string
+  icon?: string
+  theme: number
+}

@@ -38,6 +38,12 @@ const EditProfileButton: FC = () => (
         .editicon {
           padding-left: 10px;
         }
+        .editbutton:hover {
+          background-color: #e4586a;
+        }
+        .editbutton:active {
+          background-color: #e86e7e;
+        }
       `}
     </style>
   </>

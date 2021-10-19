@@ -35,10 +35,10 @@ const UploadButton: FC = () => (
           line-height: 18px;
         }
         .uploadbutton:hover {
-          background-color: #1e88d4;
+          background-color: #1b7bc0;
         }
         .uploadbutton:active {
-          background-color: #3e9ce0;
+          background-color: #2289d3;
         }
         .uploadicon {
           padding-left: 12px;
