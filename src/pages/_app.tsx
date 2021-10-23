@@ -3,10 +3,15 @@ import { RecoilRoot } from "recoil"
 import Auth from "~/components/auth"
 import NextHead from "next/head"
 import initAuth from "~/modules/nextauth"
-
+import { useEffect } from "react"
+import firebase from "firebase/app"
+import "firebase/performance"
 initAuth()
 
 export default function App({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    firebase.performance()
+  }, [])
   return (
     <>
       <RecoilRoot>

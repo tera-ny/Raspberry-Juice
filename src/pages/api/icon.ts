@@ -4,16 +4,21 @@ import initAuth from "~/modules/nextauth"
 initAuth()
 
 const handler: NextApiHandler = async (req, res) => {
-  if (typeof req.query.color !== "string") {
+  if (
+    !(
+      typeof req.query.color === "string" ||
+      typeof req.query.color === "undefined"
+    )
+  ) {
     res.end()
     return
   }
-  const colorQuery = parseInt(req.query.color).toString(16).padStart(6, "0")
-  console.log(colorQuery)
+  const colorQuery = parseInt(req.query.color ?? "")
+    ?.toString(16)
+    .padStart(6, "0")
   const matched = colorQuery.match(/^([a-f]|[0-9]){6}$/)
   const color = matched ? "#" + matched[0] : "#E2495D"
   res.setHeader("Content-Type", "image/svg+xml")
-  console.log(color)
   res.send(
     `<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="200" cy="200" r="200" fill="${color}"/>

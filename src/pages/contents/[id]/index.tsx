@@ -8,7 +8,7 @@ import {
 import api from "~/modules/api/videos/id"
 import { SerializableVideo } from "~/modules/entity"
 import dayjs from "dayjs"
-import { generateCDNCookies, makeCookieString } from "~/modules/storagecookie"
+import { generateCDNCookies } from "~/modules/storagecookie"
 import Header from "~/components/header"
 import dynamic from "next/dynamic"
 import Modal from "~/components/modal"
@@ -22,37 +22,14 @@ type Props = {
   video?: SerializableVideo
 }
 
-const ExpiresKey = "CookieExpires"
-
-const handleCookie = async (
+const setCDNCookie = async (
   res: ServerResponse,
   id: string,
   expiresOfUnix?: number
 ) => {
-  const now = dayjs()
-  if (!(expiresOfUnix && now.unix() + 300 < expiresOfUnix)) {
-    try {
-      const expires = now.add(1, "day")
-      expiresOfUnix = expires.unix()
-      const isSecure = process.env.ENVIRONMENT !== "development"
-      const cdnCookies = await generateCDNCookies([id], expiresOfUnix, isSecure)
-      res.setHeader(
-        "Set-Cookie",
-        cdnCookies.concat([
-          makeCookieString(
-            ExpiresKey,
-            expiresOfUnix.toString(),
-            expires.toDate(),
-            isSecure,
-            `/contents/${id}`
-          ),
-        ])
-      )
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
-  }
+  const isSecure = process.env.ENVIRONMENT !== "development"
+  const cdnCookies = await generateCDNCookies([id], expiresOfUnix, isSecure)
+  res.setHeader("Set-Cookie", cdnCookies)
 }
 
 export const getServerSideProps = withAuthUserTokenSSR({
@@ -60,7 +37,6 @@ export const getServerSideProps = withAuthUserTokenSSR({
 })(
   async ({
     AuthUser,
-    req,
     res,
     query,
   }): Promise<GetServerSidePropsResult<Props>> => {
@@ -82,11 +58,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
           destination: "/contents/" + query.id,
         },
       }
-    } else {
     }
-    const cookie = req.cookies[ExpiresKey]
-    let expiresOfUnix = parseInt(cookie)
-    handleCookie(res, query.id, expiresOfUnix)
+    await setCDNCookie(res, query.id, dayjs().add(1, "day").unix())
     return {
       props: {
         edit: query.edit === "true",

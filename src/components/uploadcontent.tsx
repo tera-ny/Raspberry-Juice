@@ -25,8 +25,8 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   const form = useRef<HTMLFormElement>()
   const [isDragOver, setIsDragOver] = useState(false)
 
-  const [file, setFile] = useState<File>()
-  const [policy, setPolicy] = useState<Policy>()
+  const [file, setFile] = useState<File>(null)
+  const [policy, setPolicy] = useState<Policy>(null)
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [count, setCount] = useState(0)
   const [progress, setProgress] = useState(0)
@@ -70,7 +70,9 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
     [isUploading]
   )
   useEffect(() => {
-    setPolicy(undefined)
+    setPolicy(null)
+    const trace = firebase.performance().trace("fetch_policy")
+    trace.start()
     user
       .getIdToken()
       .then((token) =>
@@ -80,6 +82,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
       .then((json) => {
         setPolicy(json.policy)
         setID(json.id)
+        trace.stop()
       })
   }, [user])
 
@@ -101,29 +104,44 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   }, [id, router])
 
   useEffect(() => {
-    if (policy && !isUploading && file) {
-      setIsUploading(true)
-      const request = new XMLHttpRequest()
-      const data = new FormData(form.current)
-      request.open("POST", policy.url)
-      request.send(data)
-      request.addEventListener("error", () => {
-        console.error(request.status)
-        setIsUploading(false)
-        setFile(undefined)
-      })
-      request.addEventListener("progress", (e) => {
-        setProgress(e.loaded)
-      })
-      request.addEventListener("loadstart", (e) => {
-        setToatal(e.total)
-      })
-      request.addEventListener("load", () => {
-        setIsUploaded(true)
-        setIsUploading(false)
-      })
+    if (isUploaded || isUploading) return
+    if (!(policy && file)) return
+    setIsUploading(true)
+    const request = new XMLHttpRequest()
+    const data = new FormData(form.current)
+    request.open("POST", policy.url)
+    request.send(data)
+    const onError = () => {
+      console.error(request.status)
+      setFile(null)
     }
-  }, [file, policy, isUploading])
+    const onProgress = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
+      setProgress(e.loaded)
+    }
+    const onLoadStart = (e: ProgressEvent<XMLHttpRequestEventTarget>) => {
+      setToatal(e.total)
+    }
+    const onLoadEnd = () => {
+      setIsUploading(false)
+    }
+    const onLoad = () => {
+      setIsUploaded(true)
+      setPolicy(null)
+      setFile(null)
+    }
+    request.addEventListener("error", onError)
+    request.addEventListener("progress", onProgress)
+    request.addEventListener("loadstart", onLoadStart)
+    request.addEventListener("loadend", onLoadEnd)
+    request.addEventListener("load", onLoad)
+    return () => {
+      request.removeEventListener("error", onError)
+      request.removeEventListener("progress", onProgress)
+      request.removeEventListener("loadstart", onLoadStart)
+      request.removeEventListener("loadend", onLoadEnd)
+      request.removeEventListener("load", onLoad)
+    }
+  }, [file, policy, isUploaded, isUploading])
   useEffect(() => {
     onChangeIsUploading(isUploading)
   }, [isUploading, onChangeIsUploading])
@@ -180,7 +198,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
           {!(isUploading || isUploaded) && (
             <>
               <label className="pickerButton">
-                アップロードする動画を{file ? "変更" : "選択"}
+                アップロードする動画を選択
                 <input
                   disabled={isUploading}
                   name="file"
