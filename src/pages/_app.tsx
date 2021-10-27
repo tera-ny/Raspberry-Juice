@@ -5,6 +5,7 @@ import initAuth from "~/modules/nextauth"
 import { useEffect } from "react"
 import firebase from "firebase/app"
 import "firebase/performance"
+
 initAuth()
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -53,6 +54,10 @@ export default function App({ Component, pageProps }: AppProps) {
         :root {
           --seek-bar-height: 5px;
           --cursor-width: 12px;
+          --priority-pink-color: #e2495d;
+          --secondary-blue-color: #1d72af;
+          --hoverd-secondary-blue: #1b7bc0;
+          --active-secondary-blue: #2289d3;
         }
         @media (prefers-color-scheme: dark) {
           html,
