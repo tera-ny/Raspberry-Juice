@@ -128,7 +128,7 @@ const Meta = (
         }
         .editbutton {
           padding: 6px 12px;
-          background-color: #e2495d;
+          background-color: var(--primary-pink-color)
           color: white;
           display: flex;
           align-items: center;
