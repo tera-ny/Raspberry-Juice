@@ -28,17 +28,17 @@ const UploadButton: FC = () => (
           text-align: center;
           font-size: 16px;
           color: white;
-          background-color: #1d72af;
+          background-color: var(--secondary-blue-color);
           cursor: pointer;
           display: flex;
           align-items: center;
           line-height: 18px;
         }
         .uploadbutton:hover {
-          background-color: #1b7bc0;
+          background-color: var(--hoverd-secondary-blue);
         }
         .uploadbutton:active {
-          background-color: #2289d3;
+          background-color: var(--active-secondary-blue);
         }
         .uploadicon {
           padding-left: 12px;
