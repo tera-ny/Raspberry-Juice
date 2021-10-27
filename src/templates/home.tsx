@@ -182,6 +182,7 @@ const ProfileTemplate: FC = () => {
             cursor: pointer;
             color: white;
             background-color: rgba(0, 0, 0, 0.56);
+            white-space: nowrap;
           }
           .link:hover {
             background-color: rgba(40, 40, 40, 0.56);
@@ -243,6 +244,15 @@ const ProfileTemplate: FC = () => {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
+          }
+
+          @media (max-width: 1000px) {
+            .links {
+              overflow-x: scroll;
+              flex-wrap: nowrap;
+              height: 52px;
+              align-items: flex-start;
+            }
           }
 
           @media (max-width: 1200px) {
