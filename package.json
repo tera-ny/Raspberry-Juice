@@ -19,6 +19,7 @@
     "next": "11.1.2",
     "next-firebase-auth": "0.13.4",
     "react": "17.0.2",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dom": "17.0.2",
     "react-linkify": "^1.0.0-alpha",
     "recoil": "^0.4.0"
@@ -27,6 +28,7 @@
     "@types/hls.js": "^1.0.0",
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.1",
+    "@types/react-beautiful-dnd": "^13.1.2",
     "@types/react-dom": "^17.0.0",
     "@types/react-linkify": "^1.0.1",
     "@types/styled-jsx": "^2.2.8",
