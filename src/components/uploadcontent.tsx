@@ -277,17 +277,17 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             outline: none;
             padding: 8px 12px;
             color: white;
-            background-color: #1d72af;
+            background-color: var(--secondary-blue-color);
             border-radius: 4px;
           }
           .picker {
             display: none;
           }
           .pickerButton:hover {
-            background-color: #1e88d4;
+            background-color: var(--hoverd-secondary-blue);
           }
           .pickerButton:active {
-            background-color: #3e9ce0;
+            background-color: var(--active-secondary-blue);
           }
           .upload {
             cursor: pointer;
@@ -297,7 +297,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
             bottom: 12px;
             right: 20px;
             color: white;
-            background-color: #ce4b5a;
+            background-color: var(--primary-pink-color);
             font-weight: bold;
             font-size: 14px;
             padding: 8px 12px;

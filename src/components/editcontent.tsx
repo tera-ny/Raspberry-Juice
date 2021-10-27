@@ -269,7 +269,7 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
 
         .updateButton {
           cursor: pointer;
-          background-color: #e2495d;
+          background-color: var(--primary-pink-color);
           padding: 8px 32px;
           font-weight: 700;
           font-size: 14px;
