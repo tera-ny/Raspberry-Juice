@@ -25,7 +25,7 @@ const Header: FC = () => {
       </header>
       <style jsx>{`
         .container {
-          padding: 20px 24px;
+          padding: 8px 12px;
         }
         .logo {
           height: 40px;
@@ -34,11 +34,6 @@ const Header: FC = () => {
         .link {
           display: inline-block;
           height: 40px;
-        }
-        @media screen and (max-width: 899px) {
-          .container {
-            padding: 8px 12px;
-          }
         }
       `}</style>
     </>
