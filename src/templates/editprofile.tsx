@@ -42,7 +42,7 @@ const ImagePicker = ({
   )
   return (
     <>
-      <label htmlFor={id}>{children}</label>
+      {children}
       <input
         type="file"
         id={id}
@@ -53,6 +53,9 @@ const ImagePicker = ({
         input {
           display: none;
         }
+        label {
+          width: 100%;
+        }
       `}</style>
     </>
   )
@@ -60,16 +63,25 @@ const ImagePicker = ({
 
 const IconPicker = () => {
   const [file, setFile] = useState<File>(null)
+  const id = "icon"
   return (
     <>
-      <ImagePicker onSelectedImage={setFile} maxByteSize={6000000} id={"icon"}>
-        <div className="container">
-          <img
-            width={114}
-            height={114}
-            src={file ? URL.createObjectURL(file) : "/api/icon"}
-          />
-        </div>
+      <ImagePicker
+        onSelectedImage={setFile}
+        maxByteSize={6000000}
+        id={id}
+        key={file?.name}>
+        <label className="container" htmlFor={id}>
+          <div className="inner">
+            <div className="image">
+              <img
+                width={114}
+                height={114}
+                src={file ? URL.createObjectURL(file) : "/api/icon"}
+              />
+            </div>
+          </div>
+        </label>
       </ImagePicker>
       {file && (
         <button className="remove" onClick={() => setFile(null)}>
@@ -81,12 +93,32 @@ const IconPicker = () => {
           display: block;
           object-fit: cover;
           border-radius: 50%;
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
         }
         .container {
           background-color: #282828;
-          padding: 14px 52px;
+          width: 100%;
+          max-width: 400px;
+          display: block;
+        }
+        .inner {
+          padding: 4% 30%;
           box-sizing: border-box;
         }
+        .image {
+          position: relative;
+          width: 100%;
+        }
+        .image::before {
+          content: "";
+          padding-bottom: 100%;
+          display: block;
+        }
+
         .remove {
           border: none;
           outline: none;
@@ -101,19 +133,31 @@ const IconPicker = () => {
 
 const BannerPicker = () => {
   const [file, setFile] = useState<File>(null)
+  const id = "banner"
   return (
     <>
       <ImagePicker
         onSelectedImage={setFile}
         maxByteSize={8000000}
-        id={"banner"}>
-        {file ? (
-          <img height={233} width={504} src={URL.createObjectURL(file)} />
-        ) : (
-          <div className="container">
-            <img height={160} src="/img/banner_symbol.svg" alt="" />
-          </div>
-        )}
+        id={id}
+        key={file?.name}>
+        <div className={"wrapper"}>
+          <label htmlFor={id}>
+            {file ? (
+              <img height={233} width={504} src={URL.createObjectURL(file)} />
+            ) : (
+              <div className="container">
+                <img
+                  className="symbol"
+                  height={160}
+                  width={296}
+                  src="/img/banner_symbol.svg"
+                  alt=""
+                />
+              </div>
+            )}
+          </label>
+        </div>
       </ImagePicker>
       {file && (
         <button className="remove" onClick={() => setFile(null)}>
@@ -124,11 +168,33 @@ const BannerPicker = () => {
         img {
           display: block;
           object-fit: cover;
+          width: 100%;
+          height: 100%;
+        }
+        label {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+        }
+        .wrapper {
+          width: 100%;
+          max-width: 400px;
+          position: relative;
+        }
+        .wrapper::before {
+          content: "";
+          display: block;
+          padding-bottom: 53.5%;
         }
         .container {
           background-color: #282828;
-          padding: 34px 104px;
-          box-sizing: border-box;
+          padding: 8% 15%;
+        }
+        .symbol {
+          width: 100%;
+          height: 100%;
         }
         .remove {
           border: none;
@@ -387,7 +453,7 @@ const Section = ({ children, title, subText }: SectionProps) => (
       }
       .title {
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 400;
       }
       .sub {
         font-size: 14px;
@@ -458,7 +524,8 @@ const Template: FC = () => {
           align-items: flex-start;
           padding: 32px 60px;
           column-gap: 40px;
-          grid-template-columns: minmax(auto, 800px) 1fr;
+          grid-template-columns: 60% 1fr;
+          max-width: 1100px;
         }
         .container div {
           align-self: flex-start;
@@ -492,6 +559,16 @@ const Template: FC = () => {
           cursor: pointer;
         }
 
+        @media (max-width: 750px) {
+          .container {
+            grid-template-columns: 1fr;
+            align-items: flex-start;
+            padding: 12px 20px;
+          }
+          .title {
+            grid-column: 1/2;
+          }
+        }
         @media (prefers-color-scheme: dark) {
           input,
           textarea {
