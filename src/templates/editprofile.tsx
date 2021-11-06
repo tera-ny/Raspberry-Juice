@@ -15,6 +15,8 @@ import {
   DraggableProvidedDragHandleProps,
 } from "react-beautiful-dnd"
 import { WithChildren } from "~/utils/props"
+import Trash from "~/components/trash"
+import { setTimeout } from "timers"
 
 type ImagePickerProps = {
   id: string
@@ -176,7 +178,7 @@ const SiteLinkContent = forwardRef<HTMLDivElement, SiteLinkContentProps>(
           onChange={(e) => onChangeURL(e.target.value)}
         />
         <button title="削除" className="trash" onClick={remove}>
-          <img width={22} height={24} src="/img/trash_pink.svg" />
+          <Trash />
         </button>
       </div>
       <style jsx>{`
@@ -238,7 +240,7 @@ const isURL = (text: string) => {
   } catch (_) {
     return false
   }
-  return url.protocol === "http:" || url.protocol === "https:"
+  return (url.protocol === "http:" || url.protocol === "https:") && !!url.host
 }
 
 const SiteLinkEditor = () => {
@@ -357,12 +359,16 @@ const SiteLinkEditor = () => {
 
 type SectionProps = {
   title: string
+  subText?: string
 } & WithChildren
 
-const Section = ({ children, title }: SectionProps) => (
+const Section = ({ children, title, subText }: SectionProps) => (
   <>
     <div className="container">
-      <h3 className="title">{title}</h3>
+      <div className="header">
+        <h3 className="title">{title}</h3>
+        {subText && <p className="sub">{subText}</p>}
+      </div>
       {children}
     </div>
     <style jsx>{`
@@ -374,15 +380,44 @@ const Section = ({ children, title }: SectionProps) => (
         align-items: flex-start;
         gap: 12px;
       }
+      .header {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+      }
       .title {
         font-size: 16px;
         font-weight: 500;
+      }
+      .sub {
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 300;
+        align-self: flex-end;
       }
     `}</style>
   </>
 )
 
+let timeoutID: number
+
 const Template: FC = () => {
+  const channelURL = "https://raspberry-juice.com/channel/"
+  const [isShowCopiedText, setIsShow] = useState(false)
+  const onClickChannelURL = useCallback(
+    (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+      e.currentTarget.setSelectionRange(0, channelURL.length)
+      navigator.clipboard.writeText(channelURL)
+      setIsShow(true)
+      if (timeoutID) {
+        window.clearTimeout(timeoutID)
+      }
+      timeoutID = window.setTimeout(() => {
+        setIsShow(false)
+      }, 5000)
+    },
+    []
+  )
   return (
     <>
       <div className="container">
@@ -391,8 +426,18 @@ const Template: FC = () => {
           <Section title="チャンネル名">
             <input type="text" className="name" />
           </Section>
-          <Section title="説明文">
+          <Section title="チャンネル説明">
             <textarea className="description" rows={10}></textarea>
+          </Section>
+          <Section
+            title="チャンネルURL"
+            subText={isShowCopiedText && "Clipboardに保存しました"}>
+            <input
+              className="channelName"
+              value={channelURL}
+              onClick={onClickChannelURL}
+              readOnly
+            />
           </Section>
         </div>
         <div>
@@ -423,30 +468,33 @@ const Template: FC = () => {
           font-weight: 500;
           grid-column: 1/3;
         }
-        .name,
-        .description {
+        input,
+        textarea {
           outline: none;
           border: none;
           font-family: "Noto Sans JP";
           background-color: white;
           color: #202020;
-        }
-        .name {
           padding: 4px 8px;
-          font-size: 24px;
           width: 100%;
           box-sizing: border-box;
+        }
+        .name {
+          font-size: 24px;
         }
         .description {
           resize: vertical;
-          padding: 4px 8px;
-          font-size: 20px;
-          width: 100%;
-          box-sizing: border-box;
+          font-size: 18px;
         }
+        .channelName {
+          font-size: 16px;
+          font-weight: 400;
+          cursor: pointer;
+        }
+
         @media (prefers-color-scheme: dark) {
-          .name,
-          .description {
+          input,
+          textarea {
             background-color: #2e2f32;
             color: #f0f0f0;
           }

@@ -35,9 +35,9 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
     const algorithm = "GOOG4-RSA-SHA256"
     const account = "raspberryjuice@appspot.gserviceaccount.com"
     const credential = `${account}/${todayToFormatYYYYMMDD}/auto/storage/goog4_request`
-    const expiration = today.add(1, "hour").toISOString()
+    const expiration = today.add(1, "minutes")
     const [response] = await file.generateSignedPostPolicyV4({
-      expires: today.add(1, "hour").toDate(),
+      expires: expiration.toDate(),
       conditions: [
         ["eq", "$key", key],
         { bucket: "raspberry-juice-origin" },
@@ -48,12 +48,12 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
         {
           "x-goog-credential": credential,
         },
-        ["eq", "$Expires", expiration],
+        ["eq", "$Expires", expiration.toISOString()],
       ],
       fields: {
         key,
         "Content-Type": "video/mp4",
-        Expires: expiration,
+        Expires: expiration.toISOString(),
       },
     })
     return {
