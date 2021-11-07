@@ -16,7 +16,6 @@ import {
 } from "react-beautiful-dnd"
 import { WithChildren } from "~/utils/props"
 import Trash from "~/components/trash"
-import { setTimeout } from "timers"
 
 type ImagePickerProps = {
   id: string
