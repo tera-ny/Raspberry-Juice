@@ -29,15 +29,20 @@ export interface EditingVideo {
   readonly state: "uploaded" | "transcoded"
 }
 
-export interface Profile {
+export interface Profile<TimeStamp> {
   name: string
   description: string
+  registeredAt: TimeStamp
+  background?: string
+  icon?: string
+  theme: number
+}
+
+export type SerializableProfile = Omit<Profile<any>, "registeredAt"> & {
+  id: string
+  registeredAtMillis: number
   links: {
     text: string
     url: string
   }[]
-  registeredAtMillis: number
-  background?: string
-  icon?: string
-  theme: number
 }

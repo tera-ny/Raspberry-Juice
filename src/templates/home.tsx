@@ -1,5 +1,9 @@
 import { FC, useState, useRef, useCallback, useEffect } from "react"
-import { Profile, SerializableVideo } from "~/modules/entity"
+import {
+  Profile,
+  SerializableProfile,
+  SerializableVideo,
+} from "~/modules/entity"
 import Content from "~/components/videocontent"
 import { Modal } from "~/components/modal"
 import { useRouter } from "next/router"
@@ -8,46 +12,11 @@ import ReactLinkify from "react-linkify"
 import UploadButton from "~/components/button/upload"
 import EditProfileButton from "~/components/button/editprofile"
 
-const profile: Profile = {
-  name: "KMNZ",
-  description: `https://google.com Virtual hip hop girls duo "KMNZ"(KEMONOZ) Liz official YouTube Channel.\n\nバーチャルHIP-HOPガールズデュオ、KMNZ（ケモノズ）リズの公式YouTubeチャンネル。LIZ RADIOのアーカイブや、リズが大好きなボカロ・アニソンのカバーを中心に更新。`,
-  registeredAtMillis: new Date("2021/09/30").getTime(),
-  links: [
-    {
-      text: "KMNSTREET OFFICIAL ACCOUNT",
-      url: "https://twitter.com/KMNSTREET",
-    },
-    {
-      text: "KMNZ OFFICIAL SITE",
-      url: "https://kmnz.jp",
-    },
-    {
-      text: "KMNZ LITA YouTube Channel",
-      url: "https://www.youtube.com/c/KMNZLITA",
-    },
-    {
-      text: "KMNZ LIZ YouTube Channel",
-      url: "https://www.youtube.com/c/KMNZLIZ",
-    },
-    {
-      text: "KMNZ on Apple Music",
-      url: "https://itunes.apple.com/jp/artist/kmnz/1416494540",
-    },
-    {
-      text: "KMNZ on Spotify",
-      url: "https://open.spotify.com/artist/4uWpa0r7BZUXJ1ip2LJysz",
-    },
-    {
-      text: "KMNSUPPLY",
-      url: "https://kmnsupply.stores.jp/",
-    },
-  ],
-  background: "/img/test/background.png",
-  icon: "/img/test/icon_large.png",
-  theme: 0xb0f3ad,
+interface ProfileProps {
+  profile: SerializableProfile
 }
 
-const ProfileTemplate: FC = () => {
+const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
   return (
     <>
       <div className="container">
@@ -429,6 +398,7 @@ const ProfileTemplate: FC = () => {
 const UploadContent = dynamic(import("~/components/uploadcontent"))
 
 export type Props = {
+  profile: SerializableProfile
   contents: SerializableVideo[]
   modal: boolean
   edit?: string
@@ -439,7 +409,7 @@ const Template: FC<Props> = (props) => {
   const [isUploading, setIsUploading] = useState(false)
   return (
     <>
-      <ProfileTemplate />
+      <ProfileTemplate profile={props.profile} />
       <div className="container">
         <div className="sectiontitlewrapper">
           <h2 className="sectiontitle">Contents</h2>
