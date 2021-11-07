@@ -1,4 +1,4 @@
-import { NextPage, GetServerSideProps, GetServerSidePropsResult } from "next"
+import { NextPage, GetServerSidePropsResult } from "next"
 import Template from "~/templates/editprofile"
 import Header from "~/components/header"
 import { resetServerContext } from "react-beautiful-dnd"

@@ -1,46 +1,14 @@
-import { NextPage, GetServerSidePropsResult } from "next"
-import Template from "~/templates/home"
-import {
-  withAuthUser,
-  AuthAction,
-  withAuthUserTokenSSR,
-} from "next-firebase-auth"
+import { NextPage } from "next"
+import { withAuthUser, AuthAction } from "next-firebase-auth"
 import Header from "~/components/header"
-import fetchContents from "~/modules/api/videos"
 
-import { Props } from "~/templates/home"
+import { Props } from "~/templates/creator"
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(
-  async ({ AuthUser, query }): Promise<GetServerSidePropsResult<Props>> => {
-    try {
-      const uid = AuthUser.id
-      const response = await fetchContents(uid)
-      const targetID = typeof query.id === "string" ? query.id : null
-      return {
-        props: {
-          modal: query.m === "upload",
-          edit: targetID,
-          contents: response.contents,
-        },
-      }
-    } catch (error) {
-      console.error(error)
-      return {
-        notFound: true,
-      }
-    }
-  }
-)
-
-const Page: NextPage<Props> = (props) => {
+const Page: NextPage<Props> = () => {
   return (
     <>
       <Header />
-      <main>
-        <Template {...props} />
-      </main>
+      <main></main>
     </>
   )
 }
