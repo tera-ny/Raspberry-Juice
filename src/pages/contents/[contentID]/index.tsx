@@ -16,6 +16,7 @@ import { useRecoilValue } from "recoil"
 import auth from "~/stores/auth"
 import { useRouter } from "next/router"
 import { ServerResponse } from "http"
+import { useCallback, useMemo } from "react"
 
 type Props = {
   edit: boolean
@@ -32,19 +33,17 @@ const setCDNCookie = async (
   res.setHeader("Set-Cookie", cdnCookies)
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(
+export const getServerSideProps = withAuthUserTokenSSR()(
   async ({
     AuthUser,
     res,
     query,
   }): Promise<GetServerSidePropsResult<Props>> => {
     let content: SerializableVideo
-    if (!(typeof query.id === "string" && query.id !== "video"))
-      return { notFound: true }
+    const id = query.contentID
+    if (!(typeof id === "string" && id !== "video")) return { notFound: true }
     try {
-      content = (await api(query.id, AuthUser.id)).content
+      content = (await api(id)).content
     } catch (error) {
       return {
         notFound: true,
@@ -55,11 +54,11 @@ export const getServerSideProps = withAuthUserTokenSSR({
       return {
         redirect: {
           permanent: false,
-          destination: "/contents/" + query.id,
+          destination: "/",
         },
       }
     }
-    await setCDNCookie(res, query.id, dayjs().add(1, "day").unix())
+    await setCDNCookie(res, id, dayjs().add(1, "day").unix())
     return {
       props: {
         edit: query.edit === "true",
@@ -74,20 +73,25 @@ const EditContent = dynamic(() => import("~/components/editcontent"))
 const Page: NextPage<Props> = ({ video, edit }) => {
   const uid = useRecoilValue(auth.selector.uid)
   const router = useRouter()
+  const clicked = useCallback(() => {
+    if (!video) {
+      router.replace({ pathname: router.pathname })
+    } else {
+      router.replace("/")
+    }
+  }, [])
+  const visible = useMemo(
+    () => !!edit && !!uid && video.owner === uid,
+    [uid, edit, video.owner]
+  )
   return (
     <>
       <Header />
       <main>
         <Template video={video} />
         {
-          <Modal
-            visible={edit && uid && video.owner === uid}
-            onClickBackground={() => {
-              router.replace({
-                pathname: video ? `/contents/${video.id}` : "/",
-              })
-            }}>
-            <EditContent {...video} />
+          <Modal visible={visible} onClickBackground={clicked}>
+            <EditContent isVisible={visible} {...video} />
           </Modal>
         }
       </main>
@@ -95,6 +99,4 @@ const Page: NextPage<Props> = ({ video, edit }) => {
   )
 }
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-})(Page)
+export default withAuthUser()(Page)

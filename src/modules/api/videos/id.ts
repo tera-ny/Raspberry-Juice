@@ -6,7 +6,7 @@ export interface Response {
   content: SerializableVideo
 }
 
-const handler = async (id: string, uid: string): Promise<Response> => {
+const handler = async (id: string): Promise<Response> => {
   try {
     const snapshot = await getFirebaseAdmin()
       .firestore()
@@ -14,7 +14,7 @@ const handler = async (id: string, uid: string): Promise<Response> => {
       .doc(id)
       .get()
     const video = snapshot.data() as Video<firestore.Timestamp>
-    if (snapshot.exists && video.owner === uid && video.draft === false) {
+    if (snapshot.exists && video.isPublished && video.draft === false) {
       return {
         content: {
           id: snapshot.ref.id,

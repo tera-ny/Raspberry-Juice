@@ -1,9 +1,5 @@
-import { FC, useState, useRef, useCallback, useEffect } from "react"
-import {
-  Profile,
-  SerializableProfile,
-  SerializableVideo,
-} from "~/modules/entity"
+import { FC, useState } from "react"
+import { SerializableProfile, SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
 import { Modal } from "~/components/modal"
 import { useRouter } from "next/router"
@@ -11,23 +7,25 @@ import dynamic from "next/dynamic"
 import ReactLinkify from "react-linkify"
 import UploadButton from "~/components/button/upload"
 import EditProfileButton from "~/components/button/editprofile"
+import { toClassName } from "~/modules/utils/css"
+import { useAuthUser } from "next-firebase-auth"
 
 interface ProfileProps {
   profile: SerializableProfile
 }
 
 const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
+  const user = useAuthUser()
   return (
     <>
       <div className="container">
-        <div className="background">
+        <div
+          className={toClassName({
+            background: true,
+            effected: !!profile.background,
+          })}>
           {profile.background && (
-            <img
-              src="/img/test/background.png"
-              width="100%"
-              height="100%"
-              alt=""
-            />
+            <img src={profile.background} width="100%" height="100%" alt="" />
           )}
         </div>
         <div className="primary">
@@ -58,7 +56,8 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
         <div className="secondary">
           <div className="meta">
             <div className="inner">
-              <div className="bio">
+              <h4>biography</h4>
+              <div className="bio description">
                 <ReactLinkify
                   componentDecorator={(href, text, key) => (
                     <a
@@ -80,10 +79,14 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
           </div>
           <div className="bottomcontents">
             <p className="bio">2021/09/30 に登録</p>
-            <div className="buttons">
-              <UploadButton />
-              <EditProfileButton />
-            </div>
+            {user.id === profile.id && (
+              <>
+                <div className="buttons">
+                  <UploadButton />
+                  <EditProfileButton />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -101,10 +104,13 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             left: 0;
             height: 100%;
             width: 100%;
-            object-fit: cover;
           }
           .background img {
             object-fit: cover;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
           }
           .background:after {
             content: "";
@@ -161,13 +167,14 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             display: grid;
             flex-direction: column;
             row-gap: 20px;
-            justify-content: flex-start;
+            justify-content: stretch;
             align-items: flex-start;
             box-sizing: border-box;
             grid-template-rows: 1fr auto;
           }
           .meta {
             box-sizing: border-box;
+            width: 100%;
           }
           .inner {
             overflow-y: scroll;
@@ -176,6 +183,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             height: calc(100% - 20px);
           }
           .bio {
+            box-sizing: border-box;
             white-space: pre-wrap;
             font-weight: 400;
             font-size: 14px;
@@ -215,12 +223,41 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             flex-wrap: wrap;
           }
 
+          @media (max-width: 500px) {
+            .name {
+              font-size: 24px;
+            }
+            .icon {
+              width: 60px;
+              height: 60px;
+            }
+            .primary {
+              grid-template-columns: 60px auto;
+            }
+          }
+
+          @media (min-width: 501px) and (max-width: 1200px) {
+            .name {
+              font-size: 32px;
+            }
+            .icon {
+              width: 80px;
+              height: 80px;
+            }
+            .primary {
+              grid-template-columns: 80px auto;
+            }
+          }
+
           @media (max-width: 1000px) {
             .links {
               overflow-x: scroll;
               flex-wrap: nowrap;
               height: 52px;
               align-items: flex-start;
+            }
+            .secondary {
+              padding: 42px 20px 20px;
             }
           }
 
@@ -234,21 +271,41 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             .primary {
               padding: 20px;
               column-gap: 20px;
-              grid-template-columns: 100px auto;
             }
+            .secondary {
+              width: 100%;
+            }
+          }
+          @media (min-width: 1201px) {
             .icon {
               width: 100px;
               height: 100px;
             }
+            .primary {
+              grid-template-columns: 100px auto;
+            }
             .name {
               font-size: 38px;
             }
-            .secondary {
-              width: 100%;
-              padding: 42px 20px 20px;
+          }
+          @media (min-width: 1001px) and (max-width: 1200px) {
+            .meta {
+              height: 260px;
             }
           }
-          @media (min-width: 1201px) {
+          @media (min-width: 1001px) and (max-width: 1600px) {
+            .container {
+              grid-template-columns: min(53%, 700px) min(43%, 600px);
+              column-gap: 40px;
+              padding: 0 20px;
+            }
+            .meta {
+              padding: 20px 0;
+            }
+            h4,
+            .bio {
+              padding: 0 20px;
+            }
             .secondary {
               padding: 20px;
             }
@@ -273,15 +330,11 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               font-size: 48px;
               line-height: 64px;
             }
-            .secondary {
-              max-width: 600px;
-            }
             .meta {
               height: 350px;
-              padding: 20px 0;
             }
-            .bio {
-              padding: 0 20px;
+            .secondary {
+              max-width: 600px;
             }
           }
           @media (max-width: 1600px) {
@@ -318,6 +371,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               padding-left: 15%;
               column-gap: 52px;
               justify-content: flex-start;
+              grid-template-columns: 200px auto;
             }
             .createdAt {
               display: none;
@@ -325,6 +379,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             .secondary {
               width: 600px;
               height: 100%;
+              padding: 20px;
             }
             .bottomcontents p {
               display: inline;
@@ -339,6 +394,9 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             }
           }
           @media (prefers-color-scheme: light) {
+            .background {
+              background-color: #222222;
+            }
             .bio {
               color: #080808;
             }
@@ -350,6 +408,9 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             }
           }
           @media (prefers-color-scheme: dark) {
+            .background {
+              background-color: #222222;
+            }
             .bio {
               color: white;
             }
@@ -361,7 +422,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             }
           }
           @media (prefers-color-scheme: light) {
-            .background:after {
+            .background.effected:after {
               background-image: linear-gradient(
                 180deg,
                 rgba(0, 0, 0, 0),
@@ -370,7 +431,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             }
           }
           @media (prefers-color-scheme: dark) {
-            .background:after {
+            .background.effected:after {
               background-image: linear-gradient(
                 180deg,
                 rgba(0, 0, 0, 0),
@@ -379,12 +440,12 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             }
           }
 
-          @media (prefers-color-scheme: light) and (min-width: 1201px) and (max-width: 1600px) {
+          @media (prefers-color-scheme: light) and (min-width: 1001px) and (max-width: 1600px) {
             .meta {
               background-color: white;
             }
           }
-          @media (prefers-color-scheme: dark) and (min-width: 1201px) and (max-width: 1600px) {
+          @media (prefers-color-scheme: dark) and (min-width: 1001px) and (max-width: 1600px) {
             .meta {
               background-color: #1e2026;
             }

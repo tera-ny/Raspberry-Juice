@@ -5,6 +5,7 @@ export interface Video<Timestamp> {
   poster?: string
   createdAt?: Timestamp
   description?: string
+  isPublished: boolean
   draft: boolean
   state?: "uploaded" | "transcoded"
 }
@@ -34,11 +35,16 @@ export interface Profile<TimeStamp> {
   description: string
   registeredAt: TimeStamp
   background?: string
+  isActive: boolean
+  isBanned: boolean
   icon?: string
   theme: number
 }
 
-export type SerializableProfile = Omit<Profile<any>, "registeredAt"> & {
+export type SerializableProfile = Omit<
+  Profile<any>,
+  "registeredAt" | "isActive" | "isBanned"
+> & {
   id: string
   registeredAtMillis: number
   links: {

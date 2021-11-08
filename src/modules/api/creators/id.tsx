@@ -3,7 +3,7 @@ import { SerializableProfile, Profile } from "~/modules/entity"
 import { firestore } from "firebase-admin"
 
 export interface Response {
-  content: SerializableProfile
+  profile: SerializableProfile
 }
 
 const handler = async (id: string): Promise<Response> => {
@@ -14,9 +14,9 @@ const handler = async (id: string): Promise<Response> => {
       .doc(id)
       .get()
     const profile = snapshot.data() as Profile<firestore.Timestamp>
-    if (snapshot.exists) {
+    if (snapshot.exists && profile.isActive && !profile.isBanned) {
       return {
-        content: {
+        profile: {
           id: snapshot.id,
           name: profile.name,
           description: profile.description,

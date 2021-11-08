@@ -12,6 +12,7 @@ const Player = dynamic(import("~/components/player"), {
 
 interface Props {
   id: string
+  isVisible: boolean
   onChangeIsUploading?: (uploading: boolean) => void
 }
 
@@ -23,7 +24,7 @@ const convert = (video: Video<firebase.firestore.Timestamp>): EditingVideo => ({
   url: typeof video.url === "object" ? video.url.hls : video.url,
 })
 
-const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
+const EditContent: FC<Props> = ({ id, isVisible, onChangeIsUploading }) => {
   const [video, setVideo] = useState<EditingVideo>()
   const router = useRouter()
   const [title, setTitle] = useState<string>()
@@ -35,20 +36,18 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
     setDescription(video?.description)
   }, [video])
   useEffect(() => {
+    if (!isVisible) return
     const unsubscribe = firebase
       .firestore()
       .collection("contents")
       .doc(id)
       .onSnapshot(
         (snapshot) => {
-          if (snapshot.exists) {
-            const data = snapshot.data() as Video<firebase.firestore.Timestamp>
-            if (data.draft) {
-              router.replace(router.pathname)
-            }
+          const data = snapshot.data() as Video<firebase.firestore.Timestamp>
+          if (snapshot.exists && !data.draft) {
             setVideo(convert(data))
           } else {
-            router.replace(router.pathname)
+            router.replace("/")
           }
         },
         () => {
@@ -58,7 +57,7 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
     return () => {
       unsubscribe()
     }
-  }, [id, router])
+  }, [id, isVisible, router])
 
   const submitProfile = useCallback(async () => {
     setIsUploading(true)
@@ -71,7 +70,7 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
       body: JSON.stringify({ title, description }),
     })
       .then(() => {
-        router.replace("/contents/" + id)
+        router.replace(router.pathname)
       })
       .catch((error) => {
         console.error(error)
@@ -84,7 +83,6 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
   useEffect(() => {
     onChangeIsUploading?.(isUploading)
   }, [isUploading, onChangeIsUploading])
-
   return (
     <>
       <div className="container">

@@ -3,7 +3,7 @@ import Link from "next/link"
 
 const EditProfileButton: FC = () => (
   <>
-    <Link href={{ pathname: "/channel/edit" }}>
+    <Link href={{ pathname: "/creator/edit" }}>
       <a className="editbutton">
         プロフィール編集
         <div className="editicon">

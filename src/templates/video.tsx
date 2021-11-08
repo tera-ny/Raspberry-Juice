@@ -4,7 +4,6 @@ import dynamic from "next/dynamic"
 import auth from "~/stores/auth"
 import dayjs from "dayjs"
 import { useRecoilValue } from "recoil"
-import Link from "next/link"
 import css from "styled-jsx/css"
 import ReactLinkify from "react-linkify"
 
@@ -67,23 +66,17 @@ const Meta = (
         <div className="titlewrapper">
           <h2 className="title">{video.title}</h2>
           {video.owner && video.owner == uid && (
-            <Link
-              href={{
-                pathname: "/contents/" + video.id,
-                query: { edit: true },
-              }}>
-              <a className="editLink">
-                <div className="editbutton">
-                  編集する
-                  <img
-                    height="15"
-                    width="16"
-                    className="pen"
-                    src="/img/pen_icon_white.svg"
-                  />
-                </div>
-              </a>
-            </Link>
+            <a className="editLink">
+              <div className="editbutton">
+                編集する
+                <img
+                  height="15"
+                  width="16"
+                  className="pen"
+                  src="/img/pen_icon_white.svg"
+                />
+              </div>
+            </a>
           )}
         </div>
         <p className="uploadedAt">
