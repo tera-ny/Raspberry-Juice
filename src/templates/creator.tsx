@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { SerializableProfile, SerializableVideo } from "~/modules/entity"
 import Content from "~/components/videocontent"
 import { Modal } from "~/components/modal"
@@ -16,6 +16,8 @@ interface ProfileProps {
 
 const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
   const user = useAuthUser()
+  const router = useRouter()
+  const isOwner = useMemo(() => user.id === profile.id, [user.id, profile.id])
   return (
     <>
       <div className="container">
@@ -79,14 +81,15 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
           </div>
           <div className="bottomcontents">
             <p className="bio">2021/09/30 に登録</p>
-            {user.id === profile.id && (
-              <>
-                <div className="buttons">
-                  <UploadButton />
-                  <EditProfileButton />
-                </div>
-              </>
-            )}
+            <div className="buttons">
+              <UploadButton
+                href={{
+                  pathname: router.asPath,
+                  query: { m: true },
+                }}
+              />
+              <EditProfileButton />
+            </div>
           </div>
         </div>
       </div>
@@ -163,7 +166,6 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             background-color: rgba(40, 40, 40, 0.56);
           }
           .secondary {
-            height: 100%;
             display: grid;
             flex-direction: column;
             row-gap: 20px;
@@ -192,6 +194,9 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             word-break: break-all;
             letter-spacing: 2px;
           }
+          .description {
+            padding-top: 8px;
+          }
           .morebutton {
             outline: none;
             border: none;
@@ -214,9 +219,6 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             flex-direction: row;
             justify-content: space-between;
           }
-          .bottomcontents p {
-            display: none;
-          }
           .buttons {
             display: flex;
             gap: 20px;
@@ -224,28 +226,34 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
           }
 
           @media (max-width: 500px) {
+            .container {
+              grid-template-rows: max(calc(100vw * 0.72), 250px) auto;
+            }
+            .background {
+              height: max(calc(100vw * 0.72), 250px);
+            }
             .name {
               font-size: 24px;
             }
             .icon {
-              width: 60px;
-              height: 60px;
-            }
-            .primary {
-              grid-template-columns: 60px auto;
+              width: max(calc(100vw * 0.16), 40px);
+              height: max(calc(100vw * 0.16), 40px);
             }
           }
 
           @media (min-width: 501px) and (max-width: 1200px) {
+            .container {
+              grid-template-rows: 360px auto;
+            }
+            .background {
+              height: 360px;
+            }
             .name {
               font-size: 32px;
             }
             .icon {
               width: 80px;
               height: 80px;
-            }
-            .primary {
-              grid-template-columns: 80px auto;
             }
           }
 
@@ -262,12 +270,6 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
           }
 
           @media (max-width: 1200px) {
-            .container {
-              grid-template-rows: 360px auto;
-            }
-            .background {
-              height: 360px;
-            }
             .primary {
               padding: 20px;
               column-gap: 20px;
@@ -276,13 +278,11 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               width: 100%;
             }
           }
-          @media (min-width: 1201px) {
+
+          @media (min-width: 1001px) {
             .icon {
-              width: 100px;
-              height: 100px;
-            }
-            .primary {
-              grid-template-columns: 100px auto;
+              width: min(calc(100vw * 0.1), 180px);
+              height: min(calc(100vw * 0.1), 180px);
             }
             .name {
               font-size: 38px;
@@ -295,7 +295,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
           }
           @media (min-width: 1001px) and (max-width: 1600px) {
             .container {
-              grid-template-columns: min(53%, 700px) min(43%, 600px);
+              grid-template-columns: min(53%, 700px) max(min(43%, 600px), 420px);
               column-gap: 40px;
               padding: 0 20px;
             }
@@ -314,17 +314,11 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             .container {
               grid-template-columns: min(53%, 700px) min(43%, 600px);
               justify-content: center;
-              height: 450px;
               column-gap: 40px;
               padding: 0 20px;
             }
             .primary {
-              grid-template-columns: 150px auto;
               column-gap: 32px;
-            }
-            .icon {
-              width: 150px;
-              height: 150px;
             }
             .name {
               font-size: 48px;
@@ -348,8 +342,14 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               grid-row: 2/3;
               grid-column: 1/3;
             }
+            .bottomcontents {
+              display: ${isOwner ? "flex" : "none"};
+            }
           }
           @media (min-width: 1601px) {
+            .container {
+              height: 400px;
+            }
             .icon {
               grid-row: 1 / ${!!profile.links.length ? "3" : "2"};
             }
@@ -362,7 +362,6 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             .container {
               grid-template-columns: 1fr 600px;
               padding: 0;
-              height: 500px;
             }
             .background {
               width: calc(100% - 600px);
@@ -371,7 +370,6 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               padding-left: 15%;
               column-gap: 52px;
               justify-content: flex-start;
-              grid-template-columns: 200px auto;
             }
             .createdAt {
               display: none;
@@ -381,15 +379,11 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               height: 100%;
               padding: 20px;
             }
-            .bottomcontents p {
-              display: inline;
-            }
-            .icon {
-              width: 200px;
-              height: 200px;
+            .bottomcontents {
+              display: flex;
             }
             .name {
-              font-size: 68px;
+              font-size: 52px;
               line-height: 74px;
             }
           }
@@ -468,6 +462,14 @@ export type Props = {
 const Template: FC<Props> = (props) => {
   const router = useRouter()
   const [isUploading, setIsUploading] = useState(false)
+  const previous = useCallback(() => {
+    if (!isUploading) {
+      router.replace({
+        pathname: router.pathname,
+        query: { creatorID: router.query.creatorID },
+      })
+    }
+  }, [isUploading])
   return (
     <>
       <ProfileTemplate profile={props.profile} />
@@ -482,13 +484,7 @@ const Template: FC<Props> = (props) => {
           ))}
         </div>
       </div>
-      <Modal
-        visible={props.modal}
-        onClickBackground={() => {
-          if (!isUploading) {
-            router.push({ pathname: "/" })
-          }
-        }}>
+      <Modal visible={props.modal} onClickBackground={previous}>
         {props.modal && (
           <>{<UploadContent onChangeIsUploading={setIsUploading} />}</>
         )}
