@@ -1,6 +1,6 @@
 import { NextPage, GetServerSideProps } from "next"
 import Template from "~/templates/creator"
-import { withAuthUser, AuthAction } from "next-firebase-auth"
+import { withAuthUser } from "next-firebase-auth"
 import Header from "~/components/header"
 import fetchContents from "~/modules/api/videos"
 import fetchProfile from "~/modules/api/creators/id"
@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     const targetID = typeof query.id === "string" ? query.id : null
     return {
       props: {
-        modal: query.m === "upload",
+        modal: query.m === "true",
         edit: targetID,
         profile,
         contents,
