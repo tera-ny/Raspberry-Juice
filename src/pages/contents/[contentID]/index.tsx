@@ -1,11 +1,7 @@
 import { NextPage, GetServerSidePropsResult } from "next"
 import Template from "~/templates/video"
-import {
-  withAuthUserTokenSSR,
-  AuthAction,
-  withAuthUser,
-} from "next-firebase-auth"
-import api from "~/modules/api/videos/id"
+import { withAuthUserTokenSSR, withAuthUser } from "next-firebase-auth"
+import fetchVideo from "~/modules/api/videos/id"
 import { SerializableVideo } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateCDNCookies } from "~/modules/storagecookie"
@@ -17,6 +13,7 @@ import auth from "~/stores/auth"
 import { useRouter } from "next/router"
 import { ServerResponse } from "http"
 import { useCallback, useMemo } from "react"
+import { UnPromisify } from "~/modules/utils/type"
 
 type Props = {
   edit: boolean
@@ -33,36 +30,75 @@ const setCDNCookie = async (
   res.setHeader("Set-Cookie", cdnCookies)
 }
 
+const validID = (id: any) => {
+  return typeof id === "string" && id !== "video"
+}
+
+const idKey = "contentID"
+const editKey = "edit"
+
+interface Query {
+  [idKey]: string
+  [editKey]: boolean
+}
+
+const validQueryKey = (keys: string[]) => {
+  return (
+    !!keys.length &&
+    keys.length <= 2 &&
+    keys.includes("contentID") &&
+    (keys.length === 1 || keys.includes("edit"))
+  )
+}
+
+const validQueryValueType = (query: any) => {
+  return (
+    validID(query[idKey]) &&
+    (typeof query[editKey] === "undefined" || query[editKey] === "true")
+  )
+}
+
+const redirectToCorrectPath = (id: any) => ({
+  redirect: {
+    permanent: false,
+    destination: validID(id) ? `/contents/${id}` : "/",
+  },
+})
+
 export const getServerSideProps = withAuthUserTokenSSR()(
   async ({
     AuthUser,
     res,
     query,
   }): Promise<GetServerSidePropsResult<Props>> => {
-    let content: SerializableVideo
-    const id = query.contentID
-    if (!(typeof id === "string" && id !== "video")) return { notFound: true }
+    let response: UnPromisify<ReturnType<typeof fetchVideo>>
+    const keys = Object.keys(query)
+    if (!(validQueryKey(keys) && validQueryValueType(query))) {
+      return redirectToCorrectPath(query[idKey])
+    }
+    const validedQuery: Query = { ...(query as any) }
     try {
-      content = (await api(id)).content
-    } catch (error) {
+      response = await fetchVideo(validedQuery.contentID)
+    } catch {
       return {
         notFound: true,
       }
     }
-    const isEdit = query.edit === "true"
-    if (isEdit && content.owner !== AuthUser.id) {
-      return {
-        redirect: {
-          permanent: false,
-          destination: "/",
-        },
-      }
+    if (validedQuery.edit && response.content.owner !== AuthUser.id) {
+      return redirectToCorrectPath(validedQuery.contentID)
     }
-    await setCDNCookie(res, id, dayjs().add(1, "day").unix())
+    if (!response.isPublished && response.content.owner !== AuthUser.id)
+      return {
+        notFound: true,
+      }
+    if (!response.isPublished) {
+      const expiration = dayjs().add(1, "day").unix()
+      await setCDNCookie(res, validedQuery.contentID, expiration)
+    }
     return {
       props: {
-        edit: query.edit === "true",
-        video: content,
+        edit: !!validedQuery.edit,
+        video: response.content,
       },
     }
   }
