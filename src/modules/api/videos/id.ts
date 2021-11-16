@@ -4,6 +4,7 @@ import { firestore } from "firebase-admin"
 
 export interface Response {
   content: SerializableVideo
+  isPublished: boolean
 }
 
 const handler = async (id: string): Promise<Response> => {
@@ -14,7 +15,7 @@ const handler = async (id: string): Promise<Response> => {
       .doc(id)
       .get()
     const video = snapshot.data() as Video<firestore.Timestamp>
-    if (snapshot.exists && video.isPublished && video.draft === false) {
+    if (snapshot.exists && video.draft === false) {
       return {
         content: {
           id: snapshot.ref.id,
@@ -31,6 +32,7 @@ const handler = async (id: string): Promise<Response> => {
           description: video.description ?? null,
           draft: video.draft,
         },
+        isPublished: video.isPublished,
       }
     } else {
       throw 404
