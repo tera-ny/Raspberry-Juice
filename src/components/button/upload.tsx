@@ -1,9 +1,14 @@
 import { FC } from "react"
 import Link from "next/link"
+import { UrlObject } from "url"
 
-const UploadButton: FC = () => (
+interface Props {
+  href: UrlObject
+}
+
+const UploadButton: FC<Props> = ({ href }) => (
   <>
-    <Link href={{ pathname: "/", query: { m: "upload" } }}>
+    <Link href={href}>
       <a className="uploadbutton">
         アップロード
         <div className="uploadicon">
