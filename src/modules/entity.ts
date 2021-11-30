@@ -30,11 +30,32 @@ export interface EditingVideo {
   readonly state: "uploaded" | "transcoded"
 }
 
+export interface ResizableImage {
+  medium: string
+  small?: string
+  large?: string
+  thumbnail?: string
+}
+
+export type ResizableImageWithID = ResizableImage & {
+  meta: {
+    id: string
+    originRef: string
+  }
+}
+
+export type Image = ResizableImageWithID & {
+  meta: {
+    uploader?: string
+    isPrivate?: boolean
+  }
+}
+
 export interface Profile<TimeStamp> {
   name: string
   description: string
   registeredAt: TimeStamp
-  background?: string
+  banner?: ResizableImageWithID
   isActive: boolean
   isBanned: boolean
   icon?: string
