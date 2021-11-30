@@ -24,10 +24,15 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
         <div
           className={toClassName({
             background: true,
-            effected: !!profile.background,
+            effected: !!profile.banner,
           })}>
-          {profile.background && (
-            <img src={profile.background} width="100%" height="100%" alt="" />
+          {profile.banner && (
+            <img
+              src={profile.banner.medium}
+              width="100%"
+              height="100%"
+              alt=""
+            />
           )}
         </div>
         <div className="primary">
