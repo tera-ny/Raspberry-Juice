@@ -24,7 +24,7 @@ const handler = async (id: string): Promise<Response> => {
           theme: profile.theme,
           //TODO: fetch links
           links: [],
-          background: profile.background ?? null,
+          banner: profile.banner ?? null,
           icon: profile.icon ?? null,
         },
       }
