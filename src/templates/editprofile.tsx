@@ -1,8 +1,8 @@
 import React, {
-  ChangeEvent,
   FC,
   forwardRef,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react"
@@ -16,72 +16,63 @@ import {
 } from "react-beautiful-dnd"
 import { WithChildren } from "~/utils/props"
 import Trash from "~/components/trash"
+import app from "~/modules/firebase"
+import { Profile, ResizableImage } from "~/modules/entity"
+import FilePicker from "~/components/filepicker"
+import upload from "~/modules/imageupload"
+import { useRecoilValue } from "recoil"
+import auth from "~/stores/auth"
+import firebase from "firebase/app"
+import "firebase/firestore"
+import { toClassName } from "~/modules/utils/css"
 
-type ImagePickerProps = {
-  id: string
-  maxByteSize: number
-  onSelectedImage: (file: File) => void
-} & WithChildren
+type ProfileType = Profile<firebase.firestore.Timestamp>
 
-const ImagePicker = ({
-  children,
-  id,
-  maxByteSize,
-  onSelectedImage,
-}: ImagePickerProps) => {
-  const onChangeImage = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.target.files.length < 1) return
-      const file = e.target.files.item(0)
-      if (file.size <= maxByteSize) {
-        onSelectedImage(file)
-      }
-    },
-    [onSelectedImage]
-  )
-  return (
-    <>
-      {children}
-      <input
-        type="file"
-        id={id}
-        accept="image/png,image/jpeg,image/gif"
-        onChange={onChangeImage}
-      />
-      <style jsx>{`
-        input {
-          display: none;
-        }
-        label {
-          width: 100%;
-        }
-      `}</style>
-    </>
-  )
+const acceptImage = (...types: string[]) =>
+  types.map((type) => "image/" + type).join(",")
+
+interface IconPickerProps {
+  theme?: number
 }
 
-const IconPicker = () => {
+const IconPicker: FC<IconPickerProps> = ({ theme }) => {
   const [file, setFile] = useState<File>(null)
+  const uid = useRecoilValue(auth.selector.uid)
   const id = "icon"
+  const icon = useMemo(
+    () =>
+      file
+        ? URL.createObjectURL(file)
+        : "/api/icon" + (theme ? `?color=${theme}` : ""),
+    [theme, file]
+  )
+  useEffect(() => {
+    if (!(file && uid)) return
+    const path = "profile/icon"
+    upload(path, file, uid).then((id) => {
+      console.log(id)
+    })
+    // .then(({ id }) => {
+    //   setFile(null)
+    //   setURL(`https://picture.raspberry-juice.com/profile/${uid}/icon/${id}`)
+    // })
+  }, [file])
   return (
     <>
-      <ImagePicker
-        onSelectedImage={setFile}
+      <FilePicker
+        onSelectedFile={setFile}
+        accept={acceptImage("jpeg", "png", "webp")}
         maxByteSize={6000000}
         id={id}
         key={file?.name}>
         <label className="container" htmlFor={id}>
           <div className="inner">
             <div className="image">
-              <img
-                width={114}
-                height={114}
-                src={file ? URL.createObjectURL(file) : "/api/icon"}
-              />
+              <img width={114} height={114} src={icon} />
             </div>
           </div>
         </label>
-      </ImagePicker>
+      </FilePicker>
       {file && (
         <button className="remove" onClick={() => setFile(null)}>
           削除
@@ -130,35 +121,85 @@ const IconPicker = () => {
   )
 }
 
-const BannerPicker = () => {
+const BannerPicker: React.FC<{
+  currentID?: string
+  currentImage: ResizableImage
+}> = (props) => {
   const [file, setFile] = useState<File>(null)
   const id = "banner"
+  const uid = useRecoilValue(auth.selector.uid)
+  const [imageID, setImageID] = useState(props.currentID)
+  const [currentURL, setCurrentURL] = useState<ResizableImage>(
+    props.currentImage
+  )
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<Error>()
+  const resetUpdating = useCallback(() => {
+    setIsUploading(false)
+    setFile(null)
+  }, [])
+  useEffect(() => {
+    if (!(file && uid)) return
+    setIsUploading(true)
+    const path = "profile/banner"
+    upload(path, file, uid)
+      .then(({ id }) => {
+        setImageID(id)
+      })
+      .catch((e) => {
+        setError(e)
+        resetUpdating()
+      })
+  }, [file])
+  useEffect(() => {
+    if (!imageID) return
+    app
+      .firestore()
+      .collection("images")
+      .doc(imageID)
+      .onSnapshot(
+        (snapshot) => {
+          if (snapshot.exists) {
+            setCurrentURL(snapshot.data() as ResizableImage)
+            resetUpdating()
+          }
+        },
+        (e) => {
+          setError(e)
+          resetUpdating()
+        }
+      )
+  }, [imageID])
   return (
     <>
-      <ImagePicker
-        onSelectedImage={setFile}
+      <FilePicker
+        onSelectedFile={setFile}
+        accept={acceptImage("jpeg", "png", "webp")}
         maxByteSize={8000000}
+        disabled={isUploading}
         id={id}
         key={file?.name}>
         <div className={"wrapper"}>
-          <label htmlFor={id}>
+          <label className={toClassName({ effected: true })} htmlFor={id}>
             {file ? (
               <img height={233} width={504} src={URL.createObjectURL(file)} />
+            ) : currentURL ? (
+              <img height={233} width={504} src={currentURL.medium} />
             ) : (
               <div className="container">
                 <img
                   className="symbol"
                   height={160}
                   width={296}
-                  src="/img/banner_symbol.svg"
+                  src={"/img/banner_symbol.svg"}
                   alt=""
                 />
               </div>
             )}
           </label>
         </div>
-      </ImagePicker>
-      {file && (
+      </FilePicker>
+      {(file || (imageID && !isUploading)) && (
         <button className="remove" onClick={() => setFile(null)}>
           削除
         </button>
@@ -181,11 +222,15 @@ const BannerPicker = () => {
           width: 100%;
           max-width: 400px;
           position: relative;
+          overflow: hidden;
         }
         .wrapper::before {
           content: "";
           display: block;
           padding-bottom: 53.5%;
+        }
+        .effected {
+          filter: blur(5px);
         }
         .container {
           background-color: #282828;
@@ -466,8 +511,12 @@ const Section = ({ children, title, subText }: SectionProps) => (
 
 let timeoutID: number
 
-const Template: FC = () => {
-  const channelURL = "https://raspberry-juice.com/channel/"
+interface Props {
+  id: string
+}
+
+const Template: FC<Props> = ({ id }) => {
+  const channelURL = "https://raspberry-juice.com/creator/" + id
   const [isShowCopiedText, setIsShow] = useState(false)
   const onClickChannelURL = useCallback(
     (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
@@ -483,16 +532,45 @@ const Template: FC = () => {
     },
     []
   )
+  const [profile, setProfile] = useState<ProfileType>()
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  useEffect(() => {
+    app
+      .firestore()
+      .collection("creators")
+      .doc(id)
+      .get()
+      .then((snapshot) => {
+        setProfile(snapshot.data() as ProfileType)
+      })
+  }, [id])
+  useEffect(() => {
+    setName(profile?.name)
+    setDescription(profile?.description)
+  }, [profile])
+  if (!profile) {
+    return <></>
+  }
   return (
     <>
       <div className="container">
         <h2 className="title">チャンネル編集</h2>
         <div>
           <Section title="チャンネル名">
-            <input type="text" className="name" />
+            <input
+              type="text"
+              className="name"
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+            />
           </Section>
           <Section title="チャンネル説明">
-            <textarea className="description" rows={10}></textarea>
+            <textarea
+              className="description"
+              rows={10}
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}></textarea>
           </Section>
           <Section
             title="チャンネルURL"
@@ -507,10 +585,13 @@ const Template: FC = () => {
         </div>
         <div>
           <Section title="プロフィール画像">
-            <IconPicker />
+            <IconPicker theme={profile.theme} />
           </Section>
           <Section title="バナー画像">
-            <BannerPicker />
+            <BannerPicker
+              currentID={profile.banner.meta.id}
+              currentImage={profile.banner}
+            />
           </Section>
           <Section title="サイトリンク">
             <SiteLinkEditor />
@@ -546,11 +627,11 @@ const Template: FC = () => {
           box-sizing: border-box;
         }
         .name {
-          font-size: 24px;
+          font-size: 21px;
         }
         .description {
           resize: vertical;
-          font-size: 18px;
+          font-size: 16px;
         }
         .channelName {
           font-size: 16px;
