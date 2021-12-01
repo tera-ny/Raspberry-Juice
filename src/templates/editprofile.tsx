@@ -180,7 +180,9 @@ const BannerPicker: React.FC<{
         id={id}
         key={file?.name}>
         <div className={"wrapper"}>
-          <label className={toClassName({ effected: true })} htmlFor={id}>
+          <label
+            className={toClassName({ effected: isUploading })}
+            htmlFor={id}>
             {file ? (
               <img height={233} width={504} src={URL.createObjectURL(file)} />
             ) : currentURL ? (
