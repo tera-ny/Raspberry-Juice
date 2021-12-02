@@ -14,9 +14,174 @@ interface ProfileProps {
   profile: SerializableProfile
 }
 
+const Bio: FC<{
+  showEditLink: boolean
+  profile: { description: string }
+}> = ({ showEditLink, profile }) => {
+  const router = useRouter()
+  return (
+    <>
+      <div className="container">
+        <div className="scrollable">
+          <div className="inner">
+            <h4>biography</h4>
+            <div className="description bio">
+              <ReactLinkify
+                componentDecorator={(href, text, key) => (
+                  <a
+                    style={{ color: "inherit" }}
+                    href={href}
+                    key={key}
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    {text}
+                  </a>
+                )}>
+                {profile.description}
+              </ReactLinkify>
+              <br />
+            </div>
+          </div>
+        </div>
+        <div className="footer">
+          <p className="registeredAt bio">2021/09/30 に登録</p>
+          <div className="buttons">
+            <UploadButton
+              href={{
+                pathname: router.asPath,
+                query: { m: true },
+              }}
+            />
+            <EditProfileButton />
+          </div>
+        </div>
+      </div>
+      <style jsx>
+        {`
+          .container {
+            position: relative;
+            display: grid;
+            flex-direction: column;
+            row-gap: 20px;
+            justify-content: stretch;
+            align-items: flex-start;
+            box-sizing: border-box;
+            grid-template-rows: 1fr auto;
+            height: 100%;
+          }
+          .scrollable {
+            overflow-y: scroll;
+            overflow-x: hidden;
+            height: 100%;
+          }
+          .meta {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+          }
+          .inner {
+            padding: 0;
+          }
+          .bio {
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            font-weight: 400;
+            font-size: 14px;
+            color: #080808;
+            line-height: 20px;
+            word-break: break-all;
+            letter-spacing: 2px;
+          }
+          .description {
+            padding-top: 8px;
+          }
+          .footer {
+            box-sizing: border-box;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+          }
+          .buttons {
+            display: ${showEditLink ? "flex" : "none"};
+            row-gap: 8px;
+            column-gap: 12px;
+            flex-wrap: wrap;
+          }
+          @media (max-width: 500px) {
+            .footer {
+              flex-direction: column;
+            }
+          }
+
+          @media (max-width: 1000px) {
+            .container {
+              padding: 42px 20px 0;
+            }
+          }
+
+          @media (min-width: 1001px) {
+            .inner {
+              padding: 20px;
+            }
+            .footer {
+              padding: 0 20px 12px;
+            }
+          }
+
+          @media (max-width: 1200px) {
+            .container {
+              width: 100%;
+            }
+          }
+
+          @media (min-width: 1201px) {
+            .container {
+              max-width: 600px;
+            }
+          }
+          @media (max-width: 1600px) {
+            .footer {
+              flex-direction: column;
+            }
+          }
+          @media (min-width: 1601px) {
+            .container {
+              width: 600px;
+              height: 100%;
+            }
+            .bottomcontents {
+              display: flex;
+            }
+          }
+          @media (prefers-color-scheme: light) {
+            .bio {
+              color: #080808;
+            }
+          }
+          @media (prefers-color-scheme: dark) {
+            .bio {
+              color: white;
+            }
+          }
+
+          @media (prefers-color-scheme: light) and (min-width: 1001px) and (max-width: 1600px) {
+            .container {
+              background-color: white;
+            }
+          }
+          @media (prefers-color-scheme: dark) and (min-width: 1001px) and (max-width: 1600px) {
+            .container {
+              background-color: #1e2026;
+            }
+          }
+        `}
+      </style>
+    </>
+  )
+}
 const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
   const user = useAuthUser()
-  const router = useRouter()
   const isOwner = useMemo(() => user.id === profile.id, [user.id, profile.id])
   return (
     <>
@@ -60,42 +225,8 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             </div>
           )}
         </div>
-        <div className="secondary">
-          <div className="meta">
-            <div className="inner">
-              <h4>biography</h4>
-              <div className="bio description">
-                <ReactLinkify
-                  componentDecorator={(href, text, key) => (
-                    <a
-                      style={{ color: "inherit" }}
-                      href={href}
-                      key={key}
-                      target="_blank"
-                      rel="noopener noreferrer">
-                      {text}
-                    </a>
-                  )}>
-                  {profile.description}
-                </ReactLinkify>
-                <br />
-                <br />
-              </div>
-            </div>
-            <p className="createdAt bio">2021/09/30 に登録</p>
-          </div>
-          <div className="bottomcontents">
-            <p className="bio">2021/09/30 に登録</p>
-            <div className="buttons">
-              <UploadButton
-                href={{
-                  pathname: router.asPath,
-                  query: { m: true },
-                }}
-              />
-              <EditProfileButton />
-            </div>
-          </div>
+        <div className={"biowrapper"}>
+          <Bio showEditLink={isOwner} profile={profile} />
         </div>
       </div>
       <style jsx>
@@ -112,6 +243,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             left: 0;
             height: 100%;
             width: 100%;
+            z-index: 0;
           }
           .background img {
             object-fit: cover;
@@ -170,64 +302,10 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
           .link:hover {
             background-color: rgba(40, 40, 40, 0.56);
           }
-          .secondary {
-            display: grid;
-            flex-direction: column;
-            row-gap: 20px;
-            justify-content: stretch;
-            align-items: flex-start;
+          .biowrapper {
+            position: relative;
             box-sizing: border-box;
-            grid-template-rows: 1fr auto;
-          }
-          .meta {
-            box-sizing: border-box;
-            width: 100%;
-          }
-          .inner {
-            overflow-y: scroll;
-            display: flex;
-            flex-direction: column;
-            height: calc(100% - 20px);
-          }
-          .bio {
-            box-sizing: border-box;
-            white-space: pre-wrap;
-            font-weight: 400;
-            font-size: 14px;
-            color: #080808;
-            line-height: 20px;
-            word-break: break-all;
-            letter-spacing: 2px;
-          }
-          .description {
-            padding-top: 8px;
-          }
-          .morebutton {
-            outline: none;
-            border: none;
-            background-color: transparent;
-            text-decoration: underline;
-            font-family: "Noto Sans JP";
-            font-weight: 300;
-            font-size: 14px;
-            cursor: pointer;
-            color: black;
-            margin-top: 10px;
-          }
-          .morebutton:active {
-            color: #252525;
-          }
-          .bottomcontents {
-            box-sizing: border-box;
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-          }
-          .buttons {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+            height: 100%;
           }
 
           @media (max-width: 500px) {
@@ -246,7 +324,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
             }
           }
 
-          @media (min-width: 501px) and (max-width: 1200px) {
+          @media (min-width: 501px) {
             .container {
               grid-template-rows: 360px auto;
             }
@@ -254,7 +332,7 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               height: 360px;
             }
             .name {
-              font-size: 32px;
+              font-size: 28px;
             }
             .icon {
               width: 80px;
@@ -269,8 +347,21 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               height: 52px;
               align-items: flex-start;
             }
-            .secondary {
-              padding: 42px 20px 20px;
+          }
+
+          @media (min-width: 1001px) {
+            .icon {
+              width: min(calc(100vw * 0.08), 160px);
+              height: min(calc(100vw * 0.08), 160px);
+            }
+            .container {
+              grid-template-columns: min(53%, 700px) max(min(43%, 600px), 420px);
+              column-gap: 40px;
+              padding: 0 20px;
+              justify-content: center;
+            }
+            .biowrapper {
+              padding: 20px 0;
             }
           }
 
@@ -279,61 +370,15 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               padding: 20px;
               column-gap: 20px;
             }
-            .secondary {
-              width: 100%;
-            }
           }
 
-          @media (min-width: 1001px) {
-            .icon {
-              width: min(calc(100vw * 0.1), 180px);
-              height: min(calc(100vw * 0.1), 180px);
-            }
-            .name {
-              font-size: 38px;
-            }
-          }
-          @media (min-width: 1001px) and (max-width: 1200px) {
-            .meta {
-              height: 260px;
-            }
-          }
-          @media (min-width: 1001px) and (max-width: 1600px) {
-            .container {
-              grid-template-columns: min(53%, 700px) max(min(43%, 600px), 420px);
-              column-gap: 40px;
-              padding: 0 20px;
-            }
-            .meta {
-              padding: 20px 0;
-            }
-            h4,
-            .bio {
-              padding: 0 20px;
-            }
-            .secondary {
-              padding: 20px;
-            }
-          }
-          @media (min-width: 1201px) and (max-width: 1600px) {
-            .container {
-              grid-template-columns: min(53%, 700px) min(43%, 600px);
-              justify-content: center;
-              column-gap: 40px;
-              padding: 0 20px;
-            }
+          @media (min-width: 1201px) {
             .primary {
               column-gap: 32px;
             }
             .name {
-              font-size: 48px;
+              font-size: 38px;
               line-height: 64px;
-            }
-            .meta {
-              height: 350px;
-            }
-            .secondary {
-              max-width: 600px;
             }
           }
           @media (max-width: 1600px) {
@@ -347,14 +392,8 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               grid-row: 2/3;
               grid-column: 1/3;
             }
-            .bottomcontents {
-              display: ${isOwner ? "flex" : "none"};
-            }
           }
           @media (min-width: 1601px) {
-            .container {
-              height: 400px;
-            }
             .icon {
               grid-row: 1 / ${!!profile.links.length ? "3" : "2"};
             }
@@ -376,48 +415,18 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
               column-gap: 52px;
               justify-content: flex-start;
             }
-            .createdAt {
-              display: none;
-            }
-            .secondary {
-              width: 600px;
-              height: 100%;
-              padding: 20px;
-            }
-            .bottomcontents {
-              display: flex;
-            }
-            .name {
-              font-size: 52px;
-              line-height: 74px;
+            .biowrapper {
+              padding: 0;
             }
           }
           @media (prefers-color-scheme: light) {
             .background {
               background-color: #222222;
             }
-            .bio {
-              color: #080808;
-            }
-            .morebutton {
-              color: black;
-            }
-            .morebutton:active {
-              color: #252525;
-            }
           }
           @media (prefers-color-scheme: dark) {
             .background {
               background-color: #222222;
-            }
-            .bio {
-              color: white;
-            }
-            .morebutton {
-              color: white;
-            }
-            .morebutton:active {
-              color: #f8f8f8;
             }
           }
           @media (prefers-color-scheme: light) {
@@ -436,17 +445,6 @@ const ProfileTemplate: FC<ProfileProps> = ({ profile }) => {
                 rgba(0, 0, 0, 0),
                 rgba(30, 32, 38, 1)
               );
-            }
-          }
-
-          @media (prefers-color-scheme: light) and (min-width: 1001px) and (max-width: 1600px) {
-            .meta {
-              background-color: white;
-            }
-          }
-          @media (prefers-color-scheme: dark) and (min-width: 1001px) and (max-width: 1600px) {
-            .meta {
-              background-color: #1e2026;
             }
           }
         `}
