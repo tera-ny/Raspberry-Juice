@@ -132,7 +132,7 @@ const BannerPicker: React.FC<{
   const [currentURL, setCurrentURL] = useState<ResizableImage>(
     props.currentImage
   )
-  const [isUploading, setIsUploading] = useState(false)
+  const [isUploading, setIsUploading] = useState(true)
   const [error, setError] = useState<Error>()
   const resetUpdating = useCallback(() => {
     setIsUploading(false)
@@ -170,6 +170,7 @@ const BannerPicker: React.FC<{
         }
       )
   }, [imageID])
+  console.log(isUploading)
   return (
     <>
       <FilePicker
@@ -199,6 +200,7 @@ const BannerPicker: React.FC<{
               </div>
             )}
           </label>
+          {isUploading && <div className={"loading"} />}
         </div>
       </FilePicker>
       {(file || (imageID && !isUploading)) && (
@@ -219,6 +221,7 @@ const BannerPicker: React.FC<{
           height: 100%;
           top: 0;
           left: 0;
+          cursor: ${isUploading ? "default" : "pointer"};
         }
         .wrapper {
           width: 100%;
@@ -231,6 +234,39 @@ const BannerPicker: React.FC<{
           display: block;
           padding-bottom: 53.5%;
         }
+        .loading {
+          position: absolute;
+          margin-bottom: 12px;
+          margin-left: 12px;
+          bottom: 0;
+          left: 0;
+          width: 20px;
+          height: 20px;
+          clear: both;
+          z-index: 999;
+          border: 4px rgba(255, 255, 255, 1) solid;
+          border-top: 4px rgba(255, 255, 255, 0.5) solid;
+          border-radius: 50%;
+          -webkit-animation: spCircRot 0.6s infinite ease-in-out;
+          animation: spCircRot 0.6s infinite ease-in-out;
+        }
+        @-webkit-keyframes spCircRot {
+          from {
+            -webkit-transform: rotate(0deg);
+          }
+          to {
+            -webkit-transform: rotate(359deg);
+          }
+        }
+        @keyframes spCircRot {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(359deg);
+          }
+        }
+
         .effected {
           filter: blur(5px);
         }
