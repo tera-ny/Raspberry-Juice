@@ -28,12 +28,12 @@ const Header: FC = () => {
           padding: 8px 12px;
         }
         .logo {
-          height: 40px;
+          height: 32px;
           width: auto;
         }
         .link {
           display: inline-block;
-          height: 40px;
+          height: 32px;
         }
       `}</style>
     </>

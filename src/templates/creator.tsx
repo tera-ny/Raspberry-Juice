@@ -494,7 +494,7 @@ const Template: FC<Props> = (props) => {
       </Modal>
       <style jsx>{`
         .container {
-          padding: 20px 52px;
+          padding: 20px;
           position: relative;
         }
         .sectiontitlewrapper {
@@ -512,7 +512,7 @@ const Template: FC<Props> = (props) => {
         .contents {
           display: grid;
           grid-template-columns: repeat(auto-fill, 240px);
-          justify-content: center;
+          justify-content: flex-start;
           align-items: flex-start;
           column-gap: 32px;
           row-gap: 24px;
@@ -522,22 +522,23 @@ const Template: FC<Props> = (props) => {
             color: white;
           }
         }
-        @media (max-width: 500px) {
-          .container {
-            padding: 16px 20px;
+        @media (max-width: 540px) {
+          .contents {
+            grid-template-columns: 1fr 1fr;
           }
-          .upload {
-            bottom: 16px;
-            right: 20px;
-          }
+        }
+        @media (max-width: 460px) {
           .contents {
             grid-template-columns: 1fr;
           }
         }
-        @media (max-width: 830px) {
-          .container {
-            padding: 20px;
+        @media (max-width: 500px) {
+          .upload {
+            bottom: 16px;
+            right: 20px;
           }
+        }
+        @media (max-width: 830px) {
           .upload {
             bottom: 20px;
             right: 20px;
@@ -547,12 +548,9 @@ const Template: FC<Props> = (props) => {
             row-gap: 16px;
           }
         }
-        @media (min-width: 831px) {
+        @media (min-width: 1001px) {
           .container {
-            padding-top: 40px;
-          }
-          .contents {
-            padding-top: 32px;
+            padding: 40px 32px;
           }
         }
       `}</style>
