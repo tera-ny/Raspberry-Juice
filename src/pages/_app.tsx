@@ -2,9 +2,9 @@ import { AppProps } from "next/app"
 import { RecoilRoot } from "recoil"
 import Auth from "~/components/auth"
 import NextHead from "next/head"
-import initAuth from "~/modules/nextauth"
+import { initApp } from "~/modules/firebase"
 
-initAuth()
+initApp()
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

@@ -1,10 +1,14 @@
 import { FC, useCallback, useEffect, useState } from "react"
 import { EditingVideo, Video } from "~/modules/entity"
-import firebase from "firebase/app"
-import "firebase/firestore"
 import { useRouter } from "next/router"
-import { useAuthUser } from "next-firebase-auth"
 import dynamic from "next/dynamic"
+import {
+  Timestamp,
+  onSnapshot,
+  doc,
+  getFirestore,
+  collection,
+} from "firebase/firestore"
 
 const Player = dynamic(import("~/components/player"), {
   loading: () => <video></video>,
@@ -15,7 +19,7 @@ interface Props {
   onChangeIsUploading?: (uploading: boolean) => void
 }
 
-const convert = (video: Video<firebase.firestore.Timestamp>): EditingVideo => ({
+const convert = (video: Video<Timestamp>): EditingVideo => ({
   title: video.title ?? "",
   poster: video.poster,
   description: video.description,
@@ -29,42 +33,35 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
   const router = useRouter()
   const [title, setTitle] = useState<string>()
   const [description, setDescription] = useState<string>()
-  const user = useAuthUser()
   useEffect(() => {
     setTitle(video?.title)
     setDescription(video?.description)
   }, [video])
   useEffect(() => {
-    const unsubscribe = firebase
-      .firestore()
-      .collection("contents")
-      .doc(id)
-      .onSnapshot(
-        (snapshot) => {
-          if (snapshot.exists) {
-            const data = snapshot.data() as Video<firebase.firestore.Timestamp>
-            setIsDraft(data.draft)
-            setVideo(convert(data))
-          } else {
-            router.replace("/")
-          }
-        },
-        () => {
+    const firestore = getFirestore()
+    const unsubscribe = onSnapshot(
+      doc(collection(firestore, "contents"), id),
+      (snapshot) => {
+        if (snapshot.exists) {
+          const data = snapshot.data() as Video<Timestamp>
+          setIsDraft(data.draft)
+          setVideo(convert(data))
+        } else {
           router.replace("/")
         }
-      )
+      },
+      () => {
+        router.replace("/")
+      }
+    )
     return () => {
       unsubscribe()
     }
   }, [id])
 
   const submitProfile = useCallback(async () => {
-    const token = await user.getIdToken()
     fetch(`/api/content_profile?id=${id}`, {
       method: "PUT",
-      headers: {
-        authorization: token,
-      },
       body: JSON.stringify({ title, description }),
     }).then(() => {
       router.replace("/")

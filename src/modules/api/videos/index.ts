@@ -1,9 +1,6 @@
-import initAuth from "~/modules/nextauth"
-import { getFirebaseAdmin } from "next-firebase-auth"
 import { SerializableVideo, Video } from "~/modules/entity"
 import { firestore } from "firebase-admin"
-
-initAuth()
+import app from "~/modules/admin"
 
 export interface Response {
   contentIDs: string[]
@@ -12,7 +9,7 @@ export interface Response {
 
 const handler = async (uid: string): Promise<Response> => {
   try {
-    const snapshot = await getFirebaseAdmin()
+    const snapshot = await app
       .firestore()
       .collection("contents")
       .where("type", "==", "video")
@@ -21,24 +18,22 @@ const handler = async (uid: string): Promise<Response> => {
       .orderBy("createdAt", "desc")
       .get()
     const contentIDs = snapshot.docs.map((doc) => doc.id)
-    const contents = snapshot.docs.map(
-      (doc): SerializableVideo => {
-        const data = doc.data() as Video<firestore.Timestamp>
-        return {
-          id: doc.id,
-          title: data.title ?? null,
-          url: data.url
-            ? typeof data.url === "string"
-              ? data.url
-              : data.url.hls
-            : null,
-          poster: data.poster ?? null,
-          createdAtMillis: data.createdAt.toMillis() ?? null,
-          description: data.description ?? null,
-          draft: data.draft,
-        }
+    const contents = snapshot.docs.map((doc): SerializableVideo => {
+      const data = doc.data() as Video<firestore.Timestamp>
+      return {
+        id: doc.id,
+        title: data.title ?? null,
+        url: data.url
+          ? typeof data.url === "string"
+            ? data.url
+            : data.url.hls
+          : null,
+        poster: data.poster ?? null,
+        createdAtMillis: data.createdAt.toMillis() ?? null,
+        description: data.description ?? null,
+        draft: data.draft,
       }
-    )
+    })
     return {
       contentIDs,
       contents,

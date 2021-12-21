@@ -1,18 +1,15 @@
 import { NextApiHandler } from "next"
-import initAuth from "~/modules/nextauth"
-import { getFirebaseAdmin, verifyIdToken } from "next-firebase-auth"
 import crypto from "crypto"
 import { generatePolicy } from "~/modules/uploadpolicy"
-
-initAuth()
+import app from "~/modules/admin"
+import { verifyAuthCookie } from "~/modules/auth/login"
 
 const generateID = () => {
   return crypto.randomBytes(10).toString("hex")
 }
 
 const contentCollection = () => {
-  const admin = getFirebaseAdmin()
-  return admin.firestore().collection("contents")
+  return app.firestore().collection("contents")
 }
 
 const hasDraft = async (uid: string, type: string) => {
@@ -40,7 +37,7 @@ const makeDraft = async (uid: string, type: string) => {
 }
 
 const handler: NextApiHandler = async (req, res) => {
-  const authUser = await verifyIdToken(req.headers.authorization ?? "")
+  const authUser = await verifyAuthCookie(req)
   if (!authUser) {
     res.statusCode = 403
     res.end()

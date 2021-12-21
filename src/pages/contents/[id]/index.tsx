@@ -1,67 +1,62 @@
-import { NextPage, GetServerSidePropsResult } from "next"
+import { NextPage, GetServerSideProps } from "next"
 import Template from "~/templates/video"
 import Error from "next/error"
-import {
-  withAuthUserTokenSSR,
-  AuthAction,
-  withAuthUser,
-} from "next-firebase-auth"
 import api from "~/modules/api/videos/id"
 import { SerializableVideo } from "~/modules/entity"
 import dayjs from "dayjs"
 import { generateCDNCookies } from "~/modules/storagecookie"
 import Header from "~/components/header"
+import { verifyAuthCookie } from "~/modules/auth/login"
+import { Cookies } from "~/modules/utils"
 
 interface Props {
   video?: SerializableVideo
   error?: number
 }
 
-export const getServerSideProps = withAuthUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
-})(
-  async ({
-    AuthUser,
-    res,
-    query,
-  }): Promise<GetServerSidePropsResult<Props>> => {
-    if (typeof query.id === "string" && query.id !== "video") {
-      try {
-        const reponse = await api(query.id, AuthUser.id)
-        const expiresOfUnix = dayjs().add(1, "day").unix()
-        const isSecure = process.env.ENVIRONMENT !== "development"
-        const cdnCookies = await generateCDNCookies(
-          [query.id],
-          expiresOfUnix,
-          isSecure
-        )
-        res.setHeader("Set-Cookie", cdnCookies)
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  req,
+  res,
+  query,
+}) => {
+  if (typeof query.id === "string" && query.id !== "video") {
+    try {
+      const decoded = await verifyAuthCookie(req)
+      const reponse = await api(query.id, decoded.uid)
+      const expiresOfUnix = dayjs().add(1, "day").unix()
+      const isSecure = process.env.ENVIRONMENT !== "development"
+      const cdnCookies = await generateCDNCookies(
+        [query.id],
+        expiresOfUnix,
+        isSecure
+      )
+      const cookies = new Cookies(res)
+      cookies.setValue(cdnCookies)
+      return {
+        props: {
+          video: reponse.content,
+        },
+      }
+    } catch (error) {
+      if (error === 404) {
+        return {
+          notFound: true,
+        }
+      } else {
+        console.error(error)
         return {
           props: {
-            video: reponse.content,
+            error: 500,
           },
         }
-      } catch (error) {
-        if (error === 404) {
-          return {
-            notFound: true,
-          }
-        } else {
-          console.error(error)
-          return {
-            props: {
-              error: 500,
-            },
-          }
-        }
-      }
-    } else {
-      return {
-        notFound: true,
       }
     }
+  } else {
+    return {
+      notFound: true,
+    }
   }
-)
+}
 
 const Page: NextPage<Props> = ({ video, error }) => {
   if (!video) {
@@ -78,6 +73,4 @@ const Page: NextPage<Props> = ({ video, error }) => {
   }
 }
 
-export default withAuthUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
-})(Page)
+export default Page
