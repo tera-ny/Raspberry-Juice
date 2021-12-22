@@ -4,6 +4,7 @@ import app from "~/modules/admin"
 
 export interface Response {
   content: SerializableVideo
+  lastupdate: number
 }
 
 const handler = async (id: string, uid: string): Promise<Response> => {
@@ -25,7 +26,9 @@ const handler = async (id: string, uid: string): Promise<Response> => {
           state: video.state,
           description: video.description ?? null,
           draft: video.draft,
+          isPublished: video.isPublished,
         },
+        lastupdate: snapshot.updateTime!.nanoseconds,
       }
     } else {
       throw 404

@@ -1,14 +1,7 @@
 import { FC, useCallback, useEffect, useState } from "react"
-import { EditingVideo, Video } from "~/modules/entity"
-import { useRouter } from "next/router"
+import { SerializableVideo } from "~/modules/entity"
 import dynamic from "next/dynamic"
-import {
-  Timestamp,
-  onSnapshot,
-  doc,
-  getFirestore,
-  collection,
-} from "firebase/firestore"
+import { useRouter } from "next/router"
 
 const Player = dynamic(import("~/components/player"), {
   loading: () => <video></video>,
@@ -19,75 +12,51 @@ interface Props {
   onChangeIsUploading?: (uploading: boolean) => void
 }
 
-const convert = (video: Video<Timestamp>): EditingVideo => ({
-  title: video.title ?? "",
-  poster: video.poster,
-  description: video.description,
-  state: video.state,
-  url: typeof video.url === "object" ? video.url.hls : video.url,
-})
-
 const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
-  const [isDraft, setIsDraft] = useState<boolean>()
-  const [video, setVideo] = useState<EditingVideo>()
+  const [origin, setOrigin] = useState<SerializableVideo>()
+  const [title, setTitle] = useState("")
   const router = useRouter()
-  const [title, setTitle] = useState<string>()
-  const [description, setDescription] = useState<string>()
+  const [description, setDescription] = useState("")
   useEffect(() => {
-    setTitle(video?.title)
-    setDescription(video?.description)
-  }, [video])
-  useEffect(() => {
-    const firestore = getFirestore()
-    const unsubscribe = onSnapshot(
-      doc(collection(firestore, "contents"), id),
-      (snapshot) => {
-        if (snapshot.exists) {
-          const data = snapshot.data() as Video<Timestamp>
-          setIsDraft(data.draft)
-          setVideo(convert(data))
-        } else {
-          router.replace("/")
-        }
-      },
-      () => {
-        router.replace("/")
-      }
-    )
-    return () => {
-      unsubscribe()
-    }
+    fetch(`/api/contents/${id}`, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((video: SerializableVideo) => {
+        setOrigin(video)
+      })
   }, [id])
+  useEffect(() => {
+    setTitle(origin?.title ?? "")
+    setDescription(origin?.description ?? "")
+  }, [origin?.title, origin?.description])
 
-  const submitProfile = useCallback(async () => {
-    fetch(`/api/content_profile?id=${id}`, {
+  const updateMetaData = useCallback(() => {
+    fetch(`/api/contents/${id}/edit`, {
       method: "PUT",
       body: JSON.stringify({ title, description }),
-    }).then(() => {
-      router.replace("/")
+    }).then((res) => {
+      if (res.ok) {
+        router.replace("/")
+      }
     })
   }, [title, description, id])
-
-  if (video === undefined && isDraft === undefined) return <></>
-  if (isDraft) {
-    return <>アップロード処理中....</>
-  }
 
   return (
     <>
       <div className="container">
         <h2 className="title">アップロードしたコンテンツを編集</h2>
         <div className="contents">
-          {video?.state && video.state === "transcoded" ? (
+          {origin?.state === "transcoded" ? (
             <Player
-              src={video?.url}
-              poster={video?.poster}
+              src={origin?.url}
+              poster={origin?.poster}
               aspectRatio={16 / 9}
             />
           ) : (
             <div className="placeholderWrapper">
               <div className="placeholder">
-                {video?.state ? "配信可能な形式に変換中です。" : ""}
+                {origin?.state ? "配信可能な形式に変換中です。" : ""}
               </div>
             </div>
           )}
@@ -122,12 +91,10 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
             <h3 className="sectionTitle">動画の説明</h3>
             <div className="meta">
               <textarea
-                name=""
                 id=""
                 cols={30}
                 rows={10}
                 placeholder="動画の説明を入力"
-                value={description}
                 onChange={(e) => {
                   setDescription(e.target.value)
                 }}
@@ -136,8 +103,8 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
           </div>
           <button
             className="updateButton"
-            disabled={!video}
-            onClick={submitProfile}>
+            disabled={!origin}
+            onClick={updateMetaData}>
             更新する
           </button>
         </div>
@@ -259,16 +226,22 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
         }
 
         .updateButton {
-          background-color: transparent;
+          outline: none;
+          border: none;
           padding: 8px 32px;
           font-weight: 700;
           font-size: 14px;
           border-radius: 20px;
           margin-top: auto;
           margin-left: auto;
-        }
-        .updateButton:hover {
+          cursor: pointer;
           background-color: #e6aa11;
+          color: white;
+        }
+        .updateButton:disabled {
+          cursor: default;
+          background-color: #808080;
+          color: #c3c3c3;
         }
         @media (prefers-color-scheme: dark) {
           .meta input,
