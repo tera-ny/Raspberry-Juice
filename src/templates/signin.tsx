@@ -1,8 +1,7 @@
-import { FC, useCallback, useState } from "react"
+import { FC, useCallback, useState, useRef } from "react"
+import { useRouter } from "next/router"
 import TextInput from "~/components/textinput"
-import firebase from "~/modules/firebase"
-import "firebase/auth"
-import { useRef } from "react"
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 
 interface FormProps {
   signin: (email: string, password: string) => void
@@ -120,13 +119,37 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
   )
 }
 
-const SignInTemplate: FC = () => {
+interface Props {
+  csrfToken: string
+}
+
+const SignInTemplate: FC<Props> = ({ csrfToken }) => {
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
   const signin = useCallback(async (email: string, password: string) => {
     setIsLoading(true)
-    console.log()
     try {
-      await firebase.auth().signInWithEmailAndPassword(email, password)
+      const auth = getAuth()
+      auth.setPersistence({ type: "NONE" })
+      signInWithEmailAndPassword(auth, email, password)
+        .then((credential) => credential.user.getIdToken())
+        .then((token) =>
+          fetch("/api/login", {
+            headers: { Authorization: token },
+            method: "POST",
+            mode: "same-origin",
+            cache: "no-cache",
+            referrerPolicy: "no-referrer",
+            body: JSON.stringify({
+              csrfToken,
+            }),
+          })
+        )
+        .then((response) => {
+          if (response.ok) {
+            router.replace("/")
+          }
+        })
     } catch (e) {
       console.error(e)
     }

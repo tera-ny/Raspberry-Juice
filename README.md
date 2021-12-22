@@ -27,7 +27,6 @@ This is an online content storage system that allows users to upload their own v
 - [hlsjs](https://github.com/video-dev/hls.js/)
 - [firebase-js-sdk](https://github.com/firebase/firebase-js-sdk)
 - [firebase-admin-node](https://github.com/firebase/firebase-admin-node)
-- [next-firebase-auth](https://github.com/gladly-team/next-firebase-auth)
 
 #### Hosting
 

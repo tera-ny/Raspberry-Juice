@@ -1,5 +1,6 @@
 import * as crypto from "crypto"
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager"
+import { makeCookieString } from "./utils"
 
 const decodeSecretKey = async (
   client: SecretManagerServiceClient,
@@ -48,30 +49,11 @@ const generateSignature = (
   const prefix = generate(urlPrefix, keyName, secretKey, expiresOfUnix)
   return prefix
 }
-
-const makeCookieString = (
-  key: string,
-  value: string,
-  path: string,
-  expires: Date,
-  isSecure: boolean
-) => {
-  let values = [`${key}=${value}`]
-  values.push(`Path=${path}`)
-  values.push(`Expires=${expires.toUTCString()}`)
-  if (isSecure) {
-    values.push("Secure")
-  }
-  values.push("SameSite=None")
-  values.push("HttpOnly")
-  return values.join("; ")
-}
-
 export const generateCDNCookies = async (
-  contentIDs: string[],
+  contentID: string[],
   expiresOfUnix: number,
   isSecure: boolean
-): Promise<string[]> => {
+) => {
   const keyName = process.env.CLOUD_SECRET_NAME
   const keyVersion = process.env.CLOUD_SECRET_VERSION
   const projectID = process.env.PROJECT_ID
@@ -82,14 +64,12 @@ export const generateCDNCookies = async (
     const client = new SecretManagerServiceClient()
     signatureKey = await decodeSecretKey(client, projectID, keyName, keyVersion)
   }
-  return contentIDs.map((id) => {
-    const path = `/contents/video/${id}/`
-    return makeCookieString(
-      "Cloud-CDN-Cookie",
-      generateSignature(path, expiresOfUnix, keyName, signatureKey),
-      path,
-      new Date(expiresOfUnix * 1000),
-      isSecure
-    )
-  })
+  const path = `/contents/video/${contentID}/`
+  return makeCookieString(
+    "Cloud-CDN-Cookie",
+    generateSignature(path, expiresOfUnix, keyName, signatureKey),
+    path,
+    new Date(expiresOfUnix * 1000),
+    isSecure
+  )
 }

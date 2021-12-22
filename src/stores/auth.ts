@@ -1,6 +1,6 @@
 import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil"
 import { useEffect } from "react"
-import firebase from "~/modules/firebase"
+import { onAuthStateChanged, getAuth } from "firebase/auth"
 
 interface Subscription {
   uid?: string
@@ -31,7 +31,8 @@ export const listenAuth = () => {
   const isSubscribed = useRecoilValue(isSubscribedState)
   useEffect(() => {
     if (isSubscribed) return
-    let unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    const auth = getAuth()
+    let unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuth((atom) => ({
         ...atom,
         subscription: { uid: user?.uid ?? undefined },

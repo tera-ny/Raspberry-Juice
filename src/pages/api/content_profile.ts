@@ -1,10 +1,8 @@
 import { NextApiHandler } from "next"
-import initAuth from "~/modules/nextauth"
-import { getFirebaseAdmin, verifyIdToken } from "next-firebase-auth"
 import { Video } from "~/modules/entity"
 import * as admin from "firebase-admin"
-
-initAuth()
+import app from "~/modules/admin"
+import { verifyAuthCookie } from "~/modules/auth/login"
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method.toLowerCase() !== "put") {
@@ -12,7 +10,7 @@ const handler: NextApiHandler = async (req, res) => {
     res.end()
     return
   }
-  const authUser = await verifyIdToken(req.headers.authorization ?? "")
+  const authUser = await verifyAuthCookie(req)
   if (!authUser) {
     res.statusCode = 403
     res.end()
@@ -21,11 +19,7 @@ const handler: NextApiHandler = async (req, res) => {
     req.method.toLowerCase() === "put"
   ) {
     let id: string = req.query.id
-    const snapshot = await getFirebaseAdmin()
-      .firestore()
-      .collection("contents")
-      .doc(id)
-      .get()
+    const snapshot = await app.firestore().collection("contents").doc(id).get()
     const data = snapshot.data() as Video<admin.firestore.Timestamp>
     if (data.owner === authUser.id) {
       let updateData: { title?: string; description?: string } = {}

@@ -1,4 +1,3 @@
-import { useAuthUser } from "next-firebase-auth"
 import { useRouter } from "next/router"
 import {
   ChangeEvent,
@@ -18,8 +17,6 @@ interface Props {
 }
 
 const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
-  const user = useAuthUser()
-
   const form = useRef<HTMLFormElement>()
   const [isDragOver, setIsDragOver] = useState(false)
 
@@ -65,11 +62,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
   )
   useEffect(() => {
     setPolicy(undefined)
-    user
-      .getIdToken()
-      .then((token) =>
-        fetch("/api/upload_policy", { headers: { Authorization: token } })
-      )
+    fetch("/api/upload_policy")
       .then((res) => res.json())
       .then((json) => {
         setPolicy(json.policy)

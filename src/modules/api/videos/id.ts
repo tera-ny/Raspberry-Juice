@@ -1,9 +1,6 @@
-import initAuth from "~/modules/nextauth"
-import { getFirebaseAdmin } from "next-firebase-auth"
 import { SerializableVideo, Video } from "~/modules/entity"
 import { firestore } from "firebase-admin"
-
-initAuth()
+import app from "~/modules/admin"
 
 export interface Response {
   content: SerializableVideo
@@ -11,11 +8,7 @@ export interface Response {
 
 const handler = async (id: string, uid: string): Promise<Response> => {
   try {
-    const snapshot = await getFirebaseAdmin()
-      .firestore()
-      .collection("contents")
-      .doc(id)
-      .get()
+    const snapshot = await app.firestore().collection("contents").doc(id).get()
     const video = snapshot.data() as Video<firestore.Timestamp>
     if (snapshot.exists && video.owner === uid && video.draft === false) {
       return {
