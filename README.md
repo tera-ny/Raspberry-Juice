@@ -3,13 +3,11 @@
 <br>
 <br>
 <div align=center>
-<a href="https://raspberry-juice.com/login">
 <img
   className="logo"
   src="https://raw.githubusercontent.com/tera-ny/OrangeJuiceWeb/main/public/img/logo_full_light.svg"
   width=50%
 />
-</a>
 </div>
 <br>
 <br>
