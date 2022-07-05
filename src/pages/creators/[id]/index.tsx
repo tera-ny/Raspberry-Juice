@@ -1,9 +1,9 @@
 import { NextPage, GetServerSideProps } from "next"
-import Template from "~/templates/home"
+import Template from "~/templates/creator"
 import Header from "~/components/header"
 import fetchContents from "~/modules/api/videos"
 
-import { Props } from "~/templates/home"
+import { Props } from "~/templates/creator"
 import { verifyAuthCookie } from "~/modules/auth/login"
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
@@ -11,17 +11,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
 }) => {
   try {
-    const decoded = await verifyAuthCookie(req)
-    const response = await fetchContents(decoded.uid)
-    const targetID = typeof query.id === "string" ? query.id : null
-    return {
-      props: {
-        modal: query.m === "true",
-        edit: targetID,
-        contents: response.contents,
-      },
+    if (typeof query.id !== "string") {
+      return {
+        notFound: true,
+      }
+    } else {
+      const targetID = query.id
+      const response = await fetchContents(targetID)
+      const decoded = await verifyAuthCookie(req)
+      return {
+        props: {
+          isOwner: targetID === decoded?.uid,
+          modal: query.m === "true",
+          contents: response.contents,
+        },
+      }
     }
   } catch (error) {
+    console.log(error)
     return {
       notFound: true,
     }

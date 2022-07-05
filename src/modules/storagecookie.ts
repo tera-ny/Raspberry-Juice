@@ -13,12 +13,7 @@ const decodeSecretKey = async (
   return version.payload!.data!.toString()
 }
 
-const generate = (
-  urlPrefix: string,
-  keyName: string,
-  key: string,
-  expiresOfUnix: number
-) => {
+const generate = (urlPrefix: string, key: string, expiresOfUnix: number) => {
   const decodedKeybytes = Buffer.from(key, "base64")
   const urlPrefixEncoded = Buffer.from(urlPrefix)
     .toString("base64")
@@ -41,12 +36,11 @@ const generate = (
 const generateSignature = (
   requestPath: string,
   expiresOfUnix: number,
-  keyName: string,
   secretKey: string
 ) => {
   if (process.env.ENVIRONMENT === "development") return "xxxxxx"
   const urlPrefix = `https://raspberry-juice.com${requestPath}`
-  const prefix = generate(urlPrefix, keyName, secretKey, expiresOfUnix)
+  const prefix = generate(urlPrefix, secretKey, expiresOfUnix)
   return prefix
 }
 export const generateCDNCookies = async (
@@ -67,8 +61,8 @@ export const generateCDNCookies = async (
   const path = `/contents/video/${contentID}/`
   return makeCookieString(
     "Cloud-CDN-Cookie",
-    generateSignature(path, expiresOfUnix, keyName, signatureKey),
-    path,
+    generateSignature(path, expiresOfUnix, signatureKey),
+    "/contents/video/",
     new Date(expiresOfUnix * 1000),
     isSecure
   )

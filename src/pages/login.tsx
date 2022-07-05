@@ -36,8 +36,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
   context
 ) => {
   try {
-    await verifyAuthCookie(context.req)
-    return { redirect: { statusCode: 302, destination: "/" } }
+    const decoded = await verifyAuthCookie(context.req)
+    if (!decoded) {
+      throw "not found auth cookie"
+    } else {
+      return { redirect: { statusCode: 302, destination: "/" } }
+    }
   } catch (error) {
     const cookies = new Cookies(context.res)
     const csrfToken = generateAndSetToken(cookies)

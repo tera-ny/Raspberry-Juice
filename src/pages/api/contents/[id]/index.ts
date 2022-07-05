@@ -11,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
   if (typeof id !== "string") return res.status(400).end()
   try {
     const decoded = await verifyAuthCookie(req)
-    const response = await api(id, decoded.uid)
+    const response = await api(id, decoded?.uid)
     const hash = calculateHash(
       JSON.stringify({
         id: id,

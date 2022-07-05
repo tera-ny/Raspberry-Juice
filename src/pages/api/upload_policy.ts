@@ -43,9 +43,9 @@ const handler: NextApiHandler = async (req, res) => {
     res.end()
   } else {
     let id: string
-    const draft = await hasDraft(authUser.id, "video")
+    const draft = await hasDraft(authUser.uid, "video")
     if (!draft.hasDraft) {
-      const makedDraft = await makeDraft(authUser.id, "video")
+      const makedDraft = await makeDraft(authUser.uid, "video")
       id = makedDraft.id
     } else {
       id = draft.id

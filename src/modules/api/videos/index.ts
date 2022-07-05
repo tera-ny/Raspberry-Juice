@@ -15,6 +15,7 @@ const handler = async (uid: string): Promise<Response> => {
       .where("type", "==", "video")
       .where("owner", "==", uid)
       .where("draft", "==", false)
+      .where("isPublished", "==", true)
       .orderBy("createdAt", "desc")
       .get()
     const contentIDs = snapshot.docs.map((doc) => doc.id)
