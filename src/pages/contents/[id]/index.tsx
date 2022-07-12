@@ -22,20 +22,26 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   if (typeof query.id === "string" && query.id !== "video") {
     try {
       const decoded = await verifyAuthCookie(req)
-      const reponse = await api(query.id, decoded.uid)
-      const expiresOfUnix = dayjs().add(1, "day").unix()
-      const isSecure = process.env.ENVIRONMENT !== "development"
-      const cdnCookies = await generateCDNCookies(
-        [query.id],
-        expiresOfUnix,
-        isSecure
-      )
-      const cookies = new Cookies(res)
-      cookies.setValue(cdnCookies)
-      return {
-        props: {
-          video: reponse.content,
-        },
+      const response = await api(query.id, decoded?.uid)
+      if (response) {
+        const expiresOfUnix = dayjs().add(1, "day").unix()
+        const isSecure = process.env.ENVIRONMENT !== "development"
+        const cdnCookies = await generateCDNCookies(
+          [query.id],
+          expiresOfUnix,
+          isSecure
+        )
+        const cookies = new Cookies(res)
+        cookies.setValue(cdnCookies)
+        return {
+          props: {
+            video: response.content,
+          },
+        }
+      } else {
+        return {
+          notFound: true,
+        }
       }
     } catch (error) {
       if (error === 404) {

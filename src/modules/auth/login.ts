@@ -24,7 +24,7 @@ export const verifyAuthCookie = async (req: {
   cookies: NextApiRequestCookies
 }) => {
   const sessionCookie = req.cookies[sessionKey]
-  if (!setSessionCookie) throw "not found argment"
+  if (!sessionCookie) return undefined
   return admin.auth().verifySessionCookie(sessionCookie)
 }
 

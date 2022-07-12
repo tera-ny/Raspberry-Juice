@@ -7,11 +7,15 @@ export interface Response {
   lastupdate: number
 }
 
-const handler = async (id: string, uid: string): Promise<Response> => {
+const handler = async (id: string, uid?: string): Promise<Response> => {
   try {
     const snapshot = await app.firestore().collection("contents").doc(id).get()
     const video = snapshot.data() as Video<firestore.Timestamp>
-    if (snapshot.exists && video.owner === uid && video.draft === false) {
+    if (
+      snapshot.exists &&
+      (video.owner === uid || video.isPublished) &&
+      video.draft === false
+    ) {
       return {
         content: {
           id: snapshot.ref.id,
