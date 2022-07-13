@@ -1,9 +1,9 @@
-import { FC } from "react"
-import auth from "~/stores/auth"
+import { FC } from "react";
+import { useListenAuth } from "~/stores/auth";
 
 const Auth: FC = ({ children }) => {
-  auth.effect.listenAuth()
-  return <>{children}</>
-}
+  useListenAuth();
+  return <>{children}</>;
+};
 
-export default Auth
+export default Auth;

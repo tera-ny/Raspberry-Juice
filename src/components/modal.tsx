@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC } from "react";
 
 export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
   visible,
@@ -11,7 +11,8 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
         <div className={"contents"}>{children}</div>
         <div className={"background"} onClick={onClickBackground}></div>
       </div>
-      <style jsx>{`
+      <style jsx>
+        {`
         .container {
           display: flex;
           z-index: 100;
@@ -68,9 +69,10 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
             padding: 24px 20px;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

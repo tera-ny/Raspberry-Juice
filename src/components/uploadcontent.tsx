@@ -1,4 +1,4 @@
-import { useRouter } from "next/router"
+import { useRouter } from "next/router";
 import {
   ChangeEvent,
   DragEvent,
@@ -7,106 +7,109 @@ import {
   useEffect,
   useRef,
   useState,
-} from "react"
-import { Policy } from "~/modules/uploadpolicy"
+} from "react";
+import { Policy } from "~/modules/uploadpolicy";
 
-var timeoutID: any
+var timeoutID: any;
 
 interface Props {
-  onChangeIsUploading?: (uploading: boolean) => void
+  onChangeIsUploading?: (uploading: boolean) => void;
 }
 
 const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
-  const form = useRef<HTMLFormElement>()
-  const [isDragOver, setIsDragOver] = useState(false)
+  const form = useRef<HTMLFormElement>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
 
-  const [file, setFile] = useState<File>()
-  const [policy, setPolicy] = useState<Policy>()
-  const [isUploading, setIsUploading] = useState<boolean>(false)
-  const [count, setCount] = useState(0)
+  const [file, setFile] = useState<File>();
+  const [policy, setPolicy] = useState<Policy>();
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [count, setCount] = useState(0);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const changeUploadTarget = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files.length !== 1) return
-    const file = e.target.files.item(0)
-    setFile(file)
-  }, [])
+    if (e.target.files?.length !== 1) return;
+    const file = e.target.files.item(0);
+    setFile(file ?? undefined);
+  }, []);
   const dragOverHandler = useCallback((e: DragEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     if (timeoutID) {
-      clearTimeout(timeoutID)
+      clearTimeout(timeoutID);
     }
-    form.current.classList.add("dragover")
-    setIsDragOver(true)
+    const currentForm = form.current;
+    if (!currentForm) return;
+    currentForm.classList.add("dragover");
+    setIsDragOver(true);
     timeoutID = setTimeout(function () {
-      form.current.classList.remove("dragover")
-      setIsDragOver(false)
-    }, 100)
-  }, [])
+      currentForm.classList.remove("dragover");
+      setIsDragOver(false);
+    }, 100);
+  }, []);
   const dropFile = useCallback(
     (e: DragEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      let file: File
+      e.preventDefault();
+      let file: File | null;
       if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-        file = e.dataTransfer.items[0].getAsFile()
+        file = e.dataTransfer.items[0].getAsFile();
       } else if (e.dataTransfer.files.length > 0) {
-        file = e.dataTransfer.files[0]
+        file = e.dataTransfer.files[0];
       } else {
-        return
+        return;
       }
-      if (file.type !== "video/mp4" || isUploading) return
-      setFile(file)
+      if (!file) return;
+      if (file.type !== "video/mp4" || isUploading) return;
+      setFile(file);
     },
-    [isUploading]
-  )
+    [isUploading],
+  );
   useEffect(() => {
-    setPolicy(undefined)
+    setPolicy(undefined);
     fetch("/api/upload_policy")
       .then((res) => res.json())
       .then((json) => {
-        setPolicy(json.policy)
-      })
-  }, [])
+        setPolicy(json.policy);
+      });
+  }, []);
 
   useEffect(() => {
-    if (policy && !isUploading) {
-      setIsUploading(true)
-      const request = new XMLHttpRequest()
-      const data = new FormData(form.current)
-      request.open("POST", policy.url)
-      request.send(data)
+    if (policy && !isUploading && form.current) {
+      setIsUploading(true);
+      const request = new XMLHttpRequest();
+      const data = new FormData(form.current);
+      request.open("POST", policy.url);
+      request.send(data);
       request.addEventListener("error", () => {
-        console.error(request.status)
-        setIsUploading(false)
-        setFile(undefined)
-      })
+        console.error(request.status);
+        setIsUploading(false);
+        setFile(undefined);
+      });
       request.addEventListener("progress", (e) => {
-        console.log(e.loaded ? (e.loaded / e.total) * 100 : 0)
-      })
+        console.log(e.loaded ? (e.loaded / e.total) * 100 : 0);
+      });
       request.addEventListener("load", () => {
-        console.log("uploaded")
-        router.replace("/")
-      })
+        console.log("uploaded");
+        router.replace("/");
+      });
     }
-  }, [file, isUploading])
+  }, [isUploading, policy, router]);
   useEffect(() => {
-    onChangeIsUploading(isUploading)
-  }, [isUploading])
+    onChangeIsUploading?.(isUploading);
+  }, [onChangeIsUploading, isUploading]);
   useEffect(() => {
     if (isUploading) {
-      setCount(0)
+      setCount(0);
       const interval = setInterval(() => {
-        setCount((prev) => (prev < 4 ? prev + 1 : 0))
-      }, 1000)
+        setCount((prev) => (prev < 4 ? prev + 1 : 0));
+      }, 1000);
       return () => {
-        clearInterval(interval)
-      }
+        clearInterval(interval);
+      };
     }
-  }, [isUploading])
+  }, [isUploading]);
 
   if (!policy) {
-    return <></>
+    return <></>;
   }
 
   return (
@@ -119,24 +122,22 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
         onDragOver={dragOverHandler}
         action={policy?.url}
         method="post"
-        encType="multipart/form-data">
+        encType="multipart/form-data"
+      >
         <picture className="uploadContentLogo">
           <source
-            srcSet={
-              isDragOver
-                ? "/img/upload_content_active.svg"
-                : "/img/upload_content_dark.svg"
-            }
+            srcSet={isDragOver
+              ? "/img/upload_content_active.svg"
+              : "/img/upload_content_dark.svg"}
             media="(prefers-color-scheme: dark)"
           />
           <img
             height="94"
             width="152"
-            src={
-              isDragOver
-                ? "/img/upload_content_active.svg"
-                : "/img/upload_content_light.svg"
-            }
+            src={isDragOver
+              ? "/img/upload_content_active.svg"
+              : "/img/upload_content_light.svg"}
+            alt="コンテンツをここにドロップ"
           />
         </picture>
         <>
@@ -265,7 +266,7 @@ const UploadContent: FC<Props> = ({ onChangeIsUploading }) => {
         `}
       </style>
     </>
-  )
-}
+  );
+};
 
-export default UploadContent
+export default UploadContent;

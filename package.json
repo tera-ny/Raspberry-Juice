@@ -6,7 +6,8 @@
     "dev": "ENVIRONMENT=development next",
     "deploy": "rm -rf .next/ && ENVIRONMENT=production yarn build && gcloud app deploy",
     "build": "next build",
-    "start": "next start -p $PORT"
+    "start": "next start -p $PORT",
+    "lint": "next lint"
   },
   "dependencies": {
     "@google-cloud/secret-manager": "^3.9.0",
@@ -15,10 +16,10 @@
     "firebase": "^9.6.1",
     "firebase-admin": "^9.11.0",
     "hls.js": "^1.0.9",
-    "next": "^12.0.7",
-    "react": "^17.0.2",
-    "react-dom": "17.0.1",
-    "recoil": "^0.4.0",
+    "next": "^12.2.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recoil": "^0.7.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -28,13 +29,8 @@
     "@types/react-dom": "^17.0.0",
     "@types/styled-jsx": "^2.2.8",
     "@types/uuid": "^8.3.3",
-    "@typescript-eslint/eslint-plugin": "^4.14.2",
-    "@typescript-eslint/parser": "^4.14.2",
-    "eslint": "^7.19.0",
-    "eslint-config-prettier": "^7.2.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-react": "^7.23.2",
-    "prettier": "^2.2.1",
+    "eslint": "^8.19.0",
+    "eslint-config-next": "^12.2.2",
     "typescript": "^4.4.3"
   },
   "author": "tera-ny",

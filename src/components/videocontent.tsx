@@ -1,7 +1,7 @@
-import { FC } from "react"
-import { SerializableVideo } from "~/modules/entity"
-import dayjs from "dayjs"
-import { useRouter } from "next/router"
+import { FC } from "react";
+import { SerializableVideo } from "~/modules/entity";
+import dayjs from "dayjs";
+import { useRouter } from "next/router";
 
 const Placeholder: FC = () => (
   <>
@@ -46,43 +46,47 @@ const Placeholder: FC = () => (
       `}
     </style>
   </>
-)
+);
 
 const millisToFormatedDate = (millis: number) =>
-  dayjs(millis).format("YYYY/MM/DD")
+  dayjs(millis).format("YYYY/MM/DD");
 
 interface Props {
-  video: SerializableVideo
+  video: SerializableVideo;
 }
 
 const Content: FC<Props> = (props) => {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <>
       <article
         onClick={() => {
-          router.push(`/contents/${props.video.id}`)
+          router.push(`/contents/${props.video.id}`);
         }}
-        className="article">
+        className="article"
+      >
         <div className="content">
           <div className="imagewrapper">
-            {props.video.poster ? (
-              <img
-                className="image"
-                src={props.video.poster}
-                width={100}
-                height={56}
-              />
-            ) : (
-              <div className="image">
-                <Placeholder />
-              </div>
-            )}
+            {props.video.poster
+              ? (
+                <img
+                  className="image"
+                  src={props.video.poster}
+                  width={100}
+                  height={56}
+                />
+              )
+              : (
+                <div className="image">
+                  <Placeholder />
+                </div>
+              )}
           </div>
           <div className="metadata">
             <h3 className="title">{props.video.title ?? "No title"}</h3>
             <p className="date">
-              {millisToFormatedDate(props.video.createdAtMillis)}
+              {props.video.createdAtMillis &&
+                millisToFormatedDate(props.video.createdAtMillis)}
             </p>
           </div>
         </div>
@@ -169,7 +173,7 @@ const Content: FC<Props> = (props) => {
         `}
       </style>
     </>
-  )
-}
+  );
+};
 
-export default Content
+export default Content;

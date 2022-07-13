@@ -1,37 +1,43 @@
-import { FC } from "react"
-import { SerializableVideo } from "~/modules/entity"
-import dynamic from "next/dynamic"
-import dayjs from "dayjs"
+import { FC } from "react";
+import { SerializableVideo } from "~/modules/entity";
+import dynamic from "next/dynamic";
+import dayjs from "dayjs";
 
 interface Props {
-  video: SerializableVideo
+  video: SerializableVideo | null;
 }
 
 const DynamicPlayer = dynamic(import("~/components/player"), {
   loading: () => <video></video>,
-})
+});
 
 const Index: FC<Props> = ({ video }) => {
   return (
     <>
-      <div className={"container"}>
-        <div className={"playerContainer"}>
-          <DynamicPlayer src={video.url} poster={video.poster} />
-        </div>
-        <div>
-          <h2 className="title">{video.title}</h2>
-          <p>{dayjs(video.createdAtMillis).format("YYYY/MM/DD")}</p>
-          <p>{video.description}</p>
-        </div>
-        <div>
+      {video && (
+        <div className={"container"}>
+          <div className={"playerContainer"}>
+            <DynamicPlayer
+              src={video.url ?? undefined}
+              poster={video.poster ?? undefined}
+            />
+          </div>
           <div>
-            <img src="" alt="" />
+            <h2 className="title">{video.title}</h2>
+            <p>{dayjs(video.createdAtMillis).format("YYYY/MM/DD")}</p>
+            <p>{video.description}</p>
+          </div>
+          <div>
+            <div>
+              <img src="" alt="" />
+              <p></p>
+            </div>
             <p></p>
           </div>
-          <p></p>
         </div>
-      </div>
-      <style jsx>{`
+      )}
+      <style jsx>
+        {`
         .container {
           margin: 0 auto;
           padding: 40px 20px 0;
@@ -56,9 +62,10 @@ const Index: FC<Props> = ({ video }) => {
             font-size: 16px;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default Index
+export default Index;

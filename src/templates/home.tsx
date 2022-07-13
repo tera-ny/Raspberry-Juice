@@ -1,21 +1,21 @@
-import { FC, useState } from "react"
-import { SerializableVideo } from "~/modules/entity"
-import Content from "~/components/videocontent"
-import { Modal } from "~/components/modal"
-import Link from "next/link"
-import UploadContent from "~/components/uploadcontent"
-import { useRouter } from "next/dist/client/router"
-import EditContent from "~/components/editcontent"
+import { FC, useState } from "react";
+import { SerializableVideo } from "~/modules/entity";
+import Content from "~/components/videocontent";
+import { Modal } from "~/components/modal";
+import Link from "next/link";
+import UploadContent from "~/components/uploadcontent";
+import { useRouter } from "next/dist/client/router";
+import EditContent from "~/components/editcontent";
 
 export type Props = {
-  contents: SerializableVideo[]
-  modal: boolean
-  edit?: string
-}
+  contents: SerializableVideo[];
+  modal: boolean;
+  edit?: string;
+};
 
 const Template: FC<Props> = (props) => {
-  const router = useRouter()
-  const [isUploading, setIsUploading] = useState(false)
+  const router = useRouter();
+  const [isUploading, setIsUploading] = useState(false);
   return (
     <>
       <div className="container">
@@ -46,23 +46,25 @@ const Template: FC<Props> = (props) => {
         visible={props.modal}
         onClickBackground={() => {
           if (!isUploading) {
-            router.push({ pathname: "/" })
+            router.push({ pathname: "/" });
           }
-        }}>
+        }}
+      >
         {props.modal && (
           <>
-            {props.edit ? (
-              <EditContent
-                id={props.edit}
-                onChangeIsUploading={setIsUploading}
-              />
-            ) : (
-              <UploadContent onChangeIsUploading={setIsUploading} />
-            )}
+            {props.edit
+              ? (
+                <EditContent
+                  id={props.edit}
+                  onChangeIsUploading={setIsUploading}
+                />
+              )
+              : <UploadContent onChangeIsUploading={setIsUploading} />}
           </>
         )}
       </Modal>
-      <style jsx>{`
+      <style jsx>
+        {`
         .container {
           padding: 20px 52px;
           position: relative;
@@ -147,9 +149,10 @@ const Template: FC<Props> = (props) => {
             grid-template-columns: 1fr;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default Template
+export default Template;

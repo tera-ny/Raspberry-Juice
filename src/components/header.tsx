@@ -1,5 +1,5 @@
-import { FC } from "react"
-import Link from "next/link"
+import { FC } from "react";
+import Link from "next/link";
 
 const Header: FC = () => {
   return (
@@ -17,14 +17,21 @@ const Header: FC = () => {
                 height="60"
                 width="220"
                 src="/img/logo_full_light.svg"
+                alt="raspberry-juice"
               />
             </picture>
           </a>
         </Link>
+        <button>
+          login
+        </button>
       </header>
-      <style jsx>{`
+      <style jsx>
+        {`
         .container {
           padding: 20px 24px;
+          display: flex;
+          justify-content: space-between;
         }
         .logo {
           height: 40px;
@@ -39,9 +46,10 @@ const Header: FC = () => {
             padding: 8px 12px;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

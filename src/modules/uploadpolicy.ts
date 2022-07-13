@@ -1,12 +1,12 @@
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-import { Storage } from "@google-cloud/storage"
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { Storage } from "@google-cloud/storage";
 
-dayjs.extend(utc)
+dayjs.extend(utc);
 
 export interface Policy {
-  url: string
-  fields: { [key: string]: string }
+  url: string;
+  fields: { [key: string]: string };
 }
 
 export const generatePolicy = async (id: string): Promise<Policy> => {
@@ -23,19 +23,20 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
         signature: "111111111111111111",
         encoded: "fdssjkdfsdkjfjdksk",
       },
-    }
+    };
   } else {
-    const key = `contents/video/${id}.mp4`
-    const storage = new Storage()
-    const file = storage.bucket("raspberry-juice-origin").file(key)
+    const key = `contents/video/${id}.mp4`;
+    const storage = new Storage();
+    const file = storage.bucket("raspberry-juice-origin").file(key);
 
-    const today = dayjs.utc()
-    const todayToFormatYYYYMMDD = today.format("YYYYMMDD")
-    const todayToFormatGoog_date = today.format("YYYYMMDDTHHmmss[Z]")
-    const algorithm = "GOOG4-RSA-SHA256"
-    const account = "raspberryjuice@appspot.gserviceaccount.com"
-    const credential = `${account}/${todayToFormatYYYYMMDD}/auto/storage/goog4_request`
-    const expiration = today.add(1, "hour").toISOString()
+    const today = dayjs.utc();
+    const todayToFormatYYYYMMDD = today.format("YYYYMMDD");
+    const todayToFormatGoog_date = today.format("YYYYMMDDTHHmmss[Z]");
+    const algorithm = "GOOG4-RSA-SHA256";
+    const account = "raspberryjuice@appspot.gserviceaccount.com";
+    const credential =
+      `${account}/${todayToFormatYYYYMMDD}/auto/storage/goog4_request`;
+    const expiration = today.add(1, "hour").toISOString();
     const [response] = await file.generateSignedPostPolicyV4({
       expires: today.add(1, "hour").toDate(),
       conditions: [
@@ -55,10 +56,10 @@ export const generatePolicy = async (id: string): Promise<Policy> => {
         "Content-Type": "video/mp4",
         Expires: expiration,
       },
-    })
+    });
     return {
       url: response.url,
       fields: response.fields,
-    }
+    };
   }
-}
+};

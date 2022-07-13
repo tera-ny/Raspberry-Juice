@@ -11,7 +11,7 @@
       "esnext"
     ],
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "resolveJsonModule": true,
@@ -25,13 +25,14 @@
     },
     "esModuleInterop": true,
     "allowJs": true,
-    "incremental": true
+    "incremental": true,
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next"
   ]
 }

@@ -1,10 +1,10 @@
-import { SerializableVideo, Video } from "~/modules/entity"
-import { firestore } from "firebase-admin"
-import app from "~/modules/admin"
+import { SerializableVideo, Video } from "~/modules/entity";
+import { firestore } from "firebase-admin";
+import app from "~/modules/admin";
 
 export interface Response {
-  contentIDs: string[]
-  contents: SerializableVideo[]
+  contentIDs: string[];
+  contents: SerializableVideo[];
 }
 
 const handler = async (uid: string): Promise<Response> => {
@@ -17,33 +17,31 @@ const handler = async (uid: string): Promise<Response> => {
       .where("draft", "==", false)
       .where("isPublished", "==", true)
       .orderBy("createdAt", "desc")
-      .get()
-    const contentIDs = snapshot.docs.map((doc) => doc.id)
+      .get();
+    const contentIDs = snapshot.docs.map((doc) => doc.id);
     const contents = snapshot.docs.map((doc): SerializableVideo => {
-      const data = doc.data() as Video<firestore.Timestamp>
+      const data = doc.data() as Video<firestore.Timestamp>;
       return {
         id: doc.id,
         title: data.title ?? null,
         url: data.url
-          ? typeof data.url === "string"
-            ? data.url
-            : data.url.hls
+          ? typeof data.url === "string" ? data.url : data.url.hls
           : null,
         poster: data.poster ?? null,
-        createdAtMillis: data.createdAt.toMillis() ?? null,
+        createdAtMillis: data.createdAt?.toMillis() ?? null,
         description: data.description ?? null,
         draft: data.draft,
         isPublished: data.isPublished,
-      }
-    })
+      };
+    });
     return {
       contentIDs,
       contents,
-    }
+    };
   } catch (error) {
-    console.error(error)
-    throw 500
+    console.error(error);
+    throw 500;
   }
-}
+};
 
-export default handler
+export default handler;
