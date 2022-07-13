@@ -8,7 +8,4 @@ module.exports = {
     APP_ID: process.env.APP_ID,
     MEASUREMENT_ID: process.env.MEASUREMENT_ID,
   },
-  experimental: {
-    optimizeFonts: true,
-  },
 }

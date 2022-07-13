@@ -1,10 +1,10 @@
-import { GetServerSideProps, NextPage } from "next"
-import Template from "~/templates/signin"
-import { generateAndSetToken, verifyAuthCookie } from "~/modules/auth/login"
-import { Cookies } from "~/modules/utils"
+import { GetServerSideProps, NextPage } from "next";
+import Template from "~/templates/signin";
+import { generateAndSetToken, verifyAuthCookie } from "~/modules/auth/login";
+import { Cookies } from "~/modules/utils";
 
 interface Props {
-  csrfToken: string
+  csrfToken: string;
 }
 
 const Page: NextPage<Props> = (props) => {
@@ -29,24 +29,24 @@ const Page: NextPage<Props> = (props) => {
         `}
       </style>
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
+  context,
 ) => {
   try {
-    const decoded = await verifyAuthCookie(context.req)
+    const decoded = await verifyAuthCookie(context.req);
     if (!decoded) {
-      throw "not found auth cookie"
+      throw "not found auth cookie";
     } else {
-      return { redirect: { statusCode: 302, destination: "/" } }
+      return { redirect: { statusCode: 302, destination: "/" } };
     }
   } catch (error) {
-    const cookies = new Cookies(context.res)
-    const csrfToken = generateAndSetToken(cookies)
-    return { props: { csrfToken } }
+    const cookies = new Cookies(context.res);
+    const csrfToken = generateAndSetToken(cookies);
+    return { props: { csrfToken } };
   }
-}
+};
 
-export default Page
+export default Page;

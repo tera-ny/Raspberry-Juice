@@ -1,19 +1,19 @@
-import { FC, useCallback, useState, useRef } from "react"
-import { useRouter } from "next/router"
-import TextInput from "~/components/textinput"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
+import { FC, useCallback, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import TextInput from "~/components/textinput";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 interface FormProps {
-  signin: (email: string, password: string) => void
-  disableButton: boolean
+  signin: (email: string, password: string) => void;
+  disableButton: boolean;
 }
 
 const Form: FC<FormProps> = ({ signin, disableButton }) => {
-  const [isShowPassword, setIsShowPassword] = useState(false)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const emailref = useRef<HTMLInputElement>()
-  const passwordref = useRef<HTMLInputElement>()
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const emailref = useRef<{ focus: () => void }>(null);
+  const passwordref = useRef<{ focus: () => void }>(null);
 
   return (
     <>
@@ -25,7 +25,7 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
           ref={emailref}
           onclickenter={() => {
             if (passwordref.current) {
-              passwordref.current.focus()
+              passwordref.current.focus();
             }
           }}
         />
@@ -35,7 +35,7 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
             ispassword={!isShowPassword}
             onchange={setPassword}
             onclickenter={() => {
-              signin(email, password)
+              signin(email, password);
             }}
             ref={passwordref}
             val={password}
@@ -43,21 +43,26 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
           <button
             className="showpassword"
             onClick={() => {
-              setIsShowPassword((val) => !val)
-            }}>{`${isShowPassword ? "hide" : "show"} password`}</button>
+              setIsShowPassword((val) => !val);
+            }}
+          >
+            {`${isShowPassword ? "hide" : "show"} password`}
+          </button>
         </div>
         <div className="signinwrapper">
           <button
             className="signin"
             disabled={disableButton}
             onClick={() => {
-              signin(email, password)
-            }}>
+              signin(email, password);
+            }}
+          >
             Sign in
           </button>
         </div>
       </div>
-      <style jsx>{`
+      <style jsx>
+        {`
         .container {
           padding: 28px 20px 32px;
         }
@@ -114,23 +119,24 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
             height: 100%;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
 interface Props {
-  csrfToken: string
+  csrfToken: string;
 }
 
 const SignInTemplate: FC<Props> = ({ csrfToken }) => {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const signin = useCallback(async (email: string, password: string) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const auth = getAuth()
-      auth.setPersistence({ type: "NONE" })
+      const auth = getAuth();
+      auth.setPersistence({ type: "NONE" });
       signInWithEmailAndPassword(auth, email, password)
         .then((credential) => credential.user.getIdToken())
         .then((token) =>
@@ -147,14 +153,14 @@ const SignInTemplate: FC<Props> = ({ csrfToken }) => {
         )
         .then((response) => {
           if (response.ok) {
-            router.replace("/")
+            router.replace("/");
           }
-        })
+        });
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-    setIsLoading(false)
-  }, [])
+    setIsLoading(false);
+  }, []);
   return (
     <>
       <div className="formwrapper">
@@ -167,7 +173,8 @@ const SignInTemplate: FC<Props> = ({ csrfToken }) => {
         </picture>
         <Form signin={signin} disableButton={isLoading} />
       </div>
-      <style jsx>{`
+      <style jsx>
+        {`
         .formwrapper {
           padding: 28px 8px 32px;
           width: 100%;
@@ -192,9 +199,10 @@ const SignInTemplate: FC<Props> = ({ csrfToken }) => {
             min-height: auto;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default SignInTemplate
+export default SignInTemplate;

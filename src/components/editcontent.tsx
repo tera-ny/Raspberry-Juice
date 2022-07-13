@@ -1,35 +1,35 @@
-import { FC, useCallback, useEffect, useState } from "react"
-import { SerializableVideo } from "~/modules/entity"
-import dynamic from "next/dynamic"
-import { useRouter } from "next/router"
+import { FC, useCallback, useEffect, useState } from "react";
+import { SerializableVideo } from "~/modules/entity";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 const Player = dynamic(import("~/components/player"), {
   loading: () => <video></video>,
-})
+});
 
 interface Props {
-  id: string
-  onChangeIsUploading?: (uploading: boolean) => void
+  id: string;
+  onChangeIsUploading?: (uploading: boolean) => void;
 }
 
 const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
-  const [origin, setOrigin] = useState<SerializableVideo>()
-  const [title, setTitle] = useState("")
-  const router = useRouter()
-  const [description, setDescription] = useState("")
+  const [origin, setOrigin] = useState<SerializableVideo>();
+  const [title, setTitle] = useState("");
+  const router = useRouter();
+  const [description, setDescription] = useState("");
   useEffect(() => {
     fetch(`/api/contents/${id}`, {
       method: "GET",
     })
       .then((res) => res.json())
       .then((video: SerializableVideo) => {
-        setOrigin(video)
-      })
-  }, [id])
+        setOrigin(video);
+      });
+  }, [id]);
   useEffect(() => {
-    setTitle(origin?.title ?? "")
-    setDescription(origin?.description ?? "")
-  }, [origin?.title, origin?.description])
+    setTitle(origin?.title ?? "");
+    setDescription(origin?.description ?? "");
+  }, [origin?.title, origin?.description]);
 
   const updateMetaData = useCallback(() => {
     fetch(`/api/contents/${id}/edit`, {
@@ -37,29 +37,31 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
       body: JSON.stringify({ title, description }),
     }).then((res) => {
       if (res.ok) {
-        router.replace("/")
+        router.replace("/");
       }
-    })
-  }, [title, description, id])
+    });
+  }, [title, description, id]);
 
   return (
     <>
       <div className="container">
         <h2 className="title">アップロードしたコンテンツを編集</h2>
         <div className="contents">
-          {origin?.state === "transcoded" ? (
-            <Player
-              src={origin?.url}
-              poster={origin?.poster}
-              aspectRatio={16 / 9}
-            />
-          ) : (
-            <div className="placeholderWrapper">
-              <div className="placeholder">
-                {origin?.state ? "配信可能な形式に変換中です。" : ""}
+          {origin?.state === "transcoded"
+            ? (
+              <Player
+                src={origin?.url ?? undefined}
+                poster={origin?.poster ?? undefined}
+                aspectRatio={16 / 9}
+              />
+            )
+            : (
+              <div className="placeholderWrapper">
+                <div className="placeholder">
+                  {origin?.state ? "配信可能な形式に変換中です。" : ""}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           <div className="target">
             <h3>制限</h3>
             <div className="form">
@@ -84,7 +86,7 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
                 placeholder="タイトルを入力"
                 value={title}
                 onChange={(e) => {
-                  setTitle(e.target.value)
+                  setTitle(e.target.value);
                 }}
               />
             </div>
@@ -96,7 +98,7 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
                 rows={10}
                 placeholder="動画の説明を入力"
                 onChange={(e) => {
-                  setDescription(e.target.value)
+                  setDescription(e.target.value);
                 }}
               />
             </div>
@@ -104,12 +106,14 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
           <button
             className="updateButton"
             disabled={!origin}
-            onClick={updateMetaData}>
+            onClick={updateMetaData}
+          >
             更新する
           </button>
         </div>
       </div>
-      <style jsx>{`
+      <style jsx>
+        {`
         .container {
           display: grid;
           grid-template-columns: 274px 1fr;
@@ -253,9 +257,10 @@ const EditContent: FC<Props> = ({ id, onChangeIsUploading }) => {
             background-color: #1e2026;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
-}
+  );
+};
 
-export default EditContent
+export default EditContent;

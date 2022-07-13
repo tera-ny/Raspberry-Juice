@@ -1,49 +1,52 @@
-import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil"
-import { useEffect } from "react"
-import { onAuthStateChanged, getAuth } from "firebase/auth"
+import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil";
+import { useEffect } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { initApp } from "~/modules/firebase";
 
 interface Subscription {
-  uid?: string
-  cdnSessionExpires?: number
+  uid?: string;
+  cdnSessionExpires?: number;
 }
 
 interface Atom {
-  subscription?: Subscription
+  subscription?: Subscription;
 }
 
-const authState = atom<Atom>({
+export const authState = atom<Atom>({
   key: "auth",
   default: { subscription: undefined },
-})
+});
 
-const uidState = selector<string | undefined>({
+export const uidState = selector<string | undefined>({
   key: "auth/uid",
   get: ({ get }) => get(authState)?.subscription?.uid,
-})
+});
 
-const isSubscribedState = selector<boolean>({
+export const isSubscribedState = selector<boolean>({
   key: "auth/isSubscribed",
   get: ({ get }) => get(authState)?.subscription !== undefined,
-})
+});
 
-export const listenAuth = () => {
-  const setAuth = useSetRecoilState(authState)
-  const isSubscribed = useRecoilValue(isSubscribedState)
+export const useListenAuth = () => {
+  const setAuth = useSetRecoilState(authState);
+  const isSubscribed = useRecoilValue(isSubscribedState);
   useEffect(() => {
-    if (isSubscribed) return
-    const auth = getAuth()
+    if (isSubscribed) return;
+    const auth = getAuth();
     let unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuth((atom) => ({
         ...atom,
         subscription: { uid: user?.uid ?? undefined },
-      }))
-    })
+      }));
+    });
     return () => {
-      unsubscribe()
-      setAuth((atom) => ({ ...atom, subscription: undefined }))
-    }
-  }, [])
-}
+      unsubscribe();
+      setAuth((atom) => ({ ...atom, subscription: undefined }));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   atom: authState,
   selector: {
@@ -51,6 +54,6 @@ export default {
     isSubscribed: isSubscribedState,
   },
   effect: {
-    listenAuth,
+    useListenAuth,
   },
-}
+};

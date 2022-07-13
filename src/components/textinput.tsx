@@ -1,64 +1,75 @@
 import {
-  MutableRefObject,
-  useState,
-  useEffect,
-  useCallback,
   forwardRef,
-} from "react"
+  ForwardRefRenderFunction,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 
 interface Props {
-  ispassword?: boolean
-  title: string
-  onchange?: (val: string) => void
-  onclickenter?: () => void
-  val?: string
+  ispassword?: boolean;
+  title: string;
+  onchange?: (val: string) => void;
+  onclickenter?: () => void;
+  val?: string;
 }
 
-const TextInput = forwardRef<HTMLInputElement, Props>(
-  (
-    { ispassword, title, onchange, onclickenter, val },
-    ref: MutableRefObject<HTMLInputElement>
-  ) => {
-    const [isFocus, setIsFocus] = useState(false)
-    const focus = useCallback(() => {
-      ref.current?.focus()
-    }, [ref.current])
-    useEffect(() => {
-      if (!ref.current) return
-      const handleFocus = () => {
-        setIsFocus(true)
-      }
-      const handleBlur = () => {
-        setIsFocus(false)
-      }
-      const form = ref.current
-      form.addEventListener("focus", handleFocus)
-      form.addEventListener("blur", handleBlur)
-      return () => {
-        form.removeEventListener("focus", handleFocus)
-        form.removeEventListener("blur", handleBlur)
-      }
-    }, [ref.current])
+interface Ref {
+  focus: () => void;
+}
 
-    return (
-      <>
-        <div className="container" onClick={focus}>
-          <p className="title">{title}</p>
-          <input
-            ref={ref}
-            type={ispassword ? "password" : "text"}
-            className="input"
-            value={val}
-            onChange={(e) => onchange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.code === "Enter") {
-                onclickenter()
-              }
-            }}
-          />
-        </div>
-        <style jsx>
-          {`
+const TextInputWithRef: ForwardRefRenderFunction<Ref, Props> = (
+  { ispassword, title, onchange, onclickenter, val },
+  ref,
+) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    },
+  }));
+  const [isFocus, setIsFocus] = useState(false);
+  const focus = useCallback(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+  useEffect(() => {
+    const handleFocus = () => {
+      setIsFocus(true);
+    };
+    const handleBlur = () => {
+      setIsFocus(false);
+    };
+    const form = inputRef.current;
+    form?.addEventListener("focus", handleFocus);
+    form?.addEventListener("blur", handleBlur);
+    return () => {
+      form?.removeEventListener("focus", handleFocus);
+      form?.removeEventListener("blur", handleBlur);
+    };
+  }, [inputRef]);
+
+  return (
+    <>
+      <div className="container" onClick={focus}>
+        <p className="title">{title}</p>
+        <input
+          ref={inputRef}
+          type={ispassword ? "password" : "text"}
+          className="input"
+          value={val}
+          onChange={(e) => onchange?.(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.code === "Enter") {
+              onclickenter?.();
+            }
+          }}
+        />
+      </div>
+      <style jsx>
+        {`
             .container {
               border: 2px solid;
               border-color: ${isFocus ? "#43B6E5" : "transparent"};
@@ -108,10 +119,11 @@ const TextInput = forwardRef<HTMLInputElement, Props>(
               }
             }
           `}
-        </style>
-      </>
-    )
-  }
-)
+      </style>
+    </>
+  );
+};
 
-export default TextInput
+const TextInput = forwardRef(TextInputWithRef);
+
+export default TextInput;

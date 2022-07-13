@@ -1,10 +1,10 @@
-import { AppProps } from "next/app"
-import { RecoilRoot } from "recoil"
-import Auth from "~/components/auth"
-import NextHead from "next/head"
-import { initApp } from "~/modules/firebase"
+import { AppProps } from "next/app";
+import { RecoilRoot } from "recoil";
+import Auth from "~/components/auth";
+import NextHead from "next/head";
+import { initApp } from "~/modules/firebase";
 
-initApp()
+initApp();
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -246,21 +246,13 @@ export default function App({ Component, pageProps }: AppProps) {
             href="/icon-32x32.png"
           />
           <link rel="manifest" href="/manifest.json" />
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&family=Roboto:wght@300;400;500&display=swap"
-            rel="stylesheet"></link>
         </NextHead>
         <Auth>
           <Component {...pageProps} />
         </Auth>
       </RecoilRoot>
-      <style jsx global>{`
+      <style jsx global>
+        {`
         html,
         body {
           padding: 0;
@@ -303,7 +295,8 @@ export default function App({ Component, pageProps }: AppProps) {
             color: white;
           }
         }
-      `}</style>
+      `}
+      </style>
     </>
-  )
+  );
 }
