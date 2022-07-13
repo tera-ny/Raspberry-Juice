@@ -1,7 +1,6 @@
 import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil";
 import { useEffect } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { initApp } from "~/modules/firebase";
 
 interface Subscription {
   uid?: string;

@@ -1,5 +1,4 @@
 import { NextApiHandler } from "next";
-import { verifyAuthCookie } from "~/modules/auth/login";
 import { Path, Video } from "~/modules/entity";
 import crypto from "crypto";
 import { Timestamp } from "firebase/firestore";
@@ -19,8 +18,9 @@ const typeCheck = (body: any) => {
 const handler: NextApiHandler = async (req, res) => {
   const id = req.query.id;
   try {
+    //Todo auth
+    if (req.method?.toLowerCase() === "put") return res.status(405).end();
     if (req.method?.toLowerCase() !== "put") return res.status(405).end();
-    const decoded = await verifyAuthCookie(req);
     const body = JSON.parse(req.body);
     if (typeof id !== "string") {
       console.error(id, "is not string");
@@ -34,7 +34,6 @@ const handler: NextApiHandler = async (req, res) => {
         const content = await transaction.get(document);
         if (!content.exists) return res.status(404).end();
         const data = content.data() as Video<Timestamp>;
-        if (data.owner !== decoded?.uid) res.status(403).end();
         const etag = req.headers["if-match"];
         if (etag) {
           const hash = calculateHash(

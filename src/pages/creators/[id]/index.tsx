@@ -4,10 +4,8 @@ import Header from "~/components/header";
 import fetchContents from "~/modules/api/videos";
 
 import { Props } from "~/templates/creator";
-import { verifyAuthCookie } from "~/modules/auth/login";
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
-  req,
   query,
 }) => {
   try {
@@ -18,11 +16,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     } else {
       const targetID = query.id;
       const response = await fetchContents(targetID);
-      const decoded = await verifyAuthCookie(req);
       return {
         props: {
-          isOwner: decoded !== null && targetID === decoded.uid,
-          modal: query.m === "true",
           contents: response.contents,
         },
       };

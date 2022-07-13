@@ -49,9 +49,9 @@ export const generateCDNCookies = async (
   expiresOfUnix: number,
   isSecure: boolean,
 ) => {
-  const keyName = process.env.CLOUD_SECRET_NAME;
-  const keyVersion = process.env.CLOUD_SECRET_VERSION;
-  const projectID = process.env.PROJECT_ID;
+  const keyName = process.env.CLOUD_SECRET_NAME!;
+  const keyVersion = process.env.CLOUD_SECRET_VERSION!;
+  const projectID = process.env.PROJECT_ID!;
   let signatureKey: string;
   if (process.env.ENVIRONMENT === "development") {
     signatureKey = "xxxxxxxx";

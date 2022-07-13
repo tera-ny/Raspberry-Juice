@@ -3,11 +3,7 @@ import Template from "~/templates/video";
 import Error from "next/error";
 import fetchVideo from "~/modules/api/videos/id";
 import { SerializableVideo } from "~/modules/entity";
-import dayjs from "dayjs";
-import { generateCDNCookies } from "~/modules/storagecookie";
 import Header from "~/components/header";
-import { verifyAuthCookie } from "~/modules/auth/login";
-import { Cookies } from "~/modules/utils";
 import { NotFound, NotPublished, Unknown } from "~/modules/api/error";
 
 type Props = { status: "success"; video: SerializableVideo | null } | {
@@ -16,8 +12,6 @@ type Props = { status: "success"; video: SerializableVideo | null } | {
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
-  req,
-  res,
   query,
 }) => {
   if (typeof query.id === "string") {

@@ -2,7 +2,6 @@ import {
   FC,
   forwardRef,
   ForwardRefRenderFunction,
-  MutableRefObject,
   useEffect,
   useRef,
   useState,

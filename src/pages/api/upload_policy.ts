@@ -2,7 +2,7 @@ import { NextApiHandler } from "next";
 import crypto from "crypto";
 import { generatePolicy } from "~/modules/uploadpolicy";
 import app from "~/modules/admin";
-import { verifyAuthCookie } from "~/modules/auth/login";
+import { verifyAuthorizationRequest } from "~/modules/auth/login";
 
 const generateID = () => {
   return crypto.randomBytes(10).toString("hex");
@@ -37,7 +37,7 @@ const makeDraft = async (uid: string, type: string) => {
 };
 
 const handler: NextApiHandler = async (req, res) => {
-  const authUser = await verifyAuthCookie(req);
+  const authUser = await verifyAuthorizationRequest(req);
   if (!authUser) {
     res.statusCode = 403;
     res.end();

@@ -1,7 +1,6 @@
 import {
   forwardRef,
   ForwardRefRenderFunction,
-  MutableRefObject,
   useCallback,
   useEffect,
   useImperativeHandle,

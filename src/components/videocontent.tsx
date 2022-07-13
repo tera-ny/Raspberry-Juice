@@ -61,7 +61,7 @@ const Content: FC<Props> = (props) => {
     <>
       <article
         onClick={() => {
-          router.push(`/contents/${props.video.id}`);
+          router.push(`/video/${props.video.id}`);
         }}
         className="article"
       >
