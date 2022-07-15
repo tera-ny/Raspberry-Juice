@@ -1,4 +1,4 @@
-import { VFC } from "react";
+import { FC } from "react";
 import { useRecoilValue } from "recoil";
 import {
   authState,
@@ -8,7 +8,7 @@ import {
 import SignInTemplate from "~/templates/signin";
 import Modal from "./modal";
 
-const AuthModal: VFC = () => {
+const AuthModal: FC = () => {
   const state = useRecoilValue(authState);
   const toggle = useToggleAuthModalRequest();
   useListenAuth();

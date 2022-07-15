@@ -1,11 +1,7 @@
-import { Dispatch, FC, useState } from "react";
+import { FC } from "react";
 import { SerializableVideo } from "~/modules/entity";
 import Content from "~/components/videocontent";
-import { Modal } from "~/components/modal";
-import Link from "next/link";
-import UploadContent from "~/components/uploadcontent";
-import { useRouter } from "next/dist/client/router";
-import EditContent from "~/components/editcontent";
+import "styled-jsx";
 
 export type Props = {
   contents: SerializableVideo[];

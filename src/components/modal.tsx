@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
 export const Modal: FC<
   {
@@ -6,7 +6,7 @@ export const Modal: FC<
     onClickBackground: () => void;
     width?: number;
     height?: number;
-  }
+  } & PropsWithChildren
 > = ({
   visible,
   onClickBackground,

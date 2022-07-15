@@ -1,4 +1,4 @@
-import { FC, useCallback, useRef, useState, VFC } from "react";
+import { FC, useCallback, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import TextInput from "~/components/textinput";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -125,7 +125,7 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
   );
 };
 
-const SignInTemplate: VFC = () => {
+const SignInTemplate: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const signin = useCallback(async (email: string, password: string) => {
