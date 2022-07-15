@@ -1,9 +1,18 @@
-import { FC } from "react";
+import { FC, PropsWithChildren } from "react";
 
-export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
+export const Modal: FC<
+  {
+    visible: boolean;
+    onClickBackground: () => void;
+    width?: number;
+    height?: number;
+  } & PropsWithChildren
+> = ({
   visible,
   onClickBackground,
   children,
+  width = 800,
+  height = 710,
 }) => {
   return (
     <>
@@ -49,8 +58,8 @@ export const Modal: FC<{ visible: boolean; onClickBackground: () => void }> = ({
           background: white;
           border-radius: 4px;
           padding: 12px 20px;
-          max-width: 800px;
-          max-height: 710px;
+          max-width: ${width}px;
+          max-height: ${height}px;
           box-sizing: border-box;
           width: 100%;
           height: 100%;

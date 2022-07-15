@@ -1,6 +1,6 @@
 import { IncomingMessage } from "http";
 
-const getAbsoluteURL = (url: string, req: IncomingMessage = null) => {
+const getAbsoluteURL = (url: string, req: IncomingMessage | null = null) => {
   let host;
   if (req) {
     host = req.headers.host;
@@ -12,7 +12,7 @@ const getAbsoluteURL = (url: string, req: IncomingMessage = null) => {
     }
     host = window.location.host;
   }
-  const isLocalhost = host.indexOf("localhost") === 0;
+  const isLocalhost = host?.indexOf("localhost") === 0;
   const protocol = isLocalhost ? "http" : "https";
   return `${protocol}://${host}${url}`;
 };

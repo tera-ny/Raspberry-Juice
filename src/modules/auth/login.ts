@@ -1,4 +1,4 @@
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import dayjs from "dayjs";
 import { v4 } from "uuid";
 import crypto from "crypto";
@@ -6,6 +6,7 @@ import admin from "~/modules/admin";
 import { NextApiRequestCookies } from "next/dist/server/api-utils";
 import { Cookies } from "~/modules/utils";
 import { auth } from "firebase-admin";
+import app from "~/modules/admin";
 
 const key = process.env.CSRF_SECRET as string;
 const hmac = () => crypto.createHmac("sha256", key);
@@ -21,32 +22,6 @@ export const setSessionCookie = async (token: string, cookies: Cookies) => {
     expiresIn,
   });
   cookies.set(sessionKey, newCookie, "/", expires, true);
-};
-
-export const verifyAuthCookie = async (req: {
-  cookies: NextApiRequestCookies;
-}): Promise<auth.DecodedIdToken | null> => {
-  const sessionCookie = req.cookies[sessionKey];
-  if (!sessionCookie) return null;
-  return admin.auth().verifySessionCookie(sessionCookie);
-};
-
-export const verifyCSRFToken = (req: NextApiRequest) => {
-  const csrfToken = JSON.parse(req.body).csrfToken;
-  const signedToken = req.cookies[tokenName];
-  const deadLine = dayjs(req.cookies[deadLineName]);
-  if (!dayjs().isBefore(deadLine)) {
-    console.error("timeout");
-    return false;
-  }
-  const token = hmac()
-    .update(csrfToken + ";" + deadLine.toISOString())
-    .digest("hex");
-  if (token !== signedToken) {
-    console.error("abort");
-    return false;
-  }
-  return true;
 };
 
 export const generateAndSetToken = (cookies: Cookies) => {
@@ -66,7 +41,7 @@ export const generateAndSetToken = (cookies: Cookies) => {
   return csrfToken;
 };
 
-export const refreshCSRFToken = (cookies: Cookies) => {
-  cookies.set(tokenName, "deleted", "/api/login", new Date(0), true);
-  cookies.set(deadLineName, "deleted", "/api/login", new Date(0), true);
+export const verifyAuthorizationRequest = (req: NextApiRequest) => {
+  if (!req.headers.authorization) return undefined;
+  return app.auth().verifyIdToken(req.headers.authorization);
 };

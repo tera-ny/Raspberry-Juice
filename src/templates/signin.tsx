@@ -125,37 +125,14 @@ const Form: FC<FormProps> = ({ signin, disableButton }) => {
   );
 };
 
-interface Props {
-  csrfToken: string;
-}
-
-const SignInTemplate: FC<Props> = ({ csrfToken }) => {
+const SignInTemplate: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const signin = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
       const auth = getAuth();
-      auth.setPersistence({ type: "NONE" });
-      signInWithEmailAndPassword(auth, email, password)
-        .then((credential) => credential.user.getIdToken())
-        .then((token) =>
-          fetch("/api/login", {
-            headers: { Authorization: token },
-            method: "POST",
-            mode: "same-origin",
-            cache: "no-cache",
-            referrerPolicy: "no-referrer",
-            body: JSON.stringify({
-              csrfToken,
-            }),
-          })
-        )
-        .then((response) => {
-          if (response.ok) {
-            router.replace("/");
-          }
-        });
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (e) {
       console.error(e);
     }
@@ -169,7 +146,12 @@ const SignInTemplate: FC<Props> = ({ csrfToken }) => {
             srcSet="/img/logo_full_dark.svg"
             media="(prefers-color-scheme: dark)"
           />
-          <img height="60" width="220" src="/img/logo_full_light.svg" />
+          <img
+            height="60"
+            width="220"
+            src="/img/logo_full_light.svg"
+            alt="raspberry juice"
+          />
         </picture>
         <Form signin={signin} disableButton={isLoading} />
       </div>

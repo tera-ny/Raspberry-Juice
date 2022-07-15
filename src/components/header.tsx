@@ -1,7 +1,11 @@
 import { FC } from "react";
 import Link from "next/link";
+import { uidState, useToggleAuthModalRequest } from "~/stores/auth";
+import { useRecoilValue } from "recoil";
 
 const Header: FC = () => {
+  const toggle = useToggleAuthModalRequest();
+  const uid = useRecoilValue(uidState);
   return (
     <>
       <header className="container">
@@ -22,9 +26,11 @@ const Header: FC = () => {
             </picture>
           </a>
         </Link>
-        <button>
-          login
-        </button>
+        {uid ? <span>logged in: {uid}</span> : (
+          <button onClick={() => toggle()}>
+            login
+          </button>
+        )}
       </header>
       <style jsx>
         {`

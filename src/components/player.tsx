@@ -2,53 +2,17 @@ import {
   FC,
   forwardRef,
   ForwardRefRenderFunction,
-  MutableRefObject,
   useEffect,
   useRef,
   useState,
 } from "react";
 import Hls from "hls.js";
-import css from "styled-jsx/css";
+import { classNames } from "~/modules/className";
 
 interface VideoComponentProps {
   poster?: string;
   aspectRatio?: number;
 }
-
-const getVideoComponentStyle = (aspectRatio?: number) => {
-  if (aspectRatio) {
-    return css`
-      .wrapper {
-        position: relative;
-        width: 100%;
-      }
-      .wrapper::before {
-        content: "";
-        display: block;
-        padding-top: calc(100% / ${aspectRatio});
-      }
-      .video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-    `;
-  } else {
-    return css`
-      .video {
-        width: 100%;
-        height: auto;
-        background-color: black;
-        vertical-align: bottom;
-      }
-      .wrapper {
-        position: relative;
-      }
-    `;
-  }
-};
 
 const VideoComponentWithRef: ForwardRefRenderFunction<
   HTMLVideoElement,
@@ -57,24 +21,57 @@ const VideoComponentWithRef: ForwardRefRenderFunction<
   { poster, aspectRatio },
   videoRef,
 ) => {
-  const styles = getVideoComponentStyle(aspectRatio);
   return (
     <>
-      <div className="wrapper">
+      <div
+        className={classNames({
+          wrapper: true,
+          withAspectRatio: aspectRatio !== undefined,
+        })}
+      >
         <video
           ref={videoRef}
           id="video"
-          className="video"
+          className={classNames({
+            video: true,
+            withAspectRatio: aspectRatio !== undefined,
+          })}
           poster={poster}
           controls
           playsInline
         />
       </div>
-      <style jsx>{styles}</style>
+      <style jsx>
+        {`
+      .video {
+        width: 100%;
+        height: auto;
+        background-color: black;
+        vertical-align: bottom;
+      }
+      .video.withAspectRatio {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .wrapper {
+        position: relative;
+        width: 100%;
+      }
+      .wrapper.withAspectRatio::before {
+        content: "";
+        display: block;
+        padding-top: calc(100% / ${aspectRatio});
+      }
+      `}
+      </style>
     </>
   );
 };
 
+// eslint-disable-next-line react/display-name
 const VideoComponent = forwardRef(VideoComponentWithRef);
 
 interface HLS {

@@ -3,8 +3,12 @@ import { RecoilRoot } from "recoil";
 import Auth from "~/components/auth";
 import NextHead from "next/head";
 import { initApp } from "~/modules/firebase";
+import AuthModal from "~/components/authModal";
+import "styled-jsx";
 
-initApp();
+if (typeof window !== "undefined") {
+  initApp();
+}
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -248,7 +252,9 @@ export default function App({ Component, pageProps }: AppProps) {
           <link rel="manifest" href="/manifest.json" />
         </NextHead>
         <Auth>
+          <AuthModal />
           <Component {...pageProps} />
+          <AuthModal />
         </Auth>
       </RecoilRoot>
       <style jsx global>
