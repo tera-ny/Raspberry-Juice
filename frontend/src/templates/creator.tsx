@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { SerializableVideo } from "~/modules/entity";
 import Content from "~/components/videocontent";
-import "styled-jsx";
 
 export type Props = {
   contents: SerializableVideo[];
