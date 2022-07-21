@@ -1,7 +1,9 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { SerializableVideo } from "~/modules/entity";
 import dynamic from "next/dynamic";
 import dayjs from "dayjs";
+import { useRecoilValue } from "recoil";
+import { isSubscribedState } from "~/stores/auth";
 
 interface Props {
   video: SerializableVideo | null;
@@ -11,7 +13,17 @@ const DynamicPlayer = dynamic(import("~/components/player"), {
   loading: () => <video></video>,
 });
 
-const Index: FC<Props> = ({ video }) => {
+const Index: FC<Props> = (props) => {
+  const [video, setVideo] = useState(props.video);
+  const isSubscribed = useRecoilValue(isSubscribedState);
+  useEffect(() => {
+    if (video || !isSubscribed) return;
+    let mounted = true;
+    //TODO fetch video
+    return () => {
+      mounted = false;
+    };
+  }, []);
   return (
     <>
       {video && (
