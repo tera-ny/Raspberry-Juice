@@ -25,7 +25,7 @@ exports[`Header component > Default > render component 1`] = `
 </header>
 `;
 
-exports[`Header component > LoggedInUser > render component 1`] = `
+exports[`Header component > LoggedIn > render component 1`] = `
 <header
   class="container"
 >

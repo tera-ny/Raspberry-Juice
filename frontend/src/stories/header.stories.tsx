@@ -27,7 +27,7 @@ export const ShouldLogin: Story = () => {
   return <Header />;
 };
 
-export const LoggedInUser: Story = () => {
+export const LoggedIn: Story = () => {
   const setAuth = useSetRecoilState(authState);
   const setProfile = useSetRecoilState(profileState);
   useEffect(() => {

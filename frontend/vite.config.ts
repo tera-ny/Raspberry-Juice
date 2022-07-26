@@ -8,7 +8,6 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    // ↓ 追記
     alias: {
       "~/": path.join(__dirname, "src/"),
     },
