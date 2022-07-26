@@ -1,9 +1,6 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   collection,
   doc,
-  DocumentReference,
-  getDoc,
   getFirestore,
   onSnapshot,
   Timestamp,
