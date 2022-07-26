@@ -3,7 +3,7 @@ import Template from "~/templates/creator";
 import Header from "~/components/header";
 import fetchContents from "~/modules/api/videos";
 import { Props } from "~/templates/creator";
-import { App, getDocumentData } from "@rasp/firestore-rest";
+// import { App, getDocumentData } from "@rasp/firestore-rest";
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
@@ -15,9 +15,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       };
     } else {
       const targetID = query.id;
-      const app = new App(process.env.PROJECT_ID!);
-      const creator = await getDocumentData(app, `/creators/${targetID}`);
-      console.log(creator);
+      // const app = new App(process.env.PROJECT_ID!);
+      // const creator = await getDocumentData(app, `/creators/${targetID}`);
+      // console.log(creator);
       const response = await fetchContents(targetID);
       return {
         props: {

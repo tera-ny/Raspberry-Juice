@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/teranyan/.nodenv/versions/16.11.1/bin/node /usr/local/Cellar/yarn/1.22.19/libexec/lib/cli.js add @rj/firestore-rest
+  /Users/teranyan/.nodenv/versions/16.11.1/bin/node /usr/local/Cellar/yarn/1.22.19/libexec/bin/yarn.js add -D story-book
 
 PATH: 
   /Users/teranyan/.nodenv/versions/16.11.1/bin:/Users/teranyan/.nodenv/libexec:/Users/teranyan/.nodenv/plugins/node-build/bin:/Users/teranyan/.opam/default/bin:/Users/teranyan/google-cloud-sdk/bin:/Users/teranyan/.pyenv/shims:/Users/teranyan/.nodenv/shims:/Users/teranyan/plug/libwebp-1.2.1-mac-10.15/bin:/Users/teranyan/.pyenv/bin:/Applications:/Users/teranyan/.nodenv/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/teranyan/.opam/default/bin:/Users/teranyan/.pyenv/versions/miniconda3-4.7.12/condabin:/Users/teranyan/google-cloud-sdk/bin:/Users/teranyan/.pyenv/shims:/Users/teranyan/.nodenv/shims:/Users/teranyan/plug/libwebp-1.2.1-mac-10.15/bin:/Users/teranyan/.pyenv/bin:/Applications:/Users/teranyan/.nodenv/bin:/opt/yarn-[version]/bin:/opt/yarn-[version]/bin
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@rj%2ffirestore-rest: Not found
+  Error: https://registry.yarnpkg.com/story-book: Not found
       at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.22.19/libexec/lib/cli.js:66145:18)
       at Request.self.callback (/usr/local/Cellar/yarn/1.22.19/libexec/lib/cli.js:140890:22)
       at Request.emit (node:events:390:28)
@@ -28,7 +28,8 @@ Trace:
 
 npm manifest: 
   {
-    "name": "raspberry-juice",
+    "$schema": "https://json.schemastore.org/package",
+    "name": "@rasp/frontend",
     "version": "1.0.0",
     "description": "",
     "scripts": {
@@ -41,6 +42,8 @@ npm manifest:
     "dependencies": {
       "@google-cloud/secret-manager": "^3.9.0",
       "@google-cloud/storage": "^5.14.2",
+      "@rasp/firestore-rest": "*",
+      "axios": "^0.27.2",
       "dayjs": "^1.10.6",
       "firebase": "^9.6.1",
       "firebase-admin": "^9.11.0",
