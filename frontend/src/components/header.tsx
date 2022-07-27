@@ -1,11 +1,18 @@
 import { FC } from "react";
 import Link from "next/link";
-import { uidState, useToggleAuthModalRequest } from "~/stores/auth";
+import {
+  isSubscribedState,
+  uidState,
+  useToggleAuthModalRequest,
+} from "~/stores/auth";
 import { useRecoilValue } from "recoil";
+import { profileState } from "~/stores/profile";
 
 const Header: FC = () => {
   const toggle = useToggleAuthModalRequest();
+  const { currentUser } = useRecoilValue(profileState);
   const uid = useRecoilValue(uidState);
+  const isSubscribed = useRecoilValue(isSubscribedState);
   return (
     <>
       <header className="container">
@@ -26,11 +33,15 @@ const Header: FC = () => {
             </picture>
           </a>
         </Link>
-        {uid ? <span>logged in: {uid}</span> : (
-          <button onClick={() => toggle()}>
-            login
-          </button>
-        )}
+        {isSubscribed
+          ? (uid
+            ? <span>{currentUser?.name}</span>
+            : (
+              <button onClick={() => toggle()}>
+                Login
+              </button>
+            ))
+          : null}
       </header>
       <style jsx>
         {`

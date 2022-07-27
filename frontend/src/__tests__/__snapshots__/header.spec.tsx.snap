@@ -1,0 +1,82 @@
+// Vitest Snapshot v1
+
+exports[`Header component > Default > render component 1`] = `
+<header
+  class="container"
+>
+  <a
+    class="link"
+    href="/"
+  >
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="/img/logo_full_dark.svg"
+      />
+      <img
+        alt="raspberry-juice"
+        class="logo"
+        height="60"
+        src="/img/logo_full_light.svg"
+        width="220"
+      />
+    </picture>
+  </a>
+</header>
+`;
+
+exports[`Header component > LoggedIn > render component 1`] = `
+<header
+  class="container"
+>
+  <a
+    class="link"
+    href="/"
+  >
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="/img/logo_full_dark.svg"
+      />
+      <img
+        alt="raspberry-juice"
+        class="logo"
+        height="60"
+        src="/img/logo_full_light.svg"
+        width="220"
+      />
+    </picture>
+  </a>
+  <span>
+    logged in user
+  </span>
+</header>
+`;
+
+exports[`Header component > ShouldLogin > render component 1`] = `
+<header
+  class="container"
+>
+  <a
+    class="link"
+    href="/"
+  >
+    <picture>
+      <source
+        media="(prefers-color-scheme: dark)"
+        srcset="/img/logo_full_dark.svg"
+      />
+      <img
+        alt="raspberry-juice"
+        class="logo"
+        height="60"
+        src="/img/logo_full_light.svg"
+        width="220"
+      />
+    </picture>
+  </a>
+  <button>
+    Login
+  </button>
+</header>
+`;

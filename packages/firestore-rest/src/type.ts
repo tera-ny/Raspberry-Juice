@@ -27,16 +27,18 @@ export interface ReferenceValue {
 export interface GeoPointValue {
   geoPointValue: LatLng;
 }
-export interface ArrayValue {
+export interface ArrayValue<Val extends Value> {
   arrayValue: {
-    values: Value[];
+    values: Val[];
   };
 }
-export interface MapValue {
+export interface MapValue<
+  Field extends {
+    [key: string]: Value | ArrayValue<any>;
+  },
+> {
   mapValue: {
-    fields: {
-      [key: string]: Value;
-    };
+    fields: Field;
   };
 }
 export type Value =
@@ -49,8 +51,7 @@ export type Value =
   | BytesValue
   | ReferenceValue
   | GeoPointValue
-  | ArrayValue
-  | MapValue;
+  | MapValue<any>;
 
 export type FieldFilterValue =
   | string
