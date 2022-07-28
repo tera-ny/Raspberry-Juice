@@ -11,7 +11,7 @@ import { Profile, profileConvertor } from "~/modules/entity";
 import { uidState } from "./auth";
 
 interface Atom {
-  currentUser?: Profile<Timestamp>;
+  currentUser?: Profile<Timestamp> & { id: string };
 }
 
 export const profileState = atom<Atom>({
@@ -29,7 +29,8 @@ export const useListenProfile = () => {
     const unsubscribe = onSnapshot(
       doc(creators, uid).withConverter(profileConvertor),
       (creator) => {
-        setProfile({ currentUser: creator.data() });
+        const data = creator.data();
+        setProfile({ currentUser: data && { ...data, id: uid } });
       },
     );
     return () => {
