@@ -3,7 +3,6 @@ import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import { composeStory } from "@storybook/react";
 import user from "@testing-library/user-event";
-import * as authStore from "~/stores/auth";
 import { vi } from "vitest";
 
 const cases: [stories: keyof typeof stories][] = [
@@ -42,13 +41,11 @@ describe("Header component", () => {
         expect(queryByRole("button", { name: "Login" })).not.toBeNull();
       });
       it("call toggle auth modal request", () => {
-        const toggle = vi.fn();
-        const useToggle = vi.spyOn(authStore, "useToggleAuthModalRequest");
-        useToggle.mockImplementation(() => toggle);
-        const { getByRole } = render(<Story />);
-        expect(useToggle).toHaveBeenCalled();
+        const request = vi.fn();
+        const { getByRole } = render(<Story requestLoginModal={request} />);
+        expect(request).not.toHaveBeenCalled();
         user.click(getByRole("button", { name: "Login" }));
-        expect(toggle).toHaveBeenCalledTimes(1);
+        expect(request).toHaveBeenCalled();
       });
     }
   });

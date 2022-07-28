@@ -26,12 +26,12 @@ export const isSubscribedState = selector<boolean>({
   get: ({ get }) => get(authState)?.subscription !== undefined,
 });
 
-export const useToggleAuthModalRequest = () => {
+export const useOpenAuthModalRequest = () => {
   const request = useSetRecoilState(authState);
-  return () =>
+  return (state: boolean) =>
     request((atom) => ({
       ...atom,
-      openAuthModalRequest: !atom.openAuthModalRequest,
+      openAuthModalRequest: state,
     }));
 };
 
