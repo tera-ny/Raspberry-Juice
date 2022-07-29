@@ -3,20 +3,20 @@ import { useRecoilValue } from "recoil";
 import {
   authState,
   useListenAuth,
-  useToggleAuthModalRequest,
+  useOpenAuthModalRequest,
 } from "~/stores/auth";
 import SignInTemplate from "~/templates/signin";
 import Modal from "./modal";
 
 const AuthModal: FC = () => {
   const state = useRecoilValue(authState);
-  const toggle = useToggleAuthModalRequest();
+  const modalRequest = useOpenAuthModalRequest();
   useListenAuth();
   return (
     <>
       <Modal
         visible={!!(state.openAuthModalRequest && !state.subscription?.uid)}
-        onClickBackground={() => toggle()}
+        onClickBackground={() => modalRequest(false)}
         width={450}
         height={420}
       >

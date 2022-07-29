@@ -4,6 +4,7 @@
   "description": "",
 
   "scripts": {
+    "dev": "yarn workspace @rasp/frontend dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
