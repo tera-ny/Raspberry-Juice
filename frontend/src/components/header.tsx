@@ -3,7 +3,7 @@ import Link from "next/link";
 import {
   isSubscribedState,
   uidState,
-  useOpenAuthModalRequest,
+  useSwitchDisplayAuthModal,
 } from "~/stores/auth";
 import { useRecoilValue } from "recoil";
 import { profileState } from "~/stores/profile";
@@ -74,7 +74,7 @@ export const HeaderTemplate: FC<TemplateProps> = (
 );
 
 const Header: FC = () => {
-  const openAuthModalRequest = useOpenAuthModalRequest();
+  const switchDisplayModal = useSwitchDisplayAuthModal();
   const { currentUser } = useRecoilValue(profileState);
   const uid = useRecoilValue(uidState);
   const isSubscribed = useRecoilValue(isSubscribedState);
@@ -83,7 +83,7 @@ const Header: FC = () => {
       isSubscribed={isSubscribed}
       uid={uid}
       currentUser={currentUser}
-      requestLoginModal={() => openAuthModalRequest(true)}
+      requestLoginModal={() => switchDisplayModal(true)}
     />
   );
 };

@@ -8,12 +8,12 @@ interface Subscription {
 
 type Atom = {
   subscription?: Subscription;
-  openAuthModalRequest: boolean;
+  requestsToDisplayAuthModal: boolean;
 };
 
 export const authState = atom<Atom>({
   key: "auth",
-  default: { subscription: undefined, openAuthModalRequest: false },
+  default: { subscription: undefined, requestsToDisplayAuthModal: false },
 });
 
 export const uidState = selector<string | undefined>({
@@ -26,12 +26,19 @@ export const isSubscribedState = selector<boolean>({
   get: ({ get }) => get(authState)?.subscription !== undefined,
 });
 
-export const useOpenAuthModalRequest = () => {
+export const isDisplayedAuthModal = selector<boolean>({
+  key: "auth/isDisplayedAuthModal",
+  get: ({ get }) =>
+    get(authState).requestsToDisplayAuthModal && get(isSubscribedState) &&
+    !get(uidState),
+});
+
+export const useSwitchDisplayAuthModal = () => {
   const request = useSetRecoilState(authState);
-  return (state: boolean) =>
+  return (open: boolean) =>
     request((atom) => ({
       ...atom,
-      openAuthModalRequest: state,
+      requestsToDisplayAuthModal: open,
     }));
 };
 
@@ -44,7 +51,9 @@ export const useListenAuth = () => {
     let unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuth((atom) => ({
         ...atom,
-        openAuthModalRequest: user?.uid ? false : atom.openAuthModalRequest,
+        requestsToDisplayAuthModal: user?.uid
+          ? false
+          : atom.requestsToDisplayAuthModal,
         subscription: { uid: user?.uid ?? undefined },
       }));
     });

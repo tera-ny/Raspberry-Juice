@@ -1,22 +1,22 @@
 import { FC } from "react";
 import { useRecoilValue } from "recoil";
 import {
-  authState,
+  isDisplayedAuthModal,
   useListenAuth,
-  useOpenAuthModalRequest,
+  useSwitchDisplayAuthModal,
 } from "~/stores/auth";
 import SignInTemplate from "~/templates/signin";
 import Modal from "./modal";
 
 const AuthModal: FC = () => {
-  const state = useRecoilValue(authState);
-  const modalRequest = useOpenAuthModalRequest();
+  const isDisplayed = useRecoilValue(isDisplayedAuthModal);
+  const switchDisplayModal = useSwitchDisplayAuthModal();
   useListenAuth();
   return (
     <>
       <Modal
-        visible={!!(state.openAuthModalRequest && !state.subscription?.uid)}
-        onClickBackground={() => modalRequest(false)}
+        visible={isDisplayed}
+        onClickBackground={() => switchDisplayModal(false)}
         width={450}
         height={420}
       >
